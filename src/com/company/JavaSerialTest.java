@@ -1,20 +1,9 @@
 package com.company;
 
 
-import java.io.BufferedReader;
         import java.io.InputStreamReader;
         import java.io.OutputStream;
         import com.fazecast.jSerialComm.*;
-
-/*
-        import gnu.io.CommPortIdentifier;
-
-        import gnu.io.SerialPort;
-
-        import gnu.io.SerialPortEvent;
-        import gnu.io.SerialPortEventListener;
-        */
-        import java.util.Enumeration;
         import java.util.*;
 
 
@@ -97,13 +86,7 @@ private void openPort( String portID)
 
 
     public void initialize() {
-        // the next line is for Raspberry Pi and
-        // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
-        //System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
-        //System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/tty.usbmodem1411");
 
-        //--CommPortIdentifier portId = null;
-        //--Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
         String portId = null;
         SerialPortlist = Arrays.asList(SerialPort.getCommPorts());
         //Create Map
@@ -118,46 +101,13 @@ private void openPort( String portID)
 
             System.out.println(name);
         }
-/*
-        Enumeration portEnum = Collections.enumeration(SerialPortlist);
-        //First, Find an instance of serial port as set in PORT_NAMES.
-        while (portEnum.hasMoreElements()) {
-            SerialPort currPortId = (SerialPort) portEnum.nextElement();
-              for (String portName : PORT_NAMES) {
-                  System.out.println("testing port names: currPort:"+currPortId.getDescriptivePortName()+" portNames"+ portName);
-                  System.out.println("testing port names: currPort:"+currPortId.getSystemPortName()+" portNames"+ portName);
 
-                if (currPortId.getSystemPortName().equals(portName)) {
-                    portId = currPortId.getSystemPortName();
-                    System.out.println("Will try to open: "+portId);
-
-                    break;
-                }
-            }
-        }
-        if (portId == null) {
-            System.out.println("Could not find COM port.");
-            return;
-        }
-*/
         try {
-            // open serial port, and use class name for the appName.
-            //--serialPort = (SerialPort) portId.open(this.getClass().getName(), TIME_OUT);
 
-            //m_comPort = SerialPort.getCommPort(portId);
-            //m_comPort = portMap.get(portName1);
             System.out.println("Will open: " + portName1);
             openPort( portName1 );
             setPortDefaultParams(m_comPort);
-
-            /*** OSX hack ***/
-            //m_comPort2 =SerialPort.getCommPort("tty.usbmodem1441");
-            //System.out.println("Will open: " + portName2);
-            //openPort(m_comPort2, portName2);
-            //setPortDefaultParams(m_comPort2);
             addEventListeners(m_comPort);
-            //addEventListeners(m_comPort2);
-            /*** OSX hack ***/
 
             // open the streams
             m_inputStream = new InputStreamReader(m_comPort.getInputStream());
@@ -264,19 +214,6 @@ private void openPort( String portID)
                 else{
                     System.out.println("m_inputStream is null");
                 }
-                /*
-                try
-                {
-                    if(m_inputStream!=null) {
-                        for (int j = 0; j < 1000; ++j)
-                            System.out.print((char) m_inputStream.read());
-                    }
-                    else{
-                        System.out.println("m_inputStream is null");
-                    }
-                } catch (Exception e) { e.printStackTrace(); }
-                */
-                //try {Thread.sleep(100);} catch (InterruptedException ie) {ie.printStackTrace();}
             }
         };
         readThread.start();
