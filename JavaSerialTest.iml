@@ -7,14 +7,36 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/jSerialComm" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jSerialComm" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/Other_Projects" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" scope="PROVIDED" name="jSerialComm" level="project" />
-    <orderEntry type="library" exported="" name="apache-log4j-2.10" level="project" />
+    <orderEntry type="library" exported="" name="jSerialComm" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/src/main/resources" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
