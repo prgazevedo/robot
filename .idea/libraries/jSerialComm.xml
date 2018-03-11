@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="jSerialComm">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/jSerialComm" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/jSerialComm" recursive="false" />
+  </library>
+</component>
