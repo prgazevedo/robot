@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
         public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
 
         @Override
-        public int getPacketSize() { return 100; }
+        public int getPacketSize() { return 80; }
 
         @Override
         public void serialEvent(SerialPortEvent event)
@@ -45,7 +45,8 @@ import org.apache.logging.log4j.LogManager;
 
                     if ( ApplicationProperties.isMessageSplitter(buffer[i])  )
                     {
-                        if(output!="") log.info(prefix+output);
+                        //If there is content in the output log it
+                        if(!output.equals("")) log.info(prefix+output);
                         output="";
 
                     }
