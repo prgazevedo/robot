@@ -111,7 +111,7 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
     {
 
         writeLog(Level.INFO," setPortDefaultParams called");
-        comPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 100, 0);
+        comPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
         // set port parameters
         comPort.setBaudRate(ApplicationProperties.DATA_RATE);
         comPort.setNumDataBits(ApplicationProperties.DATABITS);

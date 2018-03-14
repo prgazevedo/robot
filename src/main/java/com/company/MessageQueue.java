@@ -25,31 +25,31 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class MessageQueue {
     private String nameQueue;
-    BlockingQueue<SerialMessage> queue;
+    private BlockingQueue<SerialMessage> m_queue;
     private final static Logger logger =  LogManager.getLogger(MessageQueue.class);
 
     public MessageQueue(BlockingQueue<SerialMessage> queue) {
-        this.queue = queue;
+        this.m_queue = queue;
     }
 
     public MessageQueue(String name) {
         nameQueue=name;
-        queue = new ArrayBlockingQueue<SerialMessage>(1000);
+        m_queue = new ArrayBlockingQueue<SerialMessage>(1000);
     }
 
 
     public synchronized void add(SerialMessage message) {
-        queue.add(message);
+        m_queue.add(message);
 
-        logger.debug("Added[Queue:{}, QueueSize:{}, Message:{}]", nameQueue, queue.size(), message);
+        logger.debug("Added[Queue:{}, QueueSize:{}, Message:{}]", nameQueue, m_queue.size(), message);
     }
 
 
     public synchronized SerialMessage take() {
-        if (!queue.isEmpty()) {
-            SerialMessage message = queue.remove();
+        if (!m_queue.isEmpty()) {
+            SerialMessage message = m_queue.remove();
 
-            logger.debug("Removed[Queue:{}, QueueSize:{}, Message:{}]", nameQueue, queue.size(), message);
+            logger.debug("Removed[Queue:{}, QueueSize:{}, Message:{}]", nameQueue, m_queue.size(), message);
             return message;
         } else {
             logger.warn("There is no message in the queue, returning null");
@@ -57,17 +57,21 @@ public class MessageQueue {
         }
     }
 
-    public String dumptoString(){
-        return queue.toString();
+    public void logContents(){
+        if(m_queue!=null) {
+            logger.info("Queue size is {}", m_queue.size());
+            logger.info("Queue data is {}", m_queue.toString());
+        }
+
     }
 
     public synchronized boolean isEmpty() {
-        return queue.isEmpty();
+        return m_queue.isEmpty();
     }
 
 
     public synchronized void clear() {
-        queue.clear();
+        m_queue.clear();
     }
 
 

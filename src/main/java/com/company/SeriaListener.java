@@ -110,7 +110,7 @@ final class SeriaListener implements SerialPortPacketListener
                     log.debug("Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
                 }
             }
-           log.info(m_queue.dumptoString());
+           m_queue.logContents();
         }
         catch(Exception e){
             e.printStackTrace();
