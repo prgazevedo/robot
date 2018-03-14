@@ -1,8 +1,26 @@
+/*
+ * Copyright 2018 Pedro Azevedo (prgazevedo@gmail.com)
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 #include "Arduino.h"
 #include <IRremote.h>
 #include <stdlib.h>
 #include <Servo.h> //servo library
-#include "avr8-stub.h"
+
 
 
 Servo myservo; // create servo object to control servo
@@ -274,7 +292,7 @@ void readIR() {
 
 
 void setup() {
-  RUNNING = true;
+  RUNNING = false;
   //writeToSerialAndFlush("setup begin");
   Serial.begin(SERIALSPEED);
   writeToSerialAndFlush("setup: Serial opened");
@@ -294,7 +312,7 @@ void setup() {
 void loop() {
 
 
-    if(!RUNNING) {
+    if(RUNNING) {
       writeToSerialAndFlush("loop started");
       RUNNING=true;
     }

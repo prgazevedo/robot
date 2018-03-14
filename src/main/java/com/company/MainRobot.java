@@ -1,3 +1,21 @@
+/*
+ * Copyright 2018 Pedro Azevedo (prgazevedo@gmail.com)
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 package com.company;
 
 
@@ -11,24 +29,27 @@ import org.apache.logging.log4j.LogManager;
 
 
 
-public class Robot {
+public class MainRobot {
 
-    //private static final Logger log = LogManager.getRootLogger();
-    private final static Logger logger =  LogManager.getLogger(Robot.class);
-    private static SerialPort m_comPort;
+    /** Set the logger with the class name */
+    private final static Logger logger =  LogManager.getLogger(MainRobot.class);
+    /** The the serial port we shall use */
+    private static SerialPort m_comPort=null;
     /** The output stream to the port */
-    private static OutputStream m_outputStream;
+    private static OutputStream m_outputStream=null;
     /** The input stream to the port */
-    private static InputStreamReader m_inputStream;
-    //List of serial ports
-    private List<SerialPort> SerialPortlist=null;
+    private static InputStreamReader m_inputStream=null;
+    /** List of serial ports */
+    private List<SerialPort> m_serialPortlist=null;
+     /** Map of serial ports and names */
     private HashMap<String, SerialPort> m_portMap=null;
+     /** The Message queue that holds serial messages*/
+    private MessageQueue m_queue;
 
-
-    //PortName
+     /** PortName of this machine */
     private static final String portName1 = "cu.usbmodem1441";
 
-    /** The port we're normally going to use. */
+    /** port names to use in different machines */
     private static final String PORT_NAMES[] = {
            // "/dev/tty.usbserial-A9007UX1", // Mac OS X
             "/dev/tty.usbmodem1411", //Mac OS X
@@ -40,9 +61,23 @@ public class Robot {
             "COM3", // Windows
     };
 
+    public MainRobot() {
+        if (m_queue == null) {
+            m_queue = new MessageQueue(String.valueOf(this.toString()));
+        }
+        //Create Port Map
+        if (m_portMap == null) {
+            m_portMap = new HashMap<String, SerialPort>();
+        }
+        //Create Serial Port List
+        if (m_serialPortlist == null) {
+            m_serialPortlist = new ArrayList<SerialPort>();
+        }
+
+    }
 
 
-private void openPort( String portID)
+    private void openPort( String portID)
 {
     SerialPort sPort;
     writeLog(Level.INFO," openPort: " + portID);
@@ -87,7 +122,7 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
     private void addEventListeners(SerialPort comPort)
     {
         writeLog(Level.INFO," addEventListeners called");
-        SeriaListener listener = new SeriaListener();
+        SeriaListener listener = new SeriaListener(m_queue);
         comPort.addDataListener(listener);
     }
 
@@ -95,10 +130,9 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
     private void initialize() {
 
         String portId = null;
-        SerialPortlist = Arrays.asList(SerialPort.getCommPorts());
-        //Create Map
-        m_portMap = new HashMap<String, SerialPort>();
-        for (SerialPort serialP : SerialPortlist) {
+        m_serialPortlist = Arrays.asList(SerialPort.getCommPorts());
+
+        for (SerialPort serialP : m_serialPortlist) {
             m_portMap.put(serialP.getSystemPortName(), serialP);
             writeLog(Level.INFO," Ports in Map: "+serialP.getSystemPortName() );
         }
@@ -175,9 +209,8 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
 
 
     public static void main(String[] args) throws Exception {
-        Robot main = new Robot();
+        MainRobot main = new MainRobot();
         main.initialize();
-
 
 
         Scanner in = new Scanner(System.in);
