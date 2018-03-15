@@ -21,30 +21,42 @@ package com.company;
 public class ApplicationProperties {
 
     /** Application name */
-    public static final String APPLICATION_NAME = "MyController.org";
+    public static final String APPLICATION_NAME = "Robot";
     /** Milliseconds to block while waiting for port open */
     public static final int TIME_OUT = 2000;
     /** Default bits per second for COM port. */
     public static final int DATA_RATE = 115200;
+    /** Data bits to be sent: We shall use 8-N-1: one start bit, the eight data bits, and the one stop bit */
     public static final int DATABITS = 8;
+    /** Parity: Acceptable values are NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, and SPACE_PARITY. */
     public static final int PARITY = 0;
-    //Acceptable values are NO_PARITY, EVEN_PARITY, ODD_PARITY, MARK_PARITY, and SPACE_PARITY.
+    /** Stop bits to be sent */
     public static final int STOPBITS = 1;
-    // Message splitter char for serial message
-    //public static final byte MESSAGE_SPLITTER = '\n';
+    /** Maximum size of message */
+    public static final int SERIAL_DATA_MAX_SIZE = 1000;
+    /** Acceptable Message splitter chars for serial message */
     private static final byte MESSAGE_SPLITTERS[] = {
             '\n',
             '\r'
     };
 
-    public static final int SERIAL_DATA_MAX_SIZE = 1000;
-    // Message splitter char for serial message
-    public static final boolean isMessageSplitter(byte buffer){
+    public static int getSerialDataMaxSize() {
+        return SERIAL_DATA_MAX_SIZE;
+    }
+
+
+    /** Returns true if byte is Message splitter in serial message */
+    public static final boolean isMessageSplitter(byte b){
         for(int i=0; i<MESSAGE_SPLITTERS.length;i++)
         {
-            if(buffer==MESSAGE_SPLITTERS[i]) return true;
+            if(b==MESSAGE_SPLITTERS[i]) return true;
         }
         return false;
+    }
+    public static final boolean isMessageOversize(int buffersize) {
+        if (buffersize >= ApplicationProperties.SERIAL_DATA_MAX_SIZE) return true;
+        else return false;
+
     }
 
 

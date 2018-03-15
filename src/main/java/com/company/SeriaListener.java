@@ -26,19 +26,25 @@ import org.apache.logging.log4j.LogManager;
 final class SeriaListener implements SerialPortPacketListener
 {
 
-    public SeriaListener(MessageQueue queue) {
-        m_queue=queue;
-        m_parser= new MessageParser();
-    }
 
+
+    private SerialPort m_serialPort=null;
     private MessageParser m_parser=null;
     private MessageQueue m_queue=null;
     StringBuilder rawMessage = new StringBuilder();
 
     //private static final Logger log = LogManager.getRootLogger();
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
+
+    public SeriaListener(SerialPort serial,MessageQueue queue) {
+        m_serialPort = serial;
+        m_queue=queue;
+        m_parser= new MessageParser();
+    }
+
+
     @Override
-    public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
+    public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
 
     @Override
     public int getPacketSize() { return 80; }
@@ -46,11 +52,15 @@ final class SeriaListener implements SerialPortPacketListener
     @Override
     public void serialEvent(SerialPortEvent event)
     {
-
+        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
+            return;
+        }
         try{
-            byte[] newData = event.getReceivedData();
+            byte[] buffer = new byte[m_serialPort.bytesAvailable()];
+            m_serialPort.readBytes(buffer, buffer.length);
+            //byte[] newData = event.getReceivedData();
             //log.info("[Raspberry]: serialEvent called");
-            if(newData.length>0) readRawData(newData);
+            if(buffer.length>0) readRawData(buffer);
 
 
         }
@@ -66,47 +76,35 @@ final class SeriaListener implements SerialPortPacketListener
         String output="";
         try {
 
-            /* OLD CODE
-            for (int i = 0; i < buffer.length; ++i) {
-                //    System.out.print((char)buffer[i]);
-
-                if ( ApplicationProperties.isMessageSplitter(buffer[i])  )
+            for (byte b : buffer)
+            {
+                if (ApplicationProperties.isMessageSplitter(b) && rawMessage.length() > 0)
                 {
-                    //If there is content in the output log it
-                    if(!output.equals("")) log.info(prefix+output);
-                    output="";
-
-                }
-                else{
-                    output += (char) buffer[i];
-                }
-
-
-            }
-            */
-
-            for (byte b : buffer) {
-                if (ApplicationProperties.isMessageSplitter(b) && rawMessage.length() > 0) {
                     String toProcess = rawMessage.toString();
                     log.info(prefix + "Received a rawMessage:[{}]", toProcess);
 
                     //Send Message
                     SerialMessage message = m_parser.getMessage( toProcess.getBytes());
-                    if (message != null) {
+                    if (message != null)
+                    {
                         m_queue.add(message);
                     }
                     rawMessage.setLength(0);
                 }
-                else if (!ApplicationProperties.isMessageSplitter(b)) {
+                else if (!ApplicationProperties.isMessageSplitter(b))
+                {
                     //log.trace("Received a char:[{}]", ((char) b));
                     rawMessage.append((char) b);
-                } else if (rawMessage.length() >= ApplicationProperties.SERIAL_DATA_MAX_SIZE) {
+                }
+                else if (ApplicationProperties.isMessageOversize(rawMessage.length() ) )
+                {
                     log.warn(
                             "Serial receive buffer size reached to MAX level[{} chars], "
                                     + "Now clearing the buffer. Existing data:[{}]",
-                            ApplicationProperties.SERIAL_DATA_MAX_SIZE, rawMessage.toString());
+                            ApplicationProperties.getSerialDataMaxSize(), rawMessage.toString());
                     rawMessage.setLength(0);
-                } else {
+                }
+                else {
                     log.debug("Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
                 }
             }
@@ -114,6 +112,9 @@ final class SeriaListener implements SerialPortPacketListener
         }
         catch(Exception e){
             e.printStackTrace();
+            log.error("Exception: ",e);
+            rawMessage.setLength(0);
+
         }
     }
 

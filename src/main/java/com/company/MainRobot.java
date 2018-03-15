@@ -122,7 +122,7 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
     private void addEventListeners(SerialPort comPort)
     {
         writeLog(Level.INFO," addEventListeners called");
-        SeriaListener listener = new SeriaListener(m_queue);
+        SeriaListener listener = new SeriaListener(comPort,m_queue);
         comPort.addDataListener(listener);
     }
 
