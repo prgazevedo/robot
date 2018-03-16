@@ -65,6 +65,33 @@ public class MessageQueue {
 
     }
 
+    public void auditAllContents(){
+        if(m_queue!=null) {
+            logger.debug("auditAllContents, take all messages from message queue, queue size is {}", m_queue.size());
+            while(!m_queue.isEmpty()){
+               try{
+                   logger.info("Queue data is {}",m_queue.take().toString());
+               } catch (Exception e){
+                   logger.error("Error taking from Message queue:"+e);
+               }
+            }
+        }
+    }
+
+    public void auditLastMessage(){
+        if(m_queue!=null) {
+            if(m_queue.size()>0) logger.info("auditLastMessage, take last message from message queue size is {}", m_queue.size());
+            if(!m_queue.isEmpty()){
+                logger.info("Queue data is not empty");
+                try{
+                    logger.info("Queue data is {}",m_queue.take().toString());
+                } catch (Exception e){
+                    logger.error("Error taking from Message queue:"+e);
+                }
+            }
+        }
+    }
+
     public synchronized boolean isEmpty() {
         return m_queue.isEmpty();
     }

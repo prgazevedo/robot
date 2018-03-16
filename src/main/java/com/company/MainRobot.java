@@ -26,12 +26,13 @@ import java.util.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 
 
 
 public class MainRobot {
 
-    /** Set the logger with the class name */
+
     private final static Logger logger =  LogManager.getLogger(MainRobot.class);
     /** The the serial port we shall use */
     private static SerialPort m_comPort=null;
@@ -44,7 +45,7 @@ public class MainRobot {
      /** Map of serial ports and names */
     private HashMap<String, SerialPort> m_portMap=null;
      /** The Message queue that holds serial messages*/
-    private MessageQueue m_queue;
+    private static MessageQueue m_queue;
 
      /** PortName of this machine */
     private static final String portName1 = "cu.usbmodem1441";
@@ -73,7 +74,7 @@ public class MainRobot {
         if (m_serialPortlist == null) {
             m_serialPortlist = new ArrayList<SerialPort>();
         }
-
+        Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
     }
 
 
@@ -124,6 +125,7 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
         writeLog(Level.INFO," addEventListeners called");
         SeriaListener listener = new SeriaListener(comPort,m_queue);
         comPort.addDataListener(listener);
+
     }
 
 
@@ -172,98 +174,31 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
 
 
 
-    /**
-     * WriteStream
-     */
-    private static synchronized void writeStream(String cmd) {
-        if (m_comPort != null) {
-            writeLog(Level.INFO,"Writing to serial:"+cmd);
-            try {
-                m_outputStream.write(cmd.getBytes()); // Write to serial
-                //m_outputStream.flush();
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * ReadStream
-     */
-    public static synchronized void readStream() {
-
-        writeLog(Level.INFO," readStream called \n");
-        if (m_comPort != null) {
-            try (Scanner scanner = new Scanner(m_inputStream)) {
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    writeLog(Level.INFO,line);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 
 
     public static void main(String[] args) throws Exception {
-        MainRobot main = new MainRobot();
-        main.initialize();
+        MainRobot robot = new MainRobot();
+        writeLog(Level.INFO, "Robot initialize");
+        robot.initialize();
 
 
-        Scanner in = new Scanner(System.in);
         if(m_comPort!=null){
             if(m_comPort.isOpen()){
                 writeLog(Level.INFO," Port: "+ m_comPort.getSystemPortName()+" is Open");
-                Thread writeThread = new Thread() {
-                    @Override public void run() {
-                        try {
-                            Thread.currentThread().setName("writeThread");
-                            writeLog(Level.INFO," New Write thread launched!");
-                            String cmd = "";
-                            while (!cmd.equals("EXIT")) {
-                                writeLog(Level.INFO," Enter command:");
-                                cmd = in.next();
-                                if (cmd.equals("w") || cmd.equals("a")|| cmd.equals("d") || cmd.equals("s") || cmd.equals("x") || cmd.equals("j") || cmd.equals("k") || cmd.equals("l")  )
-                                {
+                Thread writeThread = new WriteThread(m_queue,m_comPort) {
 
-                                    writeStream(cmd);
-                                }
-                            }
-
-                        } catch (Exception e) {
-                            writeLog(Level.ERROR, "Error writing to Serial");
-                            throw(e);
-                        }
-                        m_comPort.closePort();
-                        writeLog(Level.INFO," Exiting! CLOSE COM");
-                    }
                 };
                 writeThread.start();
                 writeLog(Level.INFO," writeThread Started");
             }
 
         }
-/*
-        Thread readThread=new Thread() {
-            public void run() {
-                Thread.currentThread().setName("readThread");
-                writeLog(Level.INFO," New Read thread launched!");
-                if(m_inputStream!=null) {
-                    readStream();
-                }
-                else{
-                    log.warn("[Raspberry]: m_inputStream is null");
-                }
-                writeLog(Level.INFO," New Read thread launched!");
-            }
-        };
-        readThread.start();
 
-        writeLog(Level.INFO," readThread Started");
-*/
+        Thread monitordThread=new MonitorThread(robot.m_queue);
+        monitordThread.start();
+        writeLog(Level.INFO," monitorThread Started");
+
     }
 
 }

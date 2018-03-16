@@ -16,12 +16,16 @@
  */
 
 package com.company;
+import org.apache.logging.log4j.Level;
 
 
 public class ApplicationProperties {
 
     /** Application name */
     public static final String APPLICATION_NAME = "Robot";
+
+    /** Application debug level */
+    public static final  org.apache.logging.log4j.Level LOG_LEVEL = Level.INFO ;
     /** Milliseconds to block while waiting for port open */
     public static final int TIME_OUT = 2000;
     /** Default bits per second for COM port. */

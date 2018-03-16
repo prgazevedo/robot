@@ -32,7 +32,7 @@ final class SeriaListener implements SerialPortPacketListener
     private MessageParser m_parser=null;
     private MessageQueue m_queue=null;
     StringBuilder rawMessage = new StringBuilder();
-
+    private boolean isNameSet=false;
     //private static final Logger log = LogManager.getRootLogger();
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
 
@@ -40,8 +40,13 @@ final class SeriaListener implements SerialPortPacketListener
         m_serialPort = serial;
         m_queue=queue;
         m_parser= new MessageParser();
+
     }
 
+    public final void initThreadName(){
+        Thread.currentThread().setName("SerialListener");
+        isNameSet=true;
+    }
 
     @Override
     public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
@@ -52,6 +57,7 @@ final class SeriaListener implements SerialPortPacketListener
     @Override
     public void serialEvent(SerialPortEvent event)
     {
+        if(!isNameSet) initThreadName();
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
             return;
         }
@@ -93,7 +99,7 @@ final class SeriaListener implements SerialPortPacketListener
                 }
                 else if (!ApplicationProperties.isMessageSplitter(b))
                 {
-                    //log.trace("Received a char:[{}]", ((char) b));
+                    log.trace("Received a char:[{}]", ((char) b));
                     rawMessage.append((char) b);
                 }
                 else if (ApplicationProperties.isMessageOversize(rawMessage.length() ) )
@@ -108,7 +114,7 @@ final class SeriaListener implements SerialPortPacketListener
                     log.debug("Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
                 }
             }
-           m_queue.logContents();
+           if(!m_queue.isEmpty()) m_queue.logContents();
         }
         catch(Exception e){
             e.printStackTrace();
