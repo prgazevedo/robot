@@ -72,7 +72,9 @@ typedef enum {
     none,
     lookleft,
     lookright,
-    lookfront}codes ;
+    lookfront,
+    testdistance
+    }codes ;
 
 codes hashit (String inString) {
     if (inString == "w") return forward;
@@ -83,6 +85,7 @@ codes hashit (String inString) {
     if (inString == "j") return lookleft;
     if (inString == "l") return lookright;
     if (inString == "k") return lookfront;
+    if (inString == "t") return testdistance
     else return none;
 }
 
@@ -192,6 +195,12 @@ int Distance_test()
   return (int)Fdistance;
 }
 
+void testDistance()
+{
+    writeToSerialAndFlush("testDistance");
+    Distance_test();
+}
+
 void setupUSServo()
 {
   writeToSerialAndFlush("setupUSServo begin");
@@ -258,7 +267,11 @@ void testEngines()
 }
 
 
-
+void setupIR()
+{
+    writeToSerialAndFlush("setupIR started");
+    irrecv.enableIRIn();
+}
 
 void flushSerial(){
   writeToSerialAndFlush("flushSerial: flush incoming");
@@ -291,11 +304,14 @@ void readIR() {
 
 
 
+
 void setup() {
-  RUNNING = false;
-  //writeToSerialAndFlush("setup begin");
+
+  
   Serial.begin(SERIALSPEED);
   writeToSerialAndFlush("setup: Serial opened");
+  writeToSerialAndFlush("setup begin");
+  RUNNING = false;
   setupUSServo();
   delay(500);
   testServo();
@@ -304,8 +320,10 @@ void setup() {
   delay(500);
   testEngines();
   delay(500);
-  //irrecv.enableIRIn();
-  writeToSerialAndFlush("123456789#################setup end#################123456789");
+  setupIR();
+  delay(500);
+  testDistance();
+  writeToSerialAndFlush("setup ended");
 }
 
 
@@ -345,6 +363,9 @@ void loop() {
               break;
           case lookfront:
               servoLook(90);
+              break;
+           case testdistance:
+              testDistance();
               break;
           case none:
           default:
