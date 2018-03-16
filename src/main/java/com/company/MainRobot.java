@@ -32,7 +32,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 public class MainRobot {
 
-
+    /** The the logger we shall use */
     private final static Logger logger =  LogManager.getLogger(MainRobot.class);
     /** The the serial port we shall use */
     private static SerialPort m_comPort=null;
@@ -62,6 +62,10 @@ public class MainRobot {
             "COM3", // Windows
     };
 
+    private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
+        logger.log(messageLevel,"[Raspberry]:"+message);
+    }
+
     public MainRobot() {
         if (m_queue == null) {
             m_queue = new MessageQueue(String.valueOf(this.toString()));
@@ -79,33 +83,41 @@ public class MainRobot {
 
 
     private void openPort( String portID)
-{
-    SerialPort sPort;
-    writeLog(Level.INFO," openPort: " + portID);
-    if(m_portMap.containsKey(portID)){
-        writeLog(Level.INFO," openPort: Found port in portMap: "+portID);
-         sPort = m_portMap.get(portID);
-        // Try to open port, terminate execution if not possible
-        if (sPort.openPort()) {
-            m_comPort=sPort;
-            writeLog(Level.INFO," "+m_comPort.getSystemPortName() + " successfully opened.");
+    {
+        SerialPort sPort;
+        writeLog(Level.INFO," openPort: " + portID);
+        if(m_portMap.containsKey(portID)){
+            writeLog(Level.INFO," openPort: Found port in portMap: "+portID);
+             sPort = m_portMap.get(portID);
+            // Try to open port, terminate execution if not possible
+            if (sPort.openPort()) {
+                m_comPort=sPort;
+                writeLog(Level.INFO," "+m_comPort.getSystemPortName() + " successfully opened.");
 
-        } else {
-            writeLog(Level.WARN, "failed to open: " +portID);
+            } else {
+                writeLog(Level.WARN, "failed to open: " +portID);
 
+            }
+        }
+        else
+        {
+            writeLog(Level.WARN, " openPort: Could not find port in portMap: "+portID);
+        }
+
+
+    }
+
+    /**
+     * This should be called when you stop using the port.
+     * This will prevent port locking on platforms like Linux.
+     */
+    public synchronized void close() {
+        if (m_comPort != null) {
+            m_comPort.removeDataListener();
+            m_comPort.closePort();
         }
     }
-    else
-    {
-        writeLog(Level.WARN, " openPort: Could not find port in portMap: "+portID);
-    }
 
-
-}
-
-private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
-    logger.log(messageLevel,"[Raspberry]:"+message);
-}
 
 
     private void setPortDefaultParams(SerialPort comPort)
@@ -158,16 +170,6 @@ private static void writeLog(org.apache.logging.log4j.Level messageLevel,String 
         }
     }
 
-    /**
-     * This should be called when you stop using the port.
-     * This will prevent port locking on platforms like Linux.
-     */
-    public synchronized void close() {
-        if (m_comPort != null) {
-            m_comPort.removeDataListener();
-            m_comPort.closePort();
-        }
-    }
 
 
 
