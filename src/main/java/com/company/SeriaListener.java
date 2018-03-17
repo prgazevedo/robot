@@ -87,7 +87,7 @@ final class SeriaListener implements SerialPortPacketListener
                 if (ApplicationProperties.isMessageSplitter(b) && rawMessage.length() > 0)
                 {
                     String toProcess = rawMessage.toString();
-                    log.info(prefix + "Received a rawMessage:[{}]", toProcess);
+                    log.trace(prefix + "Received a rawMessage:[{}]", toProcess);
 
                     //Send Message
                     SerialMessage message = m_parser.getMessage( toProcess.getBytes());
@@ -111,7 +111,7 @@ final class SeriaListener implements SerialPortPacketListener
                     rawMessage.setLength(0);
                 }
                 else {
-                    log.debug("Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
+                    log.trace("Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
                 }
             }
            if(!m_queue.isEmpty()) m_queue.logContents();

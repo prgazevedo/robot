@@ -59,8 +59,8 @@ public class MessageQueue {
 
     public void logContents(){
         if(m_queue!=null) {
-            logger.info("Queue size is {}", m_queue.size());
-            logger.info("Queue data is {}", m_queue.toString());
+            logger.trace("Queue size is {}", m_queue.size());
+            logger.trace("Queue data is {}", m_queue.toString());
         }
 
     }
@@ -82,7 +82,7 @@ public class MessageQueue {
         if(m_queue!=null) {
             if(m_queue.size()>0) logger.info("auditLastMessage, take last message from message queue size is {}", m_queue.size());
             if(!m_queue.isEmpty()){
-                logger.info("Queue data is not empty");
+                logger.trace("Queue data is not empty");
                 try{
                     logger.info("Queue data is {}",m_queue.take().toString());
                 } catch (Exception e){
