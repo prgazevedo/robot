@@ -117,7 +117,15 @@ public class WriteThread extends Thread {
             while (!(cmd=readFromConsole()).equals("EXIT"))
             {
 
-                if (cmd.equals("w") || cmd.equals("a")|| cmd.equals("d") || cmd.equals("s") || cmd.equals("x") || cmd.equals("j") || cmd.equals("k") || cmd.equals("l")  )
+                if (cmd.equals("w") ||
+                        cmd.equals("a")||
+                        cmd.equals("d") ||
+                        cmd.equals("s") ||
+                        cmd.equals("x") ||
+                        cmd.equals("j") ||
+                        cmd.equals("k") ||
+                        cmd.equals("l") ||
+                        cmd.equals("t"))
                 {
                     writeStream(cmd);
                     writeinQueue(cmd.getBytes());

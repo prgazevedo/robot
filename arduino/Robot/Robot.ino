@@ -16,7 +16,6 @@
  */
 
 
-#include "Arduino.h"
 #include <IRremote.h>
 #include <stdlib.h>
 #include <Servo.h> //servo library
@@ -45,16 +44,37 @@ int Trig = A5;
 #define WORK_UNIT  50
 #define DELAY_UNIT  50
 #define SLOW_MOVE  1000
-
+/* 
+ *  NOTE: Had to physically change EN1_PIN and ENB_PIN and in code 
+ *  (were EN1_PIN=6 and ENB_PIN=11 now EN1_PIN=11 and ENB_PIN=6)
+ *  When PIN11 uses the analogWrite function, it will use the timer2; 
+ * However, IR library uses the timer2 interrupt.  
+ * So if both are used, it can cause timed confusion and errors. 
+ * PIN6 uses timer0, so if PIN11 and PIN6 swap, they will not use the same timer. 
+ * Info from:
+ * https://forum.arduino.cc/index.php?topic=460099.0
+ * Comments in https://www.youtube.com/watch?v=nVwfC9fVlVs
+ */
 int RECV_PIN = 12;
-int in1=6;
-int in2=7;
-int in3=8;
-int in4=9;
-int ENA=5;
-int ENB=11;
+int EN1_PIN=11;
+int EN2_PIN=7;
+int EN3_PIN=8;
+int EN4_PIN=9;
+int ENA_PIN=5;
+int ENB_PIN=6;
 int ABS=115;
 int servo_current_angle=0;
+
+
+//Pin assignments and global variables per function. Customize if needed
+//*******Pin assignments Motor board and IR receiver********************
+const int MotorRight1   = EN1_PIN; //right1 side motor wheel pin
+const int MotorRight2   = EN2_PIN; //right2 side motor wheel pin
+const int MotorLeft1    = EN3_PIN; //left1 side motor wheel pin
+const int MotorLeft2    = EN4_PIN; //left2 side motor wheel pin
+const int MotorRightPWM = ENA_PIN; //right side enable pin
+const int MotorLeftPWM  = ENB_PIN; //left side enable pin
+
 
 boolean RUNNING = false;
 boolean LOOPDEBUG = false;
@@ -73,7 +93,7 @@ typedef enum {
     lookleft,
     lookright,
     lookfront,
-    testdistance
+    testdistance,
     }codes ;
 
 codes hashit (String inString) {
@@ -85,7 +105,7 @@ codes hashit (String inString) {
     if (inString == "j") return lookleft;
     if (inString == "l") return lookright;
     if (inString == "k") return lookfront;
-    if (inString == "t") return testdistance
+    if (inString == "t") return testdistance;
     else return none;
 }
 
@@ -102,26 +122,35 @@ void writeToSerialAndFlush(String inString){
 void controlled_move(int speed, int time)
 {
   while(time>0){
-  analogWrite(ENA,speed);
-  analogWrite(ENB,speed);
-  delay( WORK_UNIT);
-  time-=WORK_UNIT;
-  digitalWrite(ENA,LOW);
-  digitalWrite(ENB,LOW);
-  delay( DELAY_UNIT);
-  time-=DELAY_UNIT;
+     analogWrite(ENA_PIN,speed);
+     analogWrite(ENB_PIN,speed);
+     delay( WORK_UNIT);
+     time-=WORK_UNIT;
+     digitalWrite(ENA_PIN,LOW);
+     digitalWrite(ENB_PIN,LOW);
+     delay( DELAY_UNIT);
+     time-=DELAY_UNIT;
  }
 }
 
+void leftWheelFWD()
+{
+  digitalWrite(EN1_PIN,HIGH);
+  digitalWrite(EN2_PIN,LOW);
+}
+
+void rightWheelFWD()
+{
+  digitalWrite(EN3_PIN,LOW);
+  digitalWrite(EN4_PIN,HIGH);
+}
 
 
 void moveForward(int speed, int time )
 {
 
-  digitalWrite(in1,HIGH);//digital output
-  digitalWrite(in2,LOW);
-  digitalWrite(in3,LOW);
-  digitalWrite(in4,HIGH);
+  leftWheelFWD();
+  rightWheelFWD();
   writeToSerialAndFlush("moveForward, for: "+String(time)+" ms");
   controlled_move(speed, time);
 }
@@ -131,39 +160,44 @@ void moveForward(int speed, int time )
 void moveBackward(int speed, int time )
 {
 
-  digitalWrite(in1,LOW);
-  digitalWrite(in2,HIGH);
-  digitalWrite(in3,HIGH);
-  digitalWrite(in4,LOW);
+  digitalWrite(EN1_PIN,LOW);
+  digitalWrite(EN2_PIN,HIGH);
+  digitalWrite(EN3_PIN,HIGH);
+  digitalWrite(EN4_PIN,LOW);
   writeToSerialAndFlush("moveBackward, for: "+String(time)+" ms");
   controlled_move(speed, time);
 }
 void moveLeft(int speed, int time )
 {
 
-  digitalWrite(in1,HIGH);
-  digitalWrite(in2,LOW);
-  digitalWrite(in3,HIGH);
-  digitalWrite(in4,LOW);
+  digitalWrite(EN1_PIN,HIGH);
+  digitalWrite(EN2_PIN,LOW);
+  digitalWrite(EN3_PIN,HIGH);
+  digitalWrite(EN4_PIN,LOW);
   writeToSerialAndFlush("moveLeft, for: "+String(time)+" ms");
   controlled_move(speed, time);
 }
 void moveRight(int speed, int time )
 {
 
-  digitalWrite(in1,LOW);
-  digitalWrite(in2,HIGH);
-  digitalWrite(in3,LOW);
-  digitalWrite(in4,HIGH);
+  digitalWrite(EN1_PIN,LOW);
+  digitalWrite(EN2_PIN,HIGH);
+  digitalWrite(EN3_PIN,LOW);
+  digitalWrite(EN4_PIN,HIGH);
   writeToSerialAndFlush("moveRight, for: "+String(time)+" ms");
   controlled_move(speed, time);
 }
 void moveStop()
 {
-  digitalWrite(ENA,LOW);
-  digitalWrite(ENB,LOW);
+
+  digitalWrite(EN1_PIN,LOW);
+  digitalWrite(EN2_PIN,LOW);
+  digitalWrite(EN3_PIN,LOW);
+  digitalWrite(EN4_PIN,LOW);
+  controlled_move(LOW_SPEED, 100);
   writeToSerialAndFlush("moveStop");
 }
+
 
 
 
@@ -240,12 +274,12 @@ void testServo()
 void setupEngines()
 {
   writeToSerialAndFlush("setupEngines begin");
-  pinMode(in1,OUTPUT);
-  pinMode(in2,OUTPUT);
-  pinMode(in3,OUTPUT);
-  pinMode(in4,OUTPUT);
-  pinMode(ENA,OUTPUT);
-  pinMode(ENB,OUTPUT);
+  pinMode(EN1_PIN,OUTPUT);
+  pinMode(EN2_PIN,OUTPUT);
+  pinMode(EN3_PIN,OUTPUT);
+  pinMode(EN4_PIN,OUTPUT);
+  pinMode(ENA_PIN,OUTPUT);
+  pinMode(ENB_PIN,OUTPUT);
   writeToSerialAndFlush("setupEngines ended");
 }
 
@@ -288,13 +322,17 @@ void readIR() {
       irrecv.resume();
       switch(val){
         case FW:
-        case UNKNOWN_F: moveForward(LOW_SPEED,SLOW_MOVE);break;
+        case UNKNOWN_F: moveForward(LOW_SPEED,SLOW_MOVE);
+        break;
         case BK:
-        case UNKNOWN_B: moveBackward(LOW_SPEED,SLOW_MOVE); break;
+        case UNKNOWN_B: moveBackward(LOW_SPEED,SLOW_MOVE); 
+        break;
         case LE:
-        case UNKNOWN_L: moveLeft(LOW_SPEED,SLOW_MOVE); break;
+        case UNKNOWN_L: moveLeft(LOW_SPEED,SLOW_MOVE); 
+        break;
         case RI:
-        case UNKNOWN_R: moveRight(LOW_SPEED,SLOW_MOVE);break;
+        case UNKNOWN_R: moveRight(LOW_SPEED,SLOW_MOVE);
+        break;
         case ST:
         case UNKNOWN_S: moveStop(); break;
         default:break;
@@ -303,46 +341,13 @@ void readIR() {
 }
 
 
-
-
-void setup() {
-
-  
-  Serial.begin(SERIALSPEED);
-  writeToSerialAndFlush("setup: Serial opened");
-  writeToSerialAndFlush("setup begin");
-  RUNNING = false;
-  setupUSServo();
-  delay(500);
-  testServo();
-  delay(500);
-  setupEngines();
-  delay(500);
-  testEngines();
-  delay(500);
-  setupIR();
-  delay(500);
-  testDistance();
-  writeToSerialAndFlush("setup ended");
-}
-
-
-void loop() {
-
-
-    if(RUNNING) {
-      writeToSerialAndFlush("loop started");
-      RUNNING=true;
-    }
-    if (Serial.available() > 0)
-    {
-
+void readInputSerial(){
       String s = Serial.readString(); // Read from serial
-      if(LOOPDEBUG) writeToSerialAndFlush("loop read:"+s);
+      if(LOOPDEBUG) writeToSerialAndFlush("readInputSerial:"+s);
       switch(hashit(s) ){
           case forward:
               moveForward(LOW_SPEED,SLOW_MOVE);
-              ;break;
+              break;
           case back:
               moveBackward(LOW_SPEED,SLOW_MOVE);
               break;
@@ -369,12 +374,50 @@ void loop() {
               break;
           case none:
           default:
-              if(LOOPDEBUG) writeToSerialAndFlush("loop: Cannot interpret command!");
+              if(LOOPDEBUG) writeToSerialAndFlush("readInputSerial: Cannot interpret command!");
               break;
       }
+}
+
+
+void setup() {
+
+  
+  Serial.begin(SERIALSPEED);
+  writeToSerialAndFlush("setup: Serial opened");
+  writeToSerialAndFlush("setup begin");
+  RUNNING = false;
+  setupIR();
+  delay(500);
+  setupUSServo();
+  delay(500);
+  testServo();
+  delay(500);
+  setupEngines();
+  delay(500);
+  testEngines();
+  delay(500);
+
+  testDistance();
+  writeToSerialAndFlush("setup ended");
+}
+
+
+
+void loop() {
+
+
+    if(RUNNING) {
+      writeToSerialAndFlush("loop started");
+      RUNNING=true;
+    }
+    if (Serial.available() > 0)
+    {
+      readInputSerial();
     }
     delay(100); // delay in between reads for stability
-
+    readIR();
+    delay(100); // delay in between reads for stability
 }
 
 
