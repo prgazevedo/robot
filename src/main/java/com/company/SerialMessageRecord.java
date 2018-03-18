@@ -17,7 +17,7 @@
 
 package com.company;
 
-public class SerialMessage {
+public class SerialMessageRecord {
 
     private Boolean isTxMessage;
     private Long timestamp;
@@ -52,6 +52,6 @@ public class SerialMessage {
 
     @Override
     public String toString() {
-        return "SerialMessage <TimeStamp>"+timestamp+"<isTxMessage>"+isTxMessage+"<payload>"+payload;
+        return "SerialMessageRecord <TimeStamp>"+timestamp+"<isTxMessage>"+isTxMessage+"<payload>"+payload;
     }
 }

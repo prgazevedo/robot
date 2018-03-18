@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import com.fazecast.jSerialComm.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -45,10 +47,14 @@ public class MainRobot {
      /** Map of serial ports and names */
     private HashMap<String, SerialPort> m_portMap=null;
      /** The Message queue that holds serial messages*/
-    private static MessageQueue m_queue;
-
+    private static MessageRecordQueue m_queue;
+    private MessagePayload.MessagePayloadBuilder m_MPB;
      /** PortName of this machine */
     private static final String portName1 = "cu.usbmodem1441";
+    /** Write Thread */
+    private static WriteThread m_writeThread=null;
+    /** Read Thread */
+    private static MonitorThread m_monitorThread=null;
 
     /** port names to use in different machines */
     private static final String PORT_NAMES[] = {
@@ -68,7 +74,7 @@ public class MainRobot {
 
     public MainRobot() {
         if (m_queue == null) {
-            m_queue = new MessageQueue(String.valueOf(this.toString()));
+            m_queue = new MessageRecordQueue(String.valueOf(this.toString()));
         }
         //Create Port Map
         if (m_portMap == null) {
@@ -78,6 +84,8 @@ public class MainRobot {
         if (m_serialPortlist == null) {
             m_serialPortlist = new ArrayList<SerialPort>();
         }
+        //Create Payload Builder
+        m_MPB = new MessagePayload.MessagePayloadBuilder();
         Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
     }
 
@@ -175,8 +183,20 @@ public class MainRobot {
 
 
 
+    private void moveForward(int speed, int time )
+    {
+        m_MPB.cmd(MessagePayload.cmds.Move).Args("1",String.valueOf(speed), String.valueOf(time));
+        MessagePayload payload= m_MPB.build();
+        m_writeThread.sendMessage(payload.toString());
 
+    }
 
+    private void moveBackward(int speed, int time )
+    {
+        m_MPB.cmd(MessagePayload.cmds.Move).Args("0",String.valueOf(speed), String.valueOf(time));
+        MessagePayload payload= m_MPB.build();
+        m_writeThread.sendMessage(payload.toString());
+    }
 
 
     public static void main(String[] args) throws Exception {
@@ -188,19 +208,29 @@ public class MainRobot {
         if(m_comPort!=null){
             if(m_comPort.isOpen()){
                 writeLog(Level.INFO," Port: "+ m_comPort.getSystemPortName()+" is Open");
-                Thread writeThread = new WriteThread(m_queue,m_comPort) {
+                m_writeThread = new WriteThread(m_queue,m_comPort) {
 
                 };
-                writeThread.start();
+                m_writeThread.start();
                 writeLog(Level.INFO," writeThread Started");
+                //Small test
+
             }
 
         }
 
-        Thread monitordThread=new MonitorThread(robot.m_queue);
-        monitordThread.start();
+        m_monitorThread=new MonitorThread(robot.m_queue);
+        m_monitorThread.start();
         writeLog(Level.INFO," monitorThread Started");
-
+        TimeUnit.SECONDS.sleep(15);
+        //Test write to Arduino
+        robot.moveForward(100,1000);
+        TimeUnit.SECONDS.sleep(1);
+        robot.moveBackward(100,1000);
+        TimeUnit.SECONDS.sleep(1);
+        robot.moveForward(100,1000);
+        TimeUnit.SECONDS.sleep(1);
+        robot.moveBackward(100,1000);
     }
 
 }

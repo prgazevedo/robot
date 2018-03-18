@@ -29,17 +29,17 @@ final class SeriaListener implements SerialPortPacketListener
 
 
     private SerialPort m_serialPort=null;
-    private MessageParser m_parser=null;
-    private MessageQueue m_queue=null;
+    private MessageRecordParser m_parser=null;
+    private MessageRecordQueue m_queue=null;
     StringBuilder rawMessage = new StringBuilder();
     private boolean isNameSet=false;
     //private static final Logger log = LogManager.getRootLogger();
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
 
-    public SeriaListener(SerialPort serial,MessageQueue queue) {
+    public SeriaListener(SerialPort serial,MessageRecordQueue queue) {
         m_serialPort = serial;
         m_queue=queue;
-        m_parser= new MessageParser();
+        m_parser= new MessageRecordParser();
 
     }
 
@@ -90,7 +90,7 @@ final class SeriaListener implements SerialPortPacketListener
                     log.trace(prefix + "Received a rawMessage:[{}]", toProcess);
 
                     //Send Message
-                    SerialMessage message = m_parser.getMessage( toProcess.getBytes());
+                    SerialMessageRecord message = m_parser.getMessage( toProcess.getBytes());
                     if (message != null)
                     {
                         m_queue.add(message);

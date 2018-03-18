@@ -23,31 +23,31 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class MessageQueue {
+public class MessageRecordQueue {
     private String nameQueue;
-    private BlockingQueue<SerialMessage> m_queue;
-    private final static Logger logger =  LogManager.getLogger(MessageQueue.class);
+    private BlockingQueue<SerialMessageRecord> m_queue;
+    private final static Logger logger =  LogManager.getLogger(MessageRecordQueue.class);
 
-    public MessageQueue(BlockingQueue<SerialMessage> queue) {
+    public MessageRecordQueue(BlockingQueue<SerialMessageRecord> queue) {
         this.m_queue = queue;
     }
 
-    public MessageQueue(String name) {
+    public MessageRecordQueue(String name) {
         nameQueue=name;
-        m_queue = new ArrayBlockingQueue<SerialMessage>(1000);
+        m_queue = new ArrayBlockingQueue<SerialMessageRecord>(1000);
     }
 
 
-    public synchronized void add(SerialMessage message) {
+    public synchronized void add(SerialMessageRecord message) {
         m_queue.add(message);
 
         logger.debug("Added[Queue:{}, QueueSize:{}, Message:{}]", nameQueue, m_queue.size(), message);
     }
 
 
-    public synchronized SerialMessage take() {
+    public synchronized SerialMessageRecord take() {
         if (!m_queue.isEmpty()) {
-            SerialMessage message = m_queue.remove();
+            SerialMessageRecord message = m_queue.remove();
 
             logger.debug("Removed[Queue:{}, QueueSize:{}, Message:{}]", nameQueue, m_queue.size(), message);
             return message;
@@ -80,7 +80,7 @@ public class MessageQueue {
 
     public void auditLastMessage(){
         if(m_queue!=null) {
-            if(m_queue.size()>0) logger.info("auditLastMessage, take last message from message queue size is {}", m_queue.size());
+            if(m_queue.size()>0) logger.trace("auditLastMessage, take last message from message queue size is {}", m_queue.size());
             if(!m_queue.isEmpty()){
                 logger.trace("Queue data is not empty");
                 try{

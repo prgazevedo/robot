@@ -1,12 +1,11 @@
 package com.company;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MonitorThread extends Thread {
 
-    MessageQueue m_queue=null;
+    MessageRecordQueue m_queue=null;
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
 
@@ -24,7 +23,7 @@ public class MonitorThread extends Thread {
         super(name);
     }
 
-    public MonitorThread(MessageQueue queue) {
+    public MonitorThread(MessageRecordQueue queue) {
         super("monitorThread");
         m_queue=queue;
         m_shouldRun=true;

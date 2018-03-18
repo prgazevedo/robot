@@ -18,15 +18,15 @@
 
 package com.company;
 
-public class MessageParser {
+public class MessageRecordParser {
 
     private String payload;
     private boolean isTxMessage = false;
     private Long timestamp;
 
-    public SerialMessage getMessage( byte[] Data) throws Exception {
+    public SerialMessageRecord getMessage(byte[] Data) throws Exception {
         update( new String(Data));
-        SerialMessage message = new SerialMessage();
+        SerialMessageRecord message = new SerialMessageRecord();
         message.setPayload(payload);
         message.setTimestamp(timestamp);
         message.setTxMessage(isTxMessage);
@@ -34,7 +34,7 @@ public class MessageParser {
     }
 
 
-    public byte[] getData(SerialMessage message) throws Exception {
+    public byte[] getData(SerialMessageRecord message) throws Exception {
         update(message);
         return getSerialString().getBytes();
     }
@@ -45,7 +45,7 @@ public class MessageParser {
         return message.toString();
     }
 
-    void update(SerialMessage message) throws Exception {
+    void update(SerialMessageRecord message) throws Exception {
 
         payload = message.getPayload();
         isTxMessage = message.getTxMessage();

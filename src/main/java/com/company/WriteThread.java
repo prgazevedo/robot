@@ -1,7 +1,6 @@
 package com.company;
 
 import com.fazecast.jSerialComm.SerialPort;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,10 +17,10 @@ public class WriteThread extends Thread {
     private static OutputStream m_outputStream=null;
     /** The input stream to the port */
     private static InputStreamReader m_inputStream=null;
-    private static MessageQueue m_queue=null;
+    private static MessageRecordQueue m_queue=null;
     private static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
-    private static MessageParser m_parser=null;
+    private static MessageRecordParser m_parser=null;
 
     public boolean isM_shouldRun() {
         return m_shouldRun;
@@ -37,12 +36,12 @@ public class WriteThread extends Thread {
         super(name);
     }
 
-    public WriteThread(MessageQueue queue, SerialPort serialPort) {
+    public WriteThread(MessageRecordQueue queue, SerialPort serialPort) {
         super("writeThread");
         m_queue=queue;
         m_comPort=serialPort;
         m_shouldRun=true;
-        m_parser= new MessageParser();
+        m_parser= new MessageRecordParser();
         m_outputStream = m_comPort.getOutputStream();
     }
 
@@ -64,7 +63,7 @@ public class WriteThread extends Thread {
     }
 
     private static synchronized void writeinQueue(byte[] bytes){//Send Message
-        SerialMessage message = null;
+        SerialMessageRecord message = null;
         try{
          message = m_parser.getMessage(bytes);
          message.setTxMessage(true);
@@ -99,14 +98,17 @@ public class WriteThread extends Thread {
     private String readFromConsole(){
         Scanner in = new Scanner(System.in);
         String cmd = "";
-        System.out.println("Enter command: (wasdx or jkl) EXIT to exit:");
-        //while (!cmd.equals("EXIT")) {
+        System.out.println("Enter command: or EXIT to exit:");
+        cmd = in.next();
+        return cmd;
 
-            cmd = in.next();
-            return cmd;
-        //}
     }
 
+    public void sendMessage(String cmd)
+    {
+        writeStream(cmd);
+        writeinQueue(cmd.getBytes());
+    }
 
 
     public void run() {
@@ -116,19 +118,14 @@ public class WriteThread extends Thread {
             String cmd = "";
             while (!(cmd=readFromConsole()).equals("EXIT"))
             {
-
-                if (cmd.equals("w") ||
-                        cmd.equals("a")||
-                        cmd.equals("d") ||
-                        cmd.equals("s") ||
-                        cmd.equals("x") ||
-                        cmd.equals("j") ||
-                        cmd.equals("k") ||
-                        cmd.equals("l") ||
-                        cmd.equals("t"))
+                if(cmd.endsWith(";"))
                 {
-                    writeStream(cmd);
-                    writeinQueue(cmd.getBytes());
+                    log.info("Cmd: "+cmd+" - is well terminated (;). Sending to serial");
+                    sendMessage(cmd);
+                }
+                else
+                {
+                    System.out.println("Cmd: "+cmd+"- is not well terminated. Add (;) at end");
                 }
 
             }
