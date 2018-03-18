@@ -16,13 +16,11 @@
  */
 
 
-#include <IRremote.h>
-#include <stdlib.h>
+//#include <IRremote.h>
 #include <Servo.h> //servo library
+#include <CmdMessenger.h>  //CmdMessenger library
 
-
-#define SERIALSPEED 115200
-
+/*
 #define FW 16736925
 #define BK 16754775
 #define LE 16720605
@@ -33,7 +31,7 @@
 #define UNKNOWN_L 1386468383
 #define UNKNOWN_R 553536955
 #define UNKNOWN_S 3622325019
-
+*/
 
 #define LOW_SPEED 100
 #define ROT_MIN_SPEED 180
@@ -41,9 +39,9 @@
 #define SPEED_STEP 10
 #define WORK_UNIT  50
 #define DELAY_UNIT  50
-#define SLOW_MOVE  1000
 
 
+/*
 typedef enum {
     MOVE_FWD,
     MOVE_BWD,
@@ -56,15 +54,18 @@ typedef enum {
     lookfront,
     testdistance,
     }all_codes ;
+*/
 
-typedef enum {
+#include <avr/pgmspace.h>
+
+const PROGMEM  typedef enum {
     MOVE_FORWARD,
     MOVE_BACKWARD,
     MOVE_LEFTWARD,
     MOVE_RIGHTWARD,
     MOVE_STOP,
     }move_codes ;
-    
+   
 /* 
  *  NOTE: Had to physically change EN1_PIN and ENB_PIN and in code 
  *  (were EN1_PIN=6 and ENB_PIN=11 now EN1_PIN=11 and ENB_PIN=6)
@@ -79,21 +80,19 @@ typedef enum {
 
 ///////////////////////////////////////
 //Pin assignments 
-int RECV_PIN = 12;
-int EN1_PIN=11;
-int EN2_PIN=7;
-int EN3_PIN=8;
-int EN4_PIN=9;
-int ENA_PIN=5;
-int ENB_PIN=6;
-int ABS=115;
+uint8_t RECV_PIN = 12;
+uint8_t EN1_PIN=11;
+uint8_t EN2_PIN=7;
+uint8_t EN3_PIN=8;
+uint8_t EN4_PIN=9;
+uint8_t ENA_PIN=5;
+uint8_t ENB_PIN=6;
+
 ///////////////////////////////////////
 // Global variables
-int servo_current_angle=0;
-int current_speed=LOW_SPEED;
-move_codes current_direction; 
-boolean RUNNING = false;
-boolean LOOPDEBUG = false;
+uint8_t current_speed=LOW_SPEED;
+uint8_t current_direction; 
+
 ///////////////////////////////////////
 // create servo object to control servo
 Servo myservo; 
@@ -101,12 +100,135 @@ int Echo = A4;
 int Trig = A5;
 ///////////////////////////////////////
 // create IR object to control IR Receiver
+/*
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 unsigned long val;
+*/
 ///////////////////////////////////////
+// Attach a new CmdMessenger object to the default Serial port
+char field_separator   = ',';
+char command_separator = ';';
+CmdMessenger cmdMessenger = CmdMessenger(Serial, field_separator, command_separator);
+// This is the list of recognized commands.
+// In order to receive, attach a callback function to these events:
+// Return the command list: 0;
+// Move: 1, <direction:FWD(0)/BWD(1)>,<speed:0-150>,<time: in ms>;
+// Rotate: 2, <direction:LEFT(0)/RIGHT(1)>,<speed:0-150>,<time: in ms>;
+// Scan: 3, <angle:0-180>;
+// Ping Arduino - AreYouReady:4; Command to ask if other side is ready
+// Arduino Requests to AskUsIfReady: 5;           
+// Arduino Acknowledges is ready: 6;             
+const PROGMEM enum {
+  kCommandList         , // Command to request list of available commands
+  kMove              , // Command to move
+  kRotate    , // Command to rotate
+  kScan              , // Command to scan
+  // Setup connection test
+    kAreYouReady              , // Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
+    kAcknowledge              , // Command to acknowledge that cmd was received
+    // Acknowledge test
+    kAskUsIfReady             , // Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
+    kYouAreReady              , // Command to acknowledge that other is ready
+} cmds;
+
+// Callbacks define on which received commands we take action
+void attachCommandCallbacks()
+{
+  // Attach callback methods
+  
+  cmdMessenger.attach(OnUnknownCommand);
+  cmdMessenger.attach(kCommandList, OnCommandList);
+  cmdMessenger.attach(kMove, OnMove);
+  cmdMessenger.attach(kRotate, OnRotate);
+  cmdMessenger.attach(kScan, OnScan);
+  //cmdMessenger.attach(kAreYouReady, OnArduinoReady);
+  //cmdMessenger.attach(kAskUsIfReady, OnAskUsIfReady);
+  
+  
+}
 
 
+// Show available commands
+void ShowCommands()
+{
+  writeToSerial("Available commands");
+  writeToSerial(" 0; returns this command list");
+  writeToSerial(" 1,<direction:FWD/BWD>,<speed:0-150>,<time: in ms>;");
+  writeToSerial(" 2,<direction:LEFT/RIGHT>,<speed:0-150>,<time: in ms>;");
+  writeToSerial(" 3,<angle:0-180>;");
+  writeToSerial(" 4,Ping Arduino");
+  writeToSerial(" 5,Ack Ping");
+  writeToSerial(" 6,Ping from Arduino to verify readiness of counterpart");
+  writeToSerial(" 7,Ack from Arduino counterpart");
+}
+
+// ------------------  C A L L B A C K S -----------------------
+
+// Called when a received command has no attached function
+void OnUnknownCommand()
+{
+  writeToSerialAndFlush("This command is unknown!");
+  ShowCommands();
+}
+// Callback function that shows a list of commands
+void OnCommandList()
+{
+  ShowCommands();
+}
+
+void OnMove()
+{
+  
+    writeToSerial("onMove()");
+    bool bdir = cmdMessenger.readBoolArg();
+    writeToSerial("Move direction is: "+String(bdir));
+    int speed = cmdMessenger.readInt16Arg();
+    writeToSerial("Move speed is: "+String(speed));
+    int time = cmdMessenger.readInt16Arg();
+    writeToSerial("Move time is: "+String(speed));
+    
+}
+
+void OnRotate()
+{
+  
+    writeToSerial("onRotate()");
+   bool bdir = cmdMessenger.readBoolArg();
+    writeToSerial("Rotate direction is: "+String(bdir));
+   int speed = cmdMessenger.readInt16Arg();
+    writeToSerial("Rotate speed is: "+String(speed));
+    int time = cmdMessenger.readInt16Arg();
+    writeToSerial("Rotate time is: "+String(speed));
+    
+}
+
+void OnScan()
+{
+  
+    writeToSerial("onScan()");
+   int speed = cmdMessenger.readInt16Arg();
+    writeToSerial("Rotate angle is: "+String(speed));
+
+}
+
+void OnArduinoReady()
+{
+  // In response to ping. We just send a throw-away Acknowledgment to say "i'm ready"
+  //cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
+}
+
+void OnAskUsIfReady()
+{
+  // The other side asks us to send kAreYouReady command, wait for
+  //acknowledge
+   //int isAck = cmdMessenger.sendCmd(kAreYouReady, "Asking PC if ready", true, kAcknowledge,1000 );
+  // Now we send back whether or not we got an acknowledgments
+  //cmdMessenger.sendCmd(kYouAreReady,isAck?1:0);
+}
+
+// ------------------  OLD CMD and Serial CODE  -----------------------
+/*
 all_codes hashit (String inString) {
     if (inString == "w") return MOVE_FWD;
     if (inString == "x") return MOVE_BWD;
@@ -119,7 +241,7 @@ all_codes hashit (String inString) {
     if (inString == "t") return testdistance;
     else return NONE;
 }
-
+*/
 String printint(int val)
 {
   return String(val);
@@ -135,15 +257,18 @@ String printFloat(float val)
 }
 
 void writeToSerial(String inString){
-  Serial.println("[Arduino]: "+inString);
+  Serial.print(F("[Arduino]: "));
+  Serial.println(inString);
 }
 
 
 void writeToSerialAndFlush(String inString){
-  Serial.println("[Arduino]: "+inString);
+  writeToSerial(inString);
   Serial.flush();
 }
 
+
+// ------------------  Move Code -----------------------
 
 boolean updateDirectionSpeed(move_codes newdir)
 {
@@ -158,7 +283,7 @@ boolean updateDirectionSpeed(move_codes newdir)
         }
         else
         {
-           writeToSerial("Achieved MAX_SPEED");
+           writeToSerial(F("Achieved MAX_SPEED"));
            current_speed=MAX_SPEED;
            return false;
         }
@@ -252,9 +377,7 @@ void moveStop()
   writeToSerialAndFlush("moveStop");
 }
 
-
-
-
+// ------------------  UltraSonic Code -----------------------
 
  /*Ultrasonic distance measurement Sub function*/
 int Distance_test()
@@ -301,6 +424,9 @@ void servoLook(int angle)
   else writeToSerialAndFlush("servoLook: cannot move there: "+String(angle));
 }
 
+
+// ------------------  Test and Setup Code -----------------------
+
 void testServo()
 {
   writeToSerialAndFlush("testServo begin");
@@ -327,6 +453,7 @@ void setupEngines()
 
 void testEngines()
 {
+  int SLOW_MOVE=1000;
   writeToSerialAndFlush("testEngines begin");
   //test engines
   moveForward(LOW_SPEED,SLOW_MOVE);
@@ -342,21 +469,17 @@ void testEngines()
    writeToSerialAndFlush("testEngines ended");
 }
 
-
+/*
 void setupIR()
 {
     writeToSerialAndFlush("setupIR started");
     irrecv.enableIRIn();
 }
-
-void flushSerial(){
-  writeToSerialAndFlush("flushSerial: flush incoming");
-  while (Serial.available() > 0) {
-    Serial.read();
-  }
-}
+*/
 
 
+// ------------------  Read Serial and IR Code -----------------------
+/*
 void readIR() {
       if (irrecv.decode(&results)){
       val = results.value;
@@ -448,16 +571,18 @@ void readInputSerial(){
               break;
       }
 }
+*/
 
+
+// ------------------ M A I N ( ) ----------------------
 
 void setup() {
 
   
-  Serial.begin(SERIALSPEED);
+  Serial.begin(115200);
   writeToSerialAndFlush("setup: Serial opened");
   writeToSerialAndFlush("setup begin");
-  RUNNING = false;
-  setupIR();
+  //setupIR();
   delay(500);
   setupUSServo();
   delay(500);
@@ -467,26 +592,31 @@ void setup() {
   delay(500);
   testEngines();
   delay(500);
-
   testDistance();
   writeToSerialAndFlush("setup ended");
+
+
+  writeToSerialAndFlush("New com setup ");
+
+  // Attach my application's user-defined callback methods
+   cmdMessenger.printLfCr();
+  attachCommandCallbacks();
+
+
 }
-
-
 
 void loop() {
 
 
-    if(RUNNING) {
-      writeToSerialAndFlush("loop started");
-      RUNNING=true;
-    }
     if (Serial.available() > 0)
     {
-      readInputSerial();
+       //old ReadSerial
+       //readInputSerial();
+       // Process incoming serial data, and perform callbacks
+        cmdMessenger.feedinSerialData();
     }
     delay(100); // delay in between reads for stability
-    readIR();
+    //readIR();
     delay(100); // delay in between reads for stability
 }
 
