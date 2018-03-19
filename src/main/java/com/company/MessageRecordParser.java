@@ -18,11 +18,19 @@
 
 package com.company;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Scanner;
+import java.util.*;
+
 public class MessageRecordParser {
 
     private String payload;
     private boolean isTxMessage = false;
     private Long timestamp;
+    private MessagePayload m_messagePayload;
+    private final static Logger logger =  LogManager.getLogger(MessageRecordQueue.class);
 
     public SerialMessageRecord getMessage(byte[] Data) throws Exception {
         update( new String(Data));
@@ -31,6 +39,12 @@ public class MessageRecordParser {
         message.setTimestamp(timestamp);
         message.setTxMessage(isTxMessage);
         return message;
+    }
+
+
+    public MessagePayload getMessagePayload(SerialMessageRecord message) throws Exception {
+        update(message);
+        return processMessagePayload();
     }
 
 
@@ -43,6 +57,40 @@ public class MessageRecordParser {
         StringBuffer message = new StringBuffer();
         message.append(payload).append("\n");
         return message.toString();
+    }
+
+    public MessagePayload getMessagePayload(){
+        return m_messagePayload;
+    }
+
+    private MessagePayload processMessagePayload(){
+        MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
+        List<String> cmdlist = new ArrayList<String>(Arrays.asList(payload.split(" , ")));
+        for (String s:cmdlist)
+        {
+            //only 1 argument
+            if(cmdlist.size()==1)
+            {
+                if(s.substring(s.length() - 1).equals(";"))
+                {
+                    //Is terminated
+                    String cmd= s.substring(0,s.length() - 1);
+                    MPB.cmd(cmd);
+                    m_messagePayload=MPB.build();
+                }
+                else
+                {
+                    //Is not terminated
+                    logger.error("Message was not terminated - payload:"+payload+" string:"+s);
+                }
+            }
+            //Other payloads do not interest us for now
+            else break;
+        }
+        return m_messagePayload;
+
+
+
     }
 
     void update(SerialMessageRecord message) throws Exception {

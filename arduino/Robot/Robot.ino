@@ -143,11 +143,11 @@ void OnMove()
   
     writeToSerial(F("onMove()"));
     bool bdir = cmdMessenger.readBoolArg();
-    writeToSerial("Move direction is: "+String(bdir));
+    //writeToSerial("Move direction is: "+String(bdir));
     int speed = cmdMessenger.readInt16Arg();
-    writeToSerial("Move speed is: "+String(speed));
+    //writeToSerial("Move speed is: "+String(speed));
     int time = cmdMessenger.readInt16Arg();
-    writeToSerial("Move time is: "+String(speed));
+    //writeToSerial("Move time is: "+String(speed));
     if(bdir==true)
     {
       //Move FWD
@@ -167,11 +167,11 @@ void OnRotate()
   
     writeToSerial(F("onRotate()"));
    bool bdir = cmdMessenger.readBoolArg();
-    writeToSerial("Rotate direction is: "+String(bdir));
+    //writeToSerial("Rotate direction is: "+String(bdir));
    int speed = cmdMessenger.readInt16Arg();
-    writeToSerial("Rotate speed is: "+String(speed));
+    //writeToSerial("Rotate speed is: "+String(speed));
     int time = cmdMessenger.readInt16Arg();
-    writeToSerial("Rotate time is: "+String(speed));
+    //writeToSerial("Rotate time is: "+String(speed));
     if(bdir==true)
     {
       //Move LEFT
@@ -380,32 +380,32 @@ void testServo()
 
 void setupEngines()
 {
-  writeToSerialAndFlush(F("setupEngines begin"));
+  //writeToSerialAndFlush(F("setupEngines begin"));
   pinMode(EN1_PIN,OUTPUT);
   pinMode(EN2_PIN,OUTPUT);
   pinMode(EN3_PIN,OUTPUT);
   pinMode(EN4_PIN,OUTPUT);
   pinMode(ENA_PIN,OUTPUT);
   pinMode(ENB_PIN,OUTPUT);
-  writeToSerialAndFlush(F("setupEngines ended"));
+  //writeToSerialAndFlush(F("setupEngines ended"));
 }
 
 void testEngines()
 {
-  int SLOW_MOVE=1000;
-  writeToSerialAndFlush(F("testEngines begin"));
+  int SHORT_MOVE=500;
+  //writeToSerialAndFlush(F("testEngines begin"));
   //test engines
-  moveForward(LOW_SPEED,SLOW_MOVE);
+  moveForward(LOW_SPEED,SHORT_MOVE);
   delay(100);
-  moveBackward(LOW_SPEED,SLOW_MOVE);
+  moveBackward(LOW_SPEED,SHORT_MOVE);
   delay(100);
-  moveLeftward(LOW_SPEED,SLOW_MOVE);
+  moveLeftward(LOW_SPEED,SHORT_MOVE);
   delay(100);
-  moveRightward(LOW_SPEED,SLOW_MOVE);
+  moveRightward(LOW_SPEED,SHORT_MOVE);
   delay(100);
   moveStop();
    delay(100);
-   writeToSerialAndFlush(F("testEngines ended"));
+   //writeToSerialAndFlush(F("testEngines ended"));
 }
 
 
@@ -418,7 +418,7 @@ void setup() {
   
   Serial.begin(115200);
   writeToSerialAndFlush(F("setup: Serial opened"));
-  writeToSerialAndFlush(F("setup begin"));
+  //writeToSerialAndFlush(F("setup begin"));
    // Attach my application's user-defined callback methods
   cmdMessenger.printLfCr();
   attachCommandCallbacks();

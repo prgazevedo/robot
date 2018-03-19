@@ -180,7 +180,12 @@ public class MainRobot {
 
 
 
-
+    private void askIfArduinoIsReady()
+    {
+        m_MPB.cmd(MessagePayload.cmds.AskUsIfReady);
+        MessagePayload payload= m_MPB.build();
+        m_writeThread.sendMessage(payload.toString());
+    }
 
 
     private void moveForward(int speed, int time )

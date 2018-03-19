@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 public class MonitorThread extends Thread {
 
     MessageRecordQueue m_queue=null;
+    MessageRecordParser m_parser=null;
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
 
@@ -27,16 +28,26 @@ public class MonitorThread extends Thread {
         super("monitorThread");
         m_queue=queue;
         m_shouldRun=true;
+        m_parser= new MessageRecordParser();
     }
 
-
+    private void processMessage(){
+        SerialMessageRecord smr = m_queue.auditLastMessage();
+        try {
+            MessagePayload messagePayload = m_parser.getMessagePayload(smr);
+        }
+        catch(Exception e)
+        {
+            log.error("Exception:"+e.toString());
+        }
+    }
 
     public void run() {
 
         log.info(" New monitorThread launched!");
         while(m_shouldRun) {
             if (m_queue != null) {
-                m_queue.auditLastMessage();
+                processMessage();
             } else {
                 //log.warn("[Raspberry]: m_inputStream is null");
             }

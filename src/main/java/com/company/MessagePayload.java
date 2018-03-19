@@ -29,6 +29,10 @@ public final class MessagePayload {
                 AskUsIfReady             , // Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
                 YouAreReady              , // Command to acknowledge that other is ready
     } ;
+
+
+
+
     private final String separator=",";
     private final String terminator=";";
 
@@ -50,6 +54,17 @@ public final class MessagePayload {
 
     public static class MessagePayloadBuilder {
 
+
+        public cmds getCmd(String s){
+            if(cmds.valueOf(s)!=null)
+            {
+                return cmds.valueOf(s);
+            }
+            else
+            {
+                throw new RuntimeException(String.format("There is no Type mapping with name (%s)"));
+            }
+        }
 
         private cmds m_cmd_type=null;
         private String m_arg1=null;
@@ -75,6 +90,11 @@ public final class MessagePayload {
             return m_arg3;
         }
 
+
+        public MessagePayloadBuilder cmd(String cmd_type) {
+            this.m_cmd_type = getCmd(cmd_type);
+            return this;
+        }
 
         public MessagePayloadBuilder cmd(cmds cmd_type) {
             this.m_cmd_type = cmd_type;

@@ -78,18 +78,33 @@ public class MessageRecordQueue {
         }
     }
 
-    public void auditLastMessage(){
+    private SerialMessageRecord getLastMessageRecord()
+    {
+        SerialMessageRecord messageRecord = null;
         if(m_queue!=null) {
-            if(m_queue.size()>0) logger.trace("auditLastMessage, take last message from message queue size is {}", m_queue.size());
+            if(m_queue.size()>0) logger.trace("getLastMessageRecord, take last message from message queue size is {}", m_queue.size());
             if(!m_queue.isEmpty()){
                 logger.trace("Queue data is not empty");
                 try{
-                    logger.info("Queue data is {}",m_queue.take().toString());
+
+                    messageRecord = m_queue.take();
+                    logger.trace("getLastMessageRecord Queue data was {}",messageRecord.toString());
                 } catch (Exception e){
                     logger.error("Error taking from Message queue:"+e);
                 }
             }
         }
+        return messageRecord;
+    }
+
+    public SerialMessageRecord auditLastMessage(){
+        SerialMessageRecord messageRecord=getLastMessageRecord();
+        if(messageRecord!=null)
+        {
+            logger.info("Queue data is {}",messageRecord.toString());
+
+        }
+        return messageRecord;
     }
 
     public synchronized boolean isEmpty() {
