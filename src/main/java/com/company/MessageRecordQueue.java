@@ -92,8 +92,13 @@ public class MessageRecordQueue {
                 } catch (Exception e){
                     logger.error("Error taking from Message queue:"+e);
                 }
+                if(messageRecord==null)
+                {
+                    logger.error("Error taking from Message queue");
+                }
             }
         }
+
         return messageRecord;
     }
 
@@ -101,7 +106,12 @@ public class MessageRecordQueue {
         SerialMessageRecord messageRecord=getLastMessageRecord();
         if(messageRecord!=null)
         {
-            logger.info("Queue data is {}",messageRecord.toString());
+            logger.info("SerialMessageRecord in Queue is {}",messageRecord.toString());
+
+        }
+        if(messageRecord==null)
+        {
+            logger.error("SerialMessageRecord in Queue is null: {}",messageRecord.toString());
 
         }
         return messageRecord;

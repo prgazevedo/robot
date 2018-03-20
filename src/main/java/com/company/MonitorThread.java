@@ -35,6 +35,12 @@ public class MonitorThread extends Thread {
         SerialMessageRecord smr = m_queue.auditLastMessage();
         try {
             MessagePayload messagePayload = m_parser.getMessagePayload(smr);
+            if(messagePayload!=null) {
+                log.info("Message Payload is" + messagePayload.toString());
+            }
+            else{
+                log.info("Message Payload was null.SerialMessageRecord was: " + smr.toString());
+            }
         }
         catch(Exception e)
         {
@@ -47,7 +53,7 @@ public class MonitorThread extends Thread {
         log.info(" New monitorThread launched!");
         while(m_shouldRun) {
             if (m_queue != null) {
-                processMessage();
+                if(!m_queue.isEmpty()) processMessage();
             } else {
                 //log.warn("[Raspberry]: m_inputStream is null");
             }

@@ -182,7 +182,7 @@ public class MainRobot {
 
     private void askIfArduinoIsReady()
     {
-        m_MPB.cmd(MessagePayload.cmds.AskUsIfReady);
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.AskUsIfReady);
         MessagePayload payload= m_MPB.build();
         m_writeThread.sendMessage(payload.toString());
     }
@@ -190,7 +190,10 @@ public class MainRobot {
 
     private void moveForward(int speed, int time )
     {
-        m_MPB.cmd(MessagePayload.cmds.Move).Args("1",String.valueOf(speed), String.valueOf(time));
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
+        m_MPB.addArg("1");
+        m_MPB.addArg(String.valueOf(speed));
+        m_MPB.addArg(String.valueOf(time));
         MessagePayload payload= m_MPB.build();
         m_writeThread.sendMessage(payload.toString());
 
@@ -198,7 +201,10 @@ public class MainRobot {
 
     private void moveBackward(int speed, int time )
     {
-        m_MPB.cmd(MessagePayload.cmds.Move).Args("0",String.valueOf(speed), String.valueOf(time));
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
+        m_MPB.addArg("0");
+        m_MPB.addArg(String.valueOf(speed));
+        m_MPB.addArg(String.valueOf(time));
         MessagePayload payload= m_MPB.build();
         m_writeThread.sendMessage(payload.toString());
     }

@@ -14,141 +14,164 @@ package com.company;
 // Arduino Requests to AskUsIfReady: 6;
 // Arduino Acknowledges is ready: 7;
 
-public final class MessagePayload {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-
-    public static enum cmds{
-                CommandList         , // Command to request list of available commands
-                Move              , // Command to move
-                Rotate    , // Command to rotate
-                Scan              , // Command to scan
-                // Setup connection test
-                AreYouReady              , // Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
-                Acknowledge              , // Command to acknowledge that cmd was received
-                // Acknowledge test
-                AskUsIfReady             , // Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
-                YouAreReady              , // Command to acknowledge that other is ready
-    } ;
+public class MessagePayload {
 
 
 
+    private final ApplicationProperties.cmds m_cmd_type;
+    private final ArrayList<String> m_Args;
 
-    private final String separator=",";
-    private final String terminator=";";
-
-
-    private final cmds m_cmd_type;
-    private final String m_arg1;
-    private final String m_arg2;
-    private final String m_arg3;
 
     public MessagePayload(MessagePayloadBuilder mpb) {
 
         this.m_cmd_type = mpb.getM_cmd_type();
-        this.m_arg1 = mpb.getM_arg1();
-        this.m_arg2 = mpb.getM_arg2();
-        this.m_arg3 = mpb.getM_arg3();
+        this.m_Args = new ArrayList<String>(mpb.getM_Args());
+
+    }
+
+    public ApplicationProperties.cmds getM_cmd_type() {
+        return m_cmd_type;
+    }
+
+    public String getArg(int i) {
+        if(m_Args!=null) {
+            if(i<m_Args.size()) {
+                return this.m_Args.get(i);
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<String> getM_Args(int i) {
+        return this.m_Args;
     }
 
 
 
+    @Override
+    public String toString() {
+        String s="";
+        if( m_cmd_type ==null) return s;
+        else {
+
+            s = m_cmd_type.toString();
+            if(m_Args!=null) {
+                for (String arg : m_Args) {
+                    s += ApplicationProperties.CMD_SEPARATOR;
+                    s += arg;
+                }
+            }
+            s += ApplicationProperties.CMD_TERMINATOR;
+
+        }
+        return s;
+    }
+
     public static class MessagePayloadBuilder {
 
+        public ApplicationProperties.cmds getM_cmd_type() {
+            return m_cmd_type;
+        }
 
-        public cmds getCmd(String s){
-            if(cmds.valueOf(s)!=null)
+        public void setM_cmd_type(ApplicationProperties.cmds m_cmd_type) {
+            this.m_cmd_type = m_cmd_type;
+        }
+
+        public void setM_Args(ArrayList<String> m_Args) {
+            this.m_Args = m_Args;
+        }
+
+        private ApplicationProperties.cmds m_cmd_type=null;
+
+        public ArrayList<String> getM_Args() {
+            return m_Args;
+        }
+
+        private  ArrayList<String> m_Args=null;
+
+
+        public void setcmdType(String cmd) {
+            m_cmd_type = convertCmdType(cmd);
+        }
+
+        public void addArg(String arg)
+        {
+            m_Args.add(arg);
+        }
+
+        public ApplicationProperties.cmds convertCmdType(String str){
+
+            String cmd = str.substring(0,str.indexOf(","));
+            if(cmd!=null)
             {
-                return cmds.valueOf(s);
+                if (ApplicationProperties.cmds.valueOf(cmd) != null) {
+                    return ApplicationProperties.cmds.valueOf(cmd);
+                } else {
+                    throw new RuntimeException(String.format("There is no Type mapping with name (%s)",cmd));
+                }
             }
             else
             {
-                throw new RuntimeException(String.format("There is no Type mapping with name (%s)"));
+                throw new RuntimeException(String.format("There is no cmd in String (%s)",str));
             }
         }
 
-        private cmds m_cmd_type=null;
-        private String m_arg1=null;
-        private String m_arg2=null;
-        private String m_arg3=null;
+        public void parseMessagePayLoad(String payload){
+            List<String> cmdlist = new ArrayList<String>(Arrays.asList(payload.split(ApplicationProperties.CMD_SEPARATOR)));
+            int index=0;
+            for (String s : cmdlist) {
+
+                //only 1 argument
+                if (cmdlist.size() == 1) {
+                    if (s.substring(s.length() - 1).equals(ApplicationProperties.CMD_TERMINATOR)) {
+                        //Is terminated
+                        String cmd = s.substring(0, s.length() - 1);
+                        setcmdType(cmd);
+
+                    } else {
+                        //Is not terminated
+                        throw new RuntimeException("Message was not terminated - payload:" + payload + " string:" + s);
+                    }
+                }
+                //Multiple arguments
+                else
+                {
+                    if(index==1)
+                    {
+                        setcmdType(s);
+                    }
+                    else
+                    {
+                        m_Args.add(s);
+                    }
+                }
+                index++;
+
+            }
+
+        }
+
+
+
+
 
         public MessagePayloadBuilder() {
         }
 
-        public cmds getM_cmd_type() {
-            return m_cmd_type;
-        }
-
-        public String getM_arg1() {
-            return m_arg1;
-        }
-
-        public String getM_arg2() {
-            return m_arg2;
-        }
-
-        public String getM_arg3() {
-            return m_arg3;
-        }
-
-
-        public MessagePayloadBuilder cmd(String cmd_type) {
-            this.m_cmd_type = getCmd(cmd_type);
-            return this;
-        }
-
-        public MessagePayloadBuilder cmd(cmds cmd_type) {
-            this.m_cmd_type = cmd_type;
-            return this;
-        }
-
-        public MessagePayloadBuilder Args(String arg1, String arg2, String arg3) {
-            this.m_arg1 = arg1;
-            this.m_arg2 = arg2;
-            this.m_arg3 = arg3;
-            return this;
-        }
-
-        public MessagePayloadBuilder Args(String arg1, String arg2) {
-            this.m_arg1 = arg1;
-            this.m_arg2 = arg2;
-            return this;
-        }
-
-        public MessagePayloadBuilder Args(String arg1) {
-            this.m_arg1 = arg1;
-            return this;
-        }
 
         public MessagePayload build() {
             return new MessagePayload(this);
         }
-    }
 
-    public cmds getM_cmd_type() {
-        return m_cmd_type;
-    }
-
-    public String getM_arg1() {
-        return m_arg1;
-    }
-
-    public String getM_arg2() {
-        return m_arg2;
-    }
-
-    public String getM_arg3() {
-        return m_arg3;
-    }
-
-    @Override
-    public String toString() {
-        if( m_cmd_type ==null) return "Error building payload";
-        else if(m_arg1==null) return (m_cmd_type.toString()+terminator);
-        else if(m_arg1!=null && m_arg2==null) return (m_cmd_type.toString()+separator+m_arg1+terminator);
-        else if(m_arg2!=null && m_arg3==null) return (m_cmd_type.toString()+separator+m_arg1+separator+m_arg2+terminator);
-        else if(m_arg3!=null) return (m_cmd_type.ordinal()+separator+m_arg1+separator+m_arg2+separator+m_arg3+terminator);
-        else {
-            return "Error building payload";
+        public MessagePayload build(String payload) {
+            parseMessagePayLoad(payload);
+            return new MessagePayload(this);
         }
     }
+
+
 }

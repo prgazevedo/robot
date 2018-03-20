@@ -114,14 +114,14 @@ void attachCommandCallbacks()
 void ShowCommands()
 {
   writeToSerial(F("Available commands"));
-  writeToSerial(F(" 0; returns this command list"));
-  writeToSerial(F(" 1,<direction:FWD/BWD>,<speed:0-150>,<time: in ms>;"));
-  writeToSerial(F(" 2,<direction:LEFT/RIGHT>,<speed:0-150>,<time: in ms>;"));
-  writeToSerial(F(" 3,<angle:0-180>;"));
-  writeToSerial(F(" 4,Ping Arduino"));
-  writeToSerial(F(" 5,Ack Ping"));
-  writeToSerial(F(" 6,Ping from Arduino to verify readiness of counterpart"));
-  writeToSerial(F(" 7,Ack from Arduino counterpart"));
+  writeToSerial(F(" 0; returns this command list "));
+  writeToSerial(F(" 1,<direction:FWD/BWD>,<speed:0-150>,<time: in ms>; "));
+  writeToSerial(F(" 2,<direction:LEFT/RIGHT>,<speed:0-150>,<time: in ms>; "));
+  writeToSerial(F(" 3,<angle:0-180>; "));
+  writeToSerial(F(" 4;Ping Arduino"));
+  writeToSerial(F(" 5;Ack Ping"));
+  writeToSerial(F(" 6;Ping from Arduino to verify readiness of counterpart"));
+  writeToSerial(F(" 7;Ack from Arduino counterpart"));
 }
 
 // ------------------  C A L L B A C K S -----------------------

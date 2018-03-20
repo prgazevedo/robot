@@ -23,7 +23,8 @@ public class ApplicationProperties {
 
     /** Application name */
     public static final String APPLICATION_NAME = "Robot";
-
+    public static final String CMD_SEPARATOR=",";
+    public static final String CMD_TERMINATOR=";";
     /** Application debug level */
     public static final  org.apache.logging.log4j.Level LOG_LEVEL = Level.INFO ;
     /** Milliseconds to block while waiting for port open */
@@ -43,6 +44,23 @@ public class ApplicationProperties {
             '\n',
             '\r'
     };
+
+
+    public enum cmds{
+        CommandList         , // Command to request list of available commands
+        Move              , // Command to move
+        Rotate    , // Command to rotate
+        Scan              , // Command to scan
+        // Setup connection test
+        AreYouReady              , // Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
+        Acknowledge              , // Command to acknowledge that cmd was received
+        // Acknowledge test
+        AskUsIfReady             , // Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
+        YouAreReady              , // Command to acknowledge that other is ready
+    } ;
+
+
+
 
     public static int getSerialDataMaxSize() {
         return SERIAL_DATA_MAX_SIZE;

@@ -21,12 +21,9 @@ package com.company;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Scanner;
-import java.util.*;
-
 public class MessageRecordParser {
 
-    private String payload;
+    private String m_recordPayload;
     private boolean isTxMessage = false;
     private Long timestamp;
     private MessagePayload m_messagePayload;
@@ -35,7 +32,7 @@ public class MessageRecordParser {
     public SerialMessageRecord getMessage(byte[] Data) throws Exception {
         update( new String(Data));
         SerialMessageRecord message = new SerialMessageRecord();
-        message.setPayload(payload);
+        message.setPayload(m_recordPayload);
         message.setTimestamp(timestamp);
         message.setTxMessage(isTxMessage);
         return message;
@@ -44,7 +41,7 @@ public class MessageRecordParser {
 
     public MessagePayload getMessagePayload(SerialMessageRecord message) throws Exception {
         update(message);
-        return processMessagePayload();
+        return processMessagePayload(m_recordPayload);
     }
 
 
@@ -55,7 +52,7 @@ public class MessageRecordParser {
 
     String getSerialString() {
         StringBuffer message = new StringBuffer();
-        message.append(payload).append("\n");
+        message.append(m_recordPayload).append("\n");
         return message.toString();
     }
 
@@ -63,31 +60,34 @@ public class MessageRecordParser {
         return m_messagePayload;
     }
 
-    private MessagePayload processMessagePayload(){
-        MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
-        List<String> cmdlist = new ArrayList<String>(Arrays.asList(payload.split(" , ")));
-        for (String s:cmdlist)
+    private boolean isMessagePayloadACommand()
+    {
+        if(m_recordPayload !=null)
         {
-            //only 1 argument
-            if(cmdlist.size()==1)
+            //If the m_recordPayload is terminated it probably is a Cmd
+            if(m_recordPayload.substring(m_recordPayload.length() - 1).equals(";"))
             {
-                if(s.substring(s.length() - 1).equals(";"))
+                //if it does not start with "[Arduino]" it is a command
+                if(!m_recordPayload.substring(0,9).equals("[Arduino]"))
                 {
-                    //Is terminated
-                    String cmd= s.substring(0,s.length() - 1);
-                    MPB.cmd(cmd);
-                    m_messagePayload=MPB.build();
+                    return true;
                 }
-                else
-                {
-                    //Is not terminated
-                    logger.error("Message was not terminated - payload:"+payload+" string:"+s);
-                }
+                else return false;
             }
-            //Other payloads do not interest us for now
-            else break;
+            else return false;
         }
-        return m_messagePayload;
+        else return false;
+
+    }
+
+    private MessagePayload processMessagePayload(String messageRecordPayload){
+        if(isMessagePayloadACommand()) {
+            MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
+
+            m_messagePayload = MPB.build(messageRecordPayload);
+            return m_messagePayload;
+        }
+        else return null;
 
 
 
@@ -95,7 +95,7 @@ public class MessageRecordParser {
 
     void update(SerialMessageRecord message) throws Exception {
 
-        payload = message.getPayload();
+        m_recordPayload = message.getPayload();
         isTxMessage = message.getTxMessage();
         timestamp = message.getTimestamp();
 
@@ -104,7 +104,7 @@ public class MessageRecordParser {
     void update(String rawData) throws Exception {
         timestamp = System.currentTimeMillis();
         isTxMessage = false;
-        payload = rawData;
+        m_recordPayload = rawData;
 
     }
 
