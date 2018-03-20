@@ -51,6 +51,24 @@ public class MessagePayload {
     }
 
 
+    public String toSerial() {
+        String s="";
+        if( m_cmd_type ==null) return s;
+        else {
+
+            s = String.valueOf(m_cmd_type.ordinal());
+            if(m_Args!=null) {
+                for (String arg : m_Args) {
+                    s += ApplicationProperties.CMD_SEPARATOR;
+                    s += arg;
+                }
+            }
+            s += ApplicationProperties.CMD_TERMINATOR;
+
+        }
+        return s;
+    }
+
 
     @Override
     public String toString() {
@@ -70,8 +88,11 @@ public class MessagePayload {
         }
         return s;
     }
-
+    /** MessagePayloadBuilder ******************************/
     public static class MessagePayloadBuilder {
+
+        private ApplicationProperties.cmds m_cmd_type=null;
+        private  ArrayList<String> m_Args=null;
 
         public ApplicationProperties.cmds getM_cmd_type() {
             return m_cmd_type;
@@ -85,13 +106,13 @@ public class MessagePayload {
             this.m_Args = m_Args;
         }
 
-        private ApplicationProperties.cmds m_cmd_type=null;
+
 
         public ArrayList<String> getM_Args() {
             return m_Args;
         }
 
-        private  ArrayList<String> m_Args=null;
+
 
 
         public void setcmdType(String cmd) {
@@ -105,13 +126,13 @@ public class MessagePayload {
 
         public ApplicationProperties.cmds convertCmdType(String str){
 
-            String cmd = str.substring(0,str.indexOf(","));
+            String cmd = str;//str.substring(0,str.indexOf(","));
             if(cmd!=null)
             {
                 if (ApplicationProperties.cmds.valueOf(cmd) != null) {
                     return ApplicationProperties.cmds.valueOf(cmd);
                 } else {
-                    throw new RuntimeException(String.format("There is no Type mapping with name (%s)",cmd));
+                    return ApplicationProperties.cmds.None;
                 }
             }
             else
@@ -140,12 +161,19 @@ public class MessagePayload {
                 //Multiple arguments
                 else
                 {
-                    if(index==1)
+                    //is first
+                    if(index==0)
                     {
                         setcmdType(s);
                     }
+
                     else
                     {
+                        //if terminated by ; remove the terminator
+                        if(s.substring(s.length() - 1).equals(ApplicationProperties.CMD_TERMINATOR))
+                        {
+                            s=s.substring(0,s.length() - 1);
+                        }
                         m_Args.add(s);
                     }
                 }
@@ -156,20 +184,30 @@ public class MessagePayload {
         }
 
 
-
+        private void clear(){
+            m_cmd_type=null;
+            m_Args.clear();
+        }
 
 
         public MessagePayloadBuilder() {
+            m_Args= new ArrayList<String>();
         }
 
 
         public MessagePayload build() {
-            return new MessagePayload(this);
+            //Make the copy
+            MessagePayload tmp =  new MessagePayload(this);
+            this.clear();
+            return tmp;
         }
 
         public MessagePayload build(String payload) {
             parseMessagePayLoad(payload);
-            return new MessagePayload(this);
+            //Make the copy
+            MessagePayload tmp =  new MessagePayload(this);
+            this.clear();
+            return tmp;
         }
     }
 

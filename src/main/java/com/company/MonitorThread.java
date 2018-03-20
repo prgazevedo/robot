@@ -36,10 +36,10 @@ public class MonitorThread extends Thread {
         try {
             MessagePayload messagePayload = m_parser.getMessagePayload(smr);
             if(messagePayload!=null) {
-                log.info("Message Payload is" + messagePayload.toString());
+                log.info("Message Payload is: " + messagePayload.toString());
             }
             else{
-                log.info("Message Payload was null.SerialMessageRecord was: " + smr.toString());
+                log.info("No Message Payload Cmd detected. SerialMessageRecord was: " + smr.toString());
             }
         }
         catch(Exception e)

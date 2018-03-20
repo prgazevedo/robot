@@ -57,6 +57,7 @@ public class ApplicationProperties {
         // Acknowledge test
         AskUsIfReady             , // Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
         YouAreReady              , // Command to acknowledge that other is ready
+        None, //No comand was identified
     } ;
 
 

@@ -85,6 +85,11 @@ public class MessageRecordParser {
             MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
 
             m_messagePayload = MPB.build(messageRecordPayload);
+            if(m_messagePayload.getM_cmd_type().equals(ApplicationProperties.cmds.None))
+            {
+                logger.error("processMessagePayload could not process the cmd type of messageRecord: "+messageRecordPayload);
+                logger.error("processMessagePayload found messagePayload was: "+m_messagePayload.getM_cmd_type().toString());
+            }
             return m_messagePayload;
         }
         else return null;

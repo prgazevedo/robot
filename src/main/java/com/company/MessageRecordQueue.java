@@ -106,7 +106,7 @@ public class MessageRecordQueue {
         SerialMessageRecord messageRecord=getLastMessageRecord();
         if(messageRecord!=null)
         {
-            logger.info("SerialMessageRecord in Queue is {}",messageRecord.toString());
+            logger.trace("SerialMessageRecord in Queue is {}",messageRecord.toString());
 
         }
         if(messageRecord==null)

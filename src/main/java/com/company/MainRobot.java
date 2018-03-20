@@ -184,7 +184,7 @@ public class MainRobot {
     {
         m_MPB.setM_cmd_type(ApplicationProperties.cmds.AskUsIfReady);
         MessagePayload payload= m_MPB.build();
-        m_writeThread.sendMessage(payload.toString());
+        m_writeThread.sendMessage(payload.toSerial());
     }
 
 
@@ -195,7 +195,7 @@ public class MainRobot {
         m_MPB.addArg(String.valueOf(speed));
         m_MPB.addArg(String.valueOf(time));
         MessagePayload payload= m_MPB.build();
-        m_writeThread.sendMessage(payload.toString());
+        m_writeThread.sendMessage(payload.toSerial());
 
     }
 
@@ -206,7 +206,7 @@ public class MainRobot {
         m_MPB.addArg(String.valueOf(speed));
         m_MPB.addArg(String.valueOf(time));
         MessagePayload payload= m_MPB.build();
-        m_writeThread.sendMessage(payload.toString());
+        m_writeThread.sendMessage(payload.toSerial());
     }
 
 

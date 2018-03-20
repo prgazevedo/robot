@@ -159,6 +159,8 @@ void OnMove()
       moveBackward(speed,time);
       
     }
+    //send ack
+    OnArduinoReady();
     
 }
 
@@ -183,6 +185,8 @@ void OnRotate()
       moveRightward(speed,time);
       
     }
+    //send ack
+    OnArduinoReady();
     
 }
 
@@ -194,6 +198,8 @@ void OnScan()
     writeToSerial("Rotate angle is: "+String(angle));
     servoLook(angle);
     testDistance();
+    //send ack
+    OnArduinoReady();
     
 
 }
