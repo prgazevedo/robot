@@ -129,8 +129,10 @@ public class MessagePayload {
             String cmd = str;//str.substring(0,str.indexOf(","));
             if(cmd!=null)
             {
-                if (ApplicationProperties.cmds.valueOf(cmd) != null) {
-                    return ApplicationProperties.cmds.valueOf(cmd);
+                int index = Integer.valueOf(cmd);
+               // if (ApplicationProperties.cmds.valueOf(cmd) != null) {
+                if (ApplicationProperties.cmds.values()[index] != null){
+                    return ApplicationProperties.cmds.values()[index];
                 } else {
                     return ApplicationProperties.cmds.None;
                 }
