@@ -72,7 +72,7 @@ public class MessageRecordQueue {
                try{
                    logger.info("Queue data is {}",m_queue.take().toString());
                } catch (Exception e){
-                   logger.error("Error taking from Message queue:"+e);
+                   logger.error("auditAllContents - Exception Error taking from Message queue:"+e);
                }
             }
         }
@@ -90,11 +90,11 @@ public class MessageRecordQueue {
                     messageRecord = m_queue.take();
                     logger.trace("getLastMessageRecord Queue data was {}",messageRecord.toString());
                 } catch (Exception e){
-                    logger.error("Error taking from Message queue:"+e);
+                    logger.error("getLastMessageRecord - Exception - Error taking from Message queue:"+e);
                 }
                 if(messageRecord==null)
                 {
-                    logger.error("Error taking from Message queue");
+                    logger.error("getLastMessageRecord - Error taking from Message queue");
                 }
             }
         }
@@ -111,7 +111,7 @@ public class MessageRecordQueue {
         }
         if(messageRecord==null)
         {
-            logger.error("SerialMessageRecord in Queue is null: {}",messageRecord.toString());
+            logger.error("auditLastMessage SerialMessageRecord in Queue is null: {}",messageRecord.toString());
 
         }
         return messageRecord;

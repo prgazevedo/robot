@@ -69,7 +69,7 @@ public class WriteThread extends Thread {
          message.setTxMessage(true);
          message.setTimestamp(System.currentTimeMillis());
         } catch (Exception e){
-            log.error(e);
+            log.error("writeinQueue - Exception: "+ e);
         }
         if (message != null)
         {

@@ -40,8 +40,15 @@ public class MessageRecordParser {
 
 
     public MessagePayload getMessagePayload(SerialMessageRecord message) throws Exception {
-        update(message);
-        return processMessagePayload(m_recordPayload);
+        MessagePayload messagePayload = null;
+        try {
+            update(message);
+            messagePayload =  processMessagePayload(m_recordPayload);
+        }
+        catch(Exception e){
+            logger.error("getMessagePayload - Exception:"+e.toString()+" messagePayload is:"+messagePayload);
+        }
+        return m_messagePayload;
     }
 
 
@@ -67,8 +74,9 @@ public class MessageRecordParser {
             //If the m_recordPayload is terminated it probably is a Cmd
             if(m_recordPayload.substring(m_recordPayload.length() - 1).equals(";"))
             {
+
                 //if it does not start with "[Arduino]" it is a command
-                if(!m_recordPayload.substring(0,9).equals("[Arduino]"))
+                if(!m_recordPayload.contains("[Arduino]"))
                 {
                     return true;
                 }
@@ -82,13 +90,20 @@ public class MessageRecordParser {
 
     private MessagePayload processMessagePayload(String messageRecordPayload){
         if(isMessagePayloadACommand()) {
-            MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
+            try {
+                MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
 
-            m_messagePayload = MPB.build(messageRecordPayload);
-            if(m_messagePayload.getM_cmd_type().equals(ApplicationProperties.cmds.None))
-            {
-                logger.error("processMessagePayload could not process the cmd type of messageRecord: "+messageRecordPayload);
-                logger.error("processMessagePayload found messagePayload was: "+m_messagePayload.getM_cmd_type().toString());
+                m_messagePayload = MPB.build(messageRecordPayload);
+                if (m_messagePayload == null) {
+                    logger.error("processMessagePayload could not build the messagePayload from the MessageRecord" + messageRecordPayload);
+                }
+                if (m_messagePayload.getM_cmd_type().equals(ApplicationProperties.cmds.None)) {
+                    logger.error("processMessagePayload could not process the cmd type of messageRecord: " + messageRecordPayload);
+                    logger.error("processMessagePayload found messagePayload was: " + m_messagePayload.getM_cmd_type().toString());
+                }
+            }
+            catch(Exception e){
+                logger.error("processMessagePayload - Exception: "+e.toString());
             }
             return m_messagePayload;
         }

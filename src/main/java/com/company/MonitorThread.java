@@ -44,7 +44,7 @@ public class MonitorThread extends Thread {
         }
         catch(Exception e)
         {
-            log.error("Exception:"+e.toString());
+            log.error("processMessage - Exception:"+e.toString());
         }
     }
 

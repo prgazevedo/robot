@@ -72,7 +72,7 @@ final class SeriaListener implements SerialPortPacketListener
         }
         catch (Exception rEx)
         {
-            log.error(rEx.toString());
+            log.error("serialEvent - exception:",rEx.toString());
         }
     }
 
