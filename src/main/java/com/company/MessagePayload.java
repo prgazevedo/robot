@@ -76,7 +76,7 @@ public class MessagePayload {
         if( m_cmd_type ==null) return s;
         else {
 
-            s = m_cmd_type.toString();
+            s = String.valueOf(m_cmd_type.ordinal())+"="+m_cmd_type.toString();
             if(m_Args!=null) {
                 for (String arg : m_Args) {
                     s += ApplicationProperties.CMD_SEPARATOR;

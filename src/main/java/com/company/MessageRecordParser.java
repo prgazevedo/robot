@@ -44,11 +44,12 @@ public class MessageRecordParser {
         try {
             update(message);
             messagePayload =  processMessagePayload(m_recordPayload);
+            return m_messagePayload;
         }
         catch(Exception e){
             logger.error("getMessagePayload - Exception:"+e.toString()+" messagePayload is:"+messagePayload);
         }
-        return m_messagePayload;
+        return null;
     }
 
 
@@ -89,6 +90,7 @@ public class MessageRecordParser {
     }
 
     private MessagePayload processMessagePayload(String messageRecordPayload){
+        m_messagePayload = null;
         if(isMessagePayloadACommand()) {
             try {
                 MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();

@@ -55,7 +55,7 @@ public class MonitorThread extends Thread {
             if (m_queue != null) {
                 if(!m_queue.isEmpty()) processMessage();
             } else {
-                //log.warn("[Raspberry]: m_inputStream is null");
+                log.warn("[Raspberry]: m_inputStream is null");
             }
         }
         log.info("monitorThread will exit.");

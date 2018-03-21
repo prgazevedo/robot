@@ -233,7 +233,7 @@ public class MainRobot {
         m_monitorThread=new MonitorThread(robot.m_queue);
         m_monitorThread.start();
         writeLog(Level.INFO," monitorThread Started");
-        TimeUnit.SECONDS.sleep(15);
+        TimeUnit.SECONDS.sleep(10);
         //Test write to Arduino
         robot.moveForward(100,1000);
         TimeUnit.SECONDS.sleep(1);

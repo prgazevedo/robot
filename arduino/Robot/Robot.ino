@@ -82,16 +82,17 @@ CmdMessenger cmdMessenger = CmdMessenger(Serial, field_separator, command_separa
 // Arduino Requests to AskUsIfReady: 6;           
 // Arduino Acknowledges is ready: 7;             
 const PROGMEM enum {
-  kCommandList         , // Command to request list of available commands
-  kMove              , // Command to move
-  kRotate    , // Command to rotate
-  kScan              , // Command to scan
+  kCommandList         , // 0-Command to request list of available commands
+  kMove              , // 1-Command to move
+  kRotate    ,        // 2-Command to rotate
+  kScan              , // 3-Command to scan
   // Setup connection test
-    kAreYouReady              , // Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
-    kAcknowledge              , // Command to acknowledge that cmd was received
+    kAreYouReady              , // 4-Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
+    kAcknowledge              , // 5-Command to acknowledge that cmd was received
     // Acknowledge test
-    kAskUsIfReady             , // Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
-    kYouAreReady              , // Command to acknowledge that other is ready
+    kAskUsIfReady             , // 6-Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
+    kYouAreReady              , // 7-Command to acknowledge that other is ready
+    kError,                     // 8-Error
 } cmds;
 
 // Callbacks define on which received commands we take action
@@ -129,12 +130,35 @@ void ShowCommands()
 // Called when a received command has no attached function
 void OnUnknownCommand()
 {
-  writeToSerialAndFlush("This command is unknown!");
-  ShowCommands();
+  writeToSerialAndFlush("OnUnknownCommand");
+// Default response for unknown commands and corrupt messages
+  cmdMessenger.sendCmd(kError,"Unknown command");
+  cmdMessenger.sendCmdStart(kYouAreReady);  
+  cmdMessenger.sendCmdArg("Command without attached callback");    
+  cmdMessenger.sendCmdArg(cmdMessenger.commandID());    
+  cmdMessenger.sendCmdEnd();
 }
+
+void OnArduinoReady()
+{
+  // In response to ping. We just send a throw-away Acknowledgment to say "i'm ready"
+  writeToSerialAndFlush(F("OnArduinoReady"));
+  cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
+}
+
+void OnAskUsIfReady()
+{
+  // The other side asks us to send kAreYouReady command, wait for acknowledge
+  writeToSerialAndFlush(F("OnAskUsIfReady"));
+   int isAck = cmdMessenger.sendCmd(kAreYouReady, "Asking PC if ready", true, kAcknowledge,1000 );
+  // Now we send back whether or not we got an acknowledgments
+  cmdMessenger.sendCmd(kYouAreReady,isAck?1:0);
+}
+
 // Callback function that shows a list of commands
 void OnCommandList()
 {
+  writeToSerialAndFlush(F("OnCommandList called"));
   ShowCommands();
 }
 
@@ -204,20 +228,7 @@ void OnScan()
 
 }
 
-void OnArduinoReady()
-{
-  // In response to ping. We just send a throw-away Acknowledgment to say "i'm ready"
-  cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
-}
 
-void OnAskUsIfReady()
-{
-  // The other side asks us to send kAreYouReady command, wait for
-  //acknowledge
-   int isAck = cmdMessenger.sendCmd(kAreYouReady, "Asking PC if ready", true, kAcknowledge,1000 );
-  // Now we send back whether or not we got an acknowledgments
-  cmdMessenger.sendCmd(kYouAreReady,isAck?1:0);
-}
 
 // ------------------  OLD CMD and Serial CODE  -----------------------
 
