@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package com.company;
+package com.company.comms;
 
+import com.company.comms.*;
+import com.company.ApplicationProperties;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortPacketListener;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-final class SeriaListener implements SerialPortPacketListener
+public final class SeriaListener implements SerialPortPacketListener
 {
 
 

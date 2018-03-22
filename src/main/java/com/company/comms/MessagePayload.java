@@ -1,4 +1,4 @@
-package com.company;
+package com.company.comms;
 
 
 //////////
@@ -13,6 +13,8 @@ package com.company;
 // Ack Arduino - Acknowledge:5; Ack from Arduino
 // Arduino Requests to AskUsIfReady: 6;
 // Arduino Acknowledges is ready: 7;
+
+import com.company.ApplicationProperties;
 
 import java.util.ArrayList;
 import java.util.Arrays;

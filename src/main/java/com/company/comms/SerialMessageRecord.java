@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.company;
+package com.company.comms;
 
 public class SerialMessageRecord {
 

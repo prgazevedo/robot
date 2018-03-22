@@ -16,8 +16,9 @@
  */
 
 
-package com.company;
+package com.company.comms;
 
+import com.company.ApplicationProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.company;
+package com.company.comms;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

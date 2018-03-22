@@ -1,5 +1,6 @@
 package com.company;
 
+import com.company.comms.*;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

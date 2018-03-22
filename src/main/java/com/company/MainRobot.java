@@ -19,6 +19,8 @@
 package com.company;
 
 
+import com.company.comms.MessageRecordQueue;
+import com.company.comms.SeriaListener;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +29,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
