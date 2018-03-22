@@ -19,23 +19,25 @@
 package com.company;
 
 
+import com.fazecast.jSerialComm.SerialPort;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import com.fazecast.jSerialComm.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.config.Configurator;
 
 
 
 public class MainRobot {
 
-    /** The the logger we shall use */
+    /** The logger we shall use */
     private final static Logger logger =  LogManager.getLogger(MainRobot.class);
+
     /** The the serial port we shall use */
     private static SerialPort m_comPort=null;
     /** The output stream to the port */
@@ -84,6 +86,8 @@ public class MainRobot {
         if (m_serialPortlist == null) {
             m_serialPortlist = new ArrayList<SerialPort>();
         }
+
+
 
         Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
     }

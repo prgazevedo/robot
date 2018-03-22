@@ -4,10 +4,14 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
+        <File name="MyFile" fileName="logs/MainRobot_Log_${date:yyyy-MM-dd HH_mm_ss_SSS}.log" immediateFlush="true">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
     </Appenders>
     <Loggers>
         <Root level="trace">
             <AppenderRef ref="Console" level="ALL" />
+            <appender-ref ref="MyFile" level="ALL"/>
         </Root>
     </Loggers>
 </Configuration>
