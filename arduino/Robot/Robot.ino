@@ -158,7 +158,17 @@ void OnAskUsIfReady()
 // Callback function that shows a list of commands
 void OnCommandList()
 {
-  writeToSerialAndFlush(F("OnCommandList called"));
+
+  uint8_t ID = cmdMessenger.commandID();
+  writeToSerialAndFlush(F("OnCommandList received:"));
+  if(cmdMessenger.isArgOk())
+  {
+    char* sArg = cmdMessenger.readStringArg();
+    writeToSerialAndFlush(F("Args are ok:"));
+    writeToSerialAndFlush(String(sArg));
+  }
+  writeToSerialAndFlush(F("Cmd Id is:"));
+  writeToSerialAndFlush(printint(ID));
   ShowCommands();
 }
 
@@ -184,7 +194,7 @@ void OnMove()
       
     }
     //send ack
-    OnArduinoReady();
+    //OnArduinoReady();
     
 }
 
@@ -210,7 +220,7 @@ void OnRotate()
       
     }
     //send ack
-    OnArduinoReady();
+    //OnArduinoReady();
     
 }
 
@@ -460,6 +470,7 @@ void loop() {
     {
 
        // Process incoming serial data, and perform callbacks
+  
         cmdMessenger.feedinSerialData();
     }
     delay(100); // delay in between reads for stability

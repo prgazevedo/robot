@@ -7,6 +7,7 @@ public class MonitorThread extends Thread {
 
     MessageRecordQueue m_queue=null;
     MessageRecordParser m_parser=null;
+    WriteThread m_writeThread=null;
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
 
@@ -36,7 +37,8 @@ public class MonitorThread extends Thread {
         try {
             MessagePayload messagePayload = m_parser.getMessagePayload(smr);
             if(messagePayload!=null) {
-                log.info("Message Payload is: " + messagePayload.toString());
+                log.info("Message Payload Cmd detected. Is Tx?:"+smr.getTxMessage()+" Payload is: " + messagePayload.toString());
+                handleMessage(messagePayload);
             }
             else{
                 log.info("No Message Payload Cmd detected. SerialMessageRecord was: " + smr.toString());
@@ -48,16 +50,31 @@ public class MonitorThread extends Thread {
         }
     }
 
+    private void handleMessage(MessagePayload messagePayload)
+    {
+        if(messagePayload.getM_cmd_type().equals(ApplicationProperties.cmds.AreYouReady))
+        {
+            m_writeThread.AckWeAreReady();
+        }
+    }
+
     public void run() {
 
         log.info(" New monitorThread launched!");
         while(m_shouldRun) {
             if (m_queue != null) {
-                if(!m_queue.isEmpty()) processMessage();
+                if(!m_queue.isEmpty())
+                {
+                    processMessage();
+                }
             } else {
                 log.warn("[Raspberry]: m_inputStream is null");
             }
         }
         log.info("monitorThread will exit.");
+    }
+
+    public void setWriteThread(WriteThread writeThread) {
+        m_writeThread=writeThread;
     }
 }

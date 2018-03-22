@@ -21,7 +21,7 @@ public class WriteThread extends Thread {
     private static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
     private static MessageRecordParser m_parser=null;
-
+    private MessagePayload.MessagePayloadBuilder m_MPB;
     public boolean isM_shouldRun() {
         return m_shouldRun;
     }
@@ -43,6 +43,8 @@ public class WriteThread extends Thread {
         m_shouldRun=true;
         m_parser= new MessageRecordParser();
         m_outputStream = m_comPort.getOutputStream();
+        //Create Payload Builder
+        m_MPB = new MessagePayload.MessagePayloadBuilder();
     }
 
 
@@ -104,7 +106,57 @@ public class WriteThread extends Thread {
 
     }
 
-    public void sendMessage(String cmd)
+    public void requestCmdList() {
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.CommandList);
+        MessagePayload payload= m_MPB.build();
+        sendMessage(payload.toSerial());
+    }
+
+
+    public void AckWeAreReady() {
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Acknowledge);
+        MessagePayload payload= m_MPB.build();
+        sendMessage(payload.toSerial());
+    }
+
+    public void pingArduinoIsReady()
+    {
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.AreYouReady);
+        MessagePayload payload= m_MPB.build();
+        sendMessage(payload.toSerial());
+    }
+
+    public void pingArduinoAskUsIfReady()
+    {
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.AskUsIfReady);
+        MessagePayload payload= m_MPB.build();
+        sendMessage(payload.toSerial());
+    }
+
+
+    public void moveForward(int speed, int time )
+    {
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
+        m_MPB.addArg("1");
+        m_MPB.addArg(String.valueOf(speed));
+        m_MPB.addArg(String.valueOf(time));
+        MessagePayload payload= m_MPB.build();
+        sendMessage(payload.toSerial());
+
+    }
+
+    public void moveBackward(int speed, int time )
+    {
+        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
+        m_MPB.addArg("0");
+        m_MPB.addArg(String.valueOf(speed));
+        m_MPB.addArg(String.valueOf(time));
+        MessagePayload payload= m_MPB.build();
+        sendMessage(payload.toSerial());
+    }
+
+
+    private void sendMessage(String cmd)
     {
         writeStream(cmd);
         writeinQueue(cmd.getBytes());
@@ -137,5 +189,7 @@ public class WriteThread extends Thread {
         m_comPort.closePort();
         log.info(" Exiting! CLOSE COM");
     }
+
+
 
 }

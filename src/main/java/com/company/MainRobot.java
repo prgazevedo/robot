@@ -48,7 +48,7 @@ public class MainRobot {
     private HashMap<String, SerialPort> m_portMap=null;
      /** The Message queue that holds serial messages*/
     private static MessageRecordQueue m_queue;
-    private MessagePayload.MessagePayloadBuilder m_MPB;
+    //private MessagePayload.MessagePayloadBuilder m_MPB;
      /** PortName of this machine */
     private static final String portName1 = "cu.usbmodem1441";
     /** Write Thread */
@@ -84,8 +84,7 @@ public class MainRobot {
         if (m_serialPortlist == null) {
             m_serialPortlist = new ArrayList<SerialPort>();
         }
-        //Create Payload Builder
-        m_MPB = new MessagePayload.MessagePayloadBuilder();
+
         Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
     }
 
@@ -180,34 +179,6 @@ public class MainRobot {
 
 
 
-    private void askIfArduinoIsReady()
-    {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.AskUsIfReady);
-        MessagePayload payload= m_MPB.build();
-        m_writeThread.sendMessage(payload.toSerial());
-    }
-
-
-    private void moveForward(int speed, int time )
-    {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
-        m_MPB.addArg("1");
-        m_MPB.addArg(String.valueOf(speed));
-        m_MPB.addArg(String.valueOf(time));
-        MessagePayload payload= m_MPB.build();
-        m_writeThread.sendMessage(payload.toSerial());
-
-    }
-
-    private void moveBackward(int speed, int time )
-    {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
-        m_MPB.addArg("0");
-        m_MPB.addArg(String.valueOf(speed));
-        m_MPB.addArg(String.valueOf(time));
-        MessagePayload payload= m_MPB.build();
-        m_writeThread.sendMessage(payload.toSerial());
-    }
 
 
     public static void main(String[] args) throws Exception {
@@ -231,17 +202,24 @@ public class MainRobot {
         }
 
         m_monitorThread=new MonitorThread(robot.m_queue);
+        m_monitorThread.setWriteThread(m_writeThread);
         m_monitorThread.start();
         writeLog(Level.INFO," monitorThread Started");
         TimeUnit.SECONDS.sleep(10);
+        m_writeThread.requestCmdList();
+        TimeUnit.SECONDS.sleep(1);
+        m_writeThread.pingArduinoAskUsIfReady();
+        TimeUnit.SECONDS.sleep(1);
+        m_writeThread.pingArduinoAskUsIfReady();
+        TimeUnit.SECONDS.sleep(1);
         //Test write to Arduino
-        robot.moveForward(100,1000);
+        m_writeThread.moveForward(100,1000);
         TimeUnit.SECONDS.sleep(1);
-        robot.moveBackward(100,1000);
+        m_writeThread.moveBackward(100,1000);
         TimeUnit.SECONDS.sleep(1);
-        robot.moveForward(100,1000);
+        m_writeThread.moveForward(100,1000);
         TimeUnit.SECONDS.sleep(1);
-        robot.moveBackward(100,1000);
+        m_writeThread.moveBackward(100,1000);
     }
 
 }

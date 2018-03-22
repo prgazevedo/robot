@@ -91,6 +91,7 @@ final class SeriaListener implements SerialPortPacketListener
 
                     //Send Message
                     SerialMessageRecord message = m_parser.getMessage( toProcess.getBytes());
+
                     if (message != null)
                     {
                         m_queue.add(message);
