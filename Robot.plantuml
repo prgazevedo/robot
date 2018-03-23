@@ -1,0 +1,166 @@
+@startuml
+
+title __ROBOT's Class Diagram__\n
+
+
+  
+
+  package  {
+    package com.company {
+      class ApplicationProperties {
+      }
+    }
+  }
+  
+
+
+  package  {
+    package com.company {
+      package com.company.graph {
+        class GraphManager {
+        }
+      }
+    }
+  }
+  
+
+  package  {
+    package com.company {
+      package com.company.graph {
+        class GraphViewer {
+        }
+      }
+    }
+  }
+  
+
+  package  {
+    package com.company {
+      package com.company.graph {
+        class GridLayout {
+        }
+      }
+    }
+  }
+  
+
+  
+
+  package  {
+    package com.company {
+      class MainRobot {
+      }
+    }
+  }
+  
+
+  package  {
+    package com.company {
+      package com.company.graph {
+        class MapGraph {
+        }
+      }
+    }
+  }
+  
+
+
+  package  {
+    package com.company {
+      package com.company.comms {
+        class MessagePayload {
+        }
+      }
+    }
+  }
+  
+
+  package  {
+    package com.company {
+      package com.company.comms {
+        class MessageRecordParser {
+        }
+      }
+    }
+  }
+  
+
+  package  {
+    package com.company {
+      package com.company.comms {
+        class MessageRecordQueue {
+        }
+      }
+    }
+  }
+  
+
+  
+
+  package  {
+    package com.company {
+      class MonitorThread {
+      }
+    }
+  }
+
+  
+
+  package  {
+    package com.company {
+      package com.company.comms {
+        class SeriaListener {
+        }
+      }
+    }
+  }
+  
+
+  package  {
+    package com.company {
+      package com.company.comms {
+        class SerialMessageRecord {
+        }
+      }
+    }
+  }
+  
+
+  
+
+  package  {
+    package com.company {
+      class WriteThread {
+      }
+    }
+  }
+
+  
+
+
+  GraphViewer -up-|> JFrame
+
+  MapGraph -up-|> SparseMultigraph
+
+  MessagePayload o-- cmds : m_cmd_type
+  MessageRecordParser o-- MessagePayload : m_messagePayload
+
+  MonitorThread o-- MessageRecordQueue : m_queue
+  MonitorThread o-- MessageRecordParser : m_parser
+  MonitorThread o-- WriteThread : m_writeThread
+
+  SeriaListener -up-|> SerialPortPacketListener
+  SeriaListener o-- MessageRecordParser : m_parser
+  SeriaListener o-- MessageRecordQueue : m_queue
+
+  WriteThread o-- MessagePayloadBuilder : m_MPB
+
+
+
+right footer
+
+
+
+endfooter
+
+@enduml
