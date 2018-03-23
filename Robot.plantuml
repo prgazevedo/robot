@@ -3,7 +3,7 @@
 title __ROBOT's Class Diagram__\n
 
 
-  
+
 
   package  {
     package com.company {
@@ -11,7 +11,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
 
   package  {
@@ -22,7 +22,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
   package  {
     package com.company {
@@ -32,7 +32,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
   package  {
     package com.company {
@@ -42,9 +42,9 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
 
-  
+
+
 
   package  {
     package com.company {
@@ -52,7 +52,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
   package  {
     package com.company {
@@ -62,7 +62,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
 
   package  {
@@ -73,7 +73,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
   package  {
     package com.company {
@@ -83,7 +83,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
   package  {
     package com.company {
@@ -93,9 +93,9 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
 
-  
+
+
 
   package  {
     package com.company {
@@ -104,7 +104,7 @@ title __ROBOT's Class Diagram__\n
     }
   }
 
-  
+
 
   package  {
     package com.company {
@@ -114,7 +114,7 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
+
 
   package  {
     package com.company {
@@ -124,9 +124,9 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
-  
 
-  
+
+
 
   package  {
     package com.company {
@@ -134,13 +134,36 @@ title __ROBOT's Class Diagram__\n
       }
     }
   }
+  package {
+    package imports{
+       class JFrame
+       class edu.uci.ics.jung.graph.SparseMultigraph
+       class edu.uci.ics.jung.graph.Graph
+       class Thread
+       class StaticLayout
+       class Dimension
+       class VisualizationViewer
+       class com.fazecast.jSerialComm.SerialPortPacketListener
+       class com.fazecast.jSerialComm.SerialPort
+       class com.fazecast.jSerialComm.SerialPortEvent
+    }
+   }
 
-  
+
 
 
   GraphViewer -up-|> JFrame
+  MapGraph -up-|> edu.uci.ics.jung.graph.SparseMultigraph
+   WriteThread -up-|> Thread
+   MonitorThread -up-|> Thread
+   SeriaListener .up.|> com.fazecast.jSerialComm.SerialPortPacketListener
 
-  MapGraph -up-|> SparseMultigraph
+   GraphViewer o-up- Dimension:m_dimension
+   GraphViewer o-up- VisualizationViewer: m_vv
+   GraphViewer o-up- StaticLayout: m_layout
+
+   MapGraph o-up- edu.uci.ics.jung.graph.Graph
+
 
   MessagePayload o-- cmds : m_cmd_type
   MessageRecordParser o-- MessagePayload : m_messagePayload
@@ -149,12 +172,18 @@ title __ROBOT's Class Diagram__\n
   MonitorThread o-- MessageRecordParser : m_parser
   MonitorThread o-- WriteThread : m_writeThread
 
-  SeriaListener -up-|> SerialPortPacketListener
+  MessagePayloadBuilder o.left. MessagePayload
+  MessagePayload +-right- MessagePayloadBuilder
   SeriaListener o-- MessageRecordParser : m_parser
   SeriaListener o-- MessageRecordQueue : m_queue
-
+  SeriaListener o-- com.fazecast.jSerialComm.SerialPortEvent
+  WriteThread o-- MessageRecordQueue : m_queue
+  WriteThread o-- MessageRecordParser : m_parser
   WriteThread o-- MessagePayloadBuilder : m_MPB
-
+  MainRobot o-- WriteThread: m_writeThread
+  MainRobot o-- MonitorThread : m_monitorThread
+  MainRobot o-- com.fazecast.jSerialComm.SerialPort: m_comPort
+  MainRobot o-- MessageRecordQueue: m_queue
 
 
 right footer

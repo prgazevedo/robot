@@ -17,7 +17,7 @@
 
 package com.company.comms;
 
-import com.company.comms.*;
+
 import com.company.ApplicationProperties;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -86,7 +86,7 @@ public final class SeriaListener implements SerialPortPacketListener
 
             for (byte b : buffer)
             {
-                if (ApplicationProperties.isMessageSplitter(b) && rawMessage.length() > 0)
+                if (CommsProperties.isMessageSplitter(b) && rawMessage.length() > 0)
                 {
                     String toProcess = rawMessage.toString();
                     log.trace(prefix + "Received a rawMessage:[{}]", toProcess);
@@ -100,17 +100,17 @@ public final class SeriaListener implements SerialPortPacketListener
                     }
                     rawMessage.setLength(0);
                 }
-                else if (!ApplicationProperties.isMessageSplitter(b))
+                else if (!CommsProperties.isMessageSplitter(b))
                 {
                     log.trace("Received a char:[{}]", ((char) b));
                     rawMessage.append((char) b);
                 }
-                else if (ApplicationProperties.isMessageOversize(rawMessage.length() ) )
+                else if (CommsProperties.isMessageOversize(rawMessage.length() ) )
                 {
                     log.warn(
                             "Serial receive buffer size reached to MAX level[{} chars], "
                                     + "Now clearing the buffer. Existing data:[{}]",
-                            ApplicationProperties.getSerialDataMaxSize(), rawMessage.toString());
+                            CommsProperties.getSerialDataMaxSize(), rawMessage.toString());
                     rawMessage.setLength(0);
                 }
                 else {

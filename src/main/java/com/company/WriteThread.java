@@ -108,28 +108,28 @@ public class WriteThread extends Thread {
     }
 
     public void requestCmdList() {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.CommandList);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.CommandList);
         MessagePayload payload= m_MPB.build();
         sendMessage(payload.toSerial());
     }
 
 
     public void AckWeAreReady() {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Acknowledge);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.Acknowledge);
         MessagePayload payload= m_MPB.build();
         sendMessage(payload.toSerial());
     }
 
     public void pingArduinoIsReady()
     {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.AreYouReady);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.AreYouReady);
         MessagePayload payload= m_MPB.build();
         sendMessage(payload.toSerial());
     }
 
     public void pingArduinoAskUsIfReady()
     {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.AskUsIfReady);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.AskUsIfReady);
         MessagePayload payload= m_MPB.build();
         sendMessage(payload.toSerial());
     }
@@ -137,7 +137,7 @@ public class WriteThread extends Thread {
 
     public void moveForward(int speed, int time )
     {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.Move);
         m_MPB.addArg("1");
         m_MPB.addArg(String.valueOf(speed));
         m_MPB.addArg(String.valueOf(time));
@@ -148,7 +148,7 @@ public class WriteThread extends Thread {
 
     public void moveBackward(int speed, int time )
     {
-        m_MPB.setM_cmd_type(ApplicationProperties.cmds.Move);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.Move);
         m_MPB.addArg("0");
         m_MPB.addArg(String.valueOf(speed));
         m_MPB.addArg(String.valueOf(time));

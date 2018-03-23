@@ -100,7 +100,7 @@ public class MessageRecordParser {
                 if (m_messagePayload == null) {
                     logger.error("processMessagePayload could not build the messagePayload from the MessageRecord" + messageRecordPayload);
                 }
-                if (m_messagePayload.getM_cmd_type().equals(ApplicationProperties.cmds.None)) {
+                if (m_messagePayload.getM_cmd_type().equals(CommsProperties.cmds.None)) {
                     logger.error("processMessagePayload could not process the cmd type of messageRecord: " + messageRecordPayload);
                     logger.error("processMessagePayload found messagePayload was: " + m_messagePayload.getM_cmd_type().toString());
                 }

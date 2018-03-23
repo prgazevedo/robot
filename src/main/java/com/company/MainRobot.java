@@ -19,6 +19,7 @@
 package com.company;
 
 
+import com.company.comms.CommsProperties;
 import com.company.comms.MessageRecordQueue;
 import com.company.comms.SeriaListener;
 import com.fazecast.jSerialComm.SerialPort;
@@ -138,10 +139,10 @@ public class MainRobot {
         writeLog(Level.INFO," setPortDefaultParams called");
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
         // set port parameters
-        comPort.setBaudRate(ApplicationProperties.DATA_RATE);
-        comPort.setNumDataBits(ApplicationProperties.DATABITS);
-        comPort.setNumStopBits(ApplicationProperties.STOPBITS);
-        comPort.setParity(ApplicationProperties.PARITY);
+        comPort.setBaudRate(CommsProperties.DATA_RATE);
+        comPort.setNumDataBits(CommsProperties.DATABITS);
+        comPort.setNumStopBits(CommsProperties.STOPBITS);
+        comPort.setParity(CommsProperties.PARITY);
     }
 
     private void addEventListeners(SerialPort comPort)

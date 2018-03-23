@@ -24,7 +24,7 @@ public class MessagePayload {
 
 
 
-    private final ApplicationProperties.cmds m_cmd_type;
+    private final CommsProperties.cmds m_cmd_type;
     private final ArrayList<String> m_Args;
 
 
@@ -35,7 +35,7 @@ public class MessagePayload {
 
     }
 
-    public ApplicationProperties.cmds getM_cmd_type() {
+    public CommsProperties.cmds getM_cmd_type() {
         return m_cmd_type;
     }
 
@@ -61,11 +61,11 @@ public class MessagePayload {
             s = String.valueOf(m_cmd_type.ordinal());
             if(m_Args!=null) {
                 for (String arg : m_Args) {
-                    s += ApplicationProperties.CMD_SEPARATOR;
+                    s += CommsProperties.CMD_SEPARATOR;
                     s += arg;
                 }
             }
-            s += ApplicationProperties.CMD_TERMINATOR;
+            s += CommsProperties.CMD_TERMINATOR;
 
         }
         return s;
@@ -81,11 +81,11 @@ public class MessagePayload {
             s = String.valueOf(m_cmd_type.ordinal())+"="+m_cmd_type.toString();
             if(m_Args!=null) {
                 for (String arg : m_Args) {
-                    s += ApplicationProperties.CMD_SEPARATOR;
+                    s += CommsProperties.CMD_SEPARATOR;
                     s += arg;
                 }
             }
-            s += ApplicationProperties.CMD_TERMINATOR;
+            s += CommsProperties.CMD_TERMINATOR;
 
         }
         return s;
@@ -93,14 +93,14 @@ public class MessagePayload {
     /** MessagePayloadBuilder ******************************/
     public static class MessagePayloadBuilder {
 
-        private ApplicationProperties.cmds m_cmd_type=null;
+        private CommsProperties.cmds m_cmd_type=null;
         private  ArrayList<String> m_Args=null;
 
-        public ApplicationProperties.cmds getM_cmd_type() {
+        public CommsProperties.cmds getM_cmd_type() {
             return m_cmd_type;
         }
 
-        public void setM_cmd_type(ApplicationProperties.cmds m_cmd_type) {
+        public void setM_cmd_type(CommsProperties.cmds m_cmd_type) {
             this.m_cmd_type = m_cmd_type;
         }
 
@@ -126,17 +126,17 @@ public class MessagePayload {
             m_Args.add(arg);
         }
 
-        public ApplicationProperties.cmds convertCmdType(String str){
+        public CommsProperties.cmds convertCmdType(String str){
 
             String cmd = str;//str.substring(0,str.indexOf(","));
             if(cmd!=null)
             {
                 int index = Integer.valueOf(cmd);
                // if (ApplicationProperties.cmds.valueOf(cmd) != null) {
-                if (ApplicationProperties.cmds.values()[index] != null){
-                    return ApplicationProperties.cmds.values()[index];
+                if (CommsProperties.cmds.values()[index] != null){
+                    return CommsProperties.cmds.values()[index];
                 } else {
-                    return ApplicationProperties.cmds.None;
+                    return CommsProperties.cmds.None;
                 }
             }
             else
@@ -146,13 +146,13 @@ public class MessagePayload {
         }
 
         public void parseMessagePayLoad(String payload){
-            List<String> cmdlist = new ArrayList<String>(Arrays.asList(payload.split(ApplicationProperties.CMD_SEPARATOR)));
+            List<String> cmdlist = new ArrayList<String>(Arrays.asList(payload.split(CommsProperties.CMD_SEPARATOR)));
             int index=0;
             for (String s : cmdlist) {
 
                 //only 1 argument
                 if (cmdlist.size() == 1) {
-                    if (s.substring(s.length() - 1).equals(ApplicationProperties.CMD_TERMINATOR)) {
+                    if (s.substring(s.length() - 1).equals(CommsProperties.CMD_TERMINATOR)) {
                         //Is terminated
                         String cmd = s.substring(0, s.length() - 1);
                         setcmdType(cmd);
@@ -174,7 +174,7 @@ public class MessagePayload {
                     else
                     {
                         //if terminated by ; remove the terminator
-                        if(s.substring(s.length() - 1).equals(ApplicationProperties.CMD_TERMINATOR))
+                        if(s.substring(s.length() - 1).equals(CommsProperties.CMD_TERMINATOR))
                         {
                             s=s.substring(0,s.length() - 1);
                         }

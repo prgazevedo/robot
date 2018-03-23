@@ -13,7 +13,7 @@ import java.awt.geom.Ellipse2D;
 public class GraphViewer extends JFrame {
 
     private Dimension m_dimension;
-    private VisualizationViewer vv;
+    private VisualizationViewer m_vv;
     private StaticLayout m_layout;
 
     public GraphViewer(String title, Dimension dimension, StaticLayout layout) throws HeadlessException {
@@ -35,7 +35,7 @@ public class GraphViewer extends JFrame {
     }
 
     public void createVisualization() {
-        vv = new VisualizationViewer(m_layout, new Dimension(800, 600));
+        m_vv = new VisualizationViewer(m_layout, new Dimension(800, 600));
 
 
         // Transformer maps the vertex number to a vertex property
@@ -51,13 +51,13 @@ public class GraphViewer extends JFrame {
                 return circle;
             }
         };
-        vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
-        vv.getRenderContext().setVertexShapeTransformer(vertexSize);
+        m_vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
+        m_vv.getRenderContext().setVertexShapeTransformer(vertexSize);
 
         //zooming and transforming
-        GraphZoomScrollPane zoomPane = new GraphZoomScrollPane(vv);
+        GraphZoomScrollPane zoomPane = new GraphZoomScrollPane(m_vv);
         DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse();
-        vv.setGraphMouse(graphMouse);
+        m_vv.setGraphMouse(graphMouse);
 
         this.getContentPane().add(zoomPane);
     }

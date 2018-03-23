@@ -53,7 +53,7 @@ public class MonitorThread extends Thread {
 
     private void handleMessage(MessagePayload messagePayload)
     {
-        if(messagePayload.getM_cmd_type().equals(ApplicationProperties.cmds.AreYouReady))
+        if(messagePayload.getM_cmd_type().equals(CommsProperties.cmds.AreYouReady))
         {
             m_writeThread.AckWeAreReady();
         }
