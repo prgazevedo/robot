@@ -18,7 +18,6 @@
 
 package com.company.comms;
 
-import com.company.ApplicationProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,18 +39,7 @@ public class MessageRecordParser {
     }
 
 
-    public MessagePayload getMessagePayload(SerialMessageRecord message) throws Exception {
-        MessagePayload messagePayload = null;
-        try {
-            update(message);
-            messagePayload =  processMessagePayload(m_recordPayload);
-            return m_messagePayload;
-        }
-        catch(Exception e){
-            logger.error("getMessagePayload - Exception:"+e.toString()+" messagePayload is:"+messagePayload);
-        }
-        return null;
-    }
+
 
 
     public byte[] getData(SerialMessageRecord message) throws Exception {
@@ -65,58 +53,18 @@ public class MessageRecordParser {
         return message.toString();
     }
 
-    public MessagePayload getMessagePayload(){
-        return m_messagePayload;
+
+
+    public String getRecordPayload(SerialMessageRecord message){
+        m_recordPayload = message.getPayload();
+        isTxMessage = message.getTxMessage();
+        timestamp = message.getTimestamp();
+        return m_recordPayload;
     }
 
-    private boolean isMessagePayloadACommand()
-    {
-        if(m_recordPayload !=null)
-        {
-            //If the m_recordPayload is terminated it probably is a Cmd
-            if(m_recordPayload.substring(m_recordPayload.length() - 1).equals(";"))
-            {
-
-                //if it does not start with "[Arduino]" it is a command
-                if(!m_recordPayload.contains("[Arduino]"))
-                {
-                    return true;
-                }
-                else return false;
-            }
-            else return false;
-        }
-        else return false;
-
-    }
-
-    private MessagePayload processMessagePayload(String messageRecordPayload){
-        m_messagePayload = null;
-        if(isMessagePayloadACommand()) {
-            try {
-                MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
-
-                m_messagePayload = MPB.build(messageRecordPayload);
-                if (m_messagePayload == null) {
-                    logger.error("processMessagePayload could not build the messagePayload from the MessageRecord" + messageRecordPayload);
-                }
-                if (m_messagePayload.getM_cmd_type().equals(CommsProperties.cmds.None)) {
-                    logger.error("processMessagePayload could not process the cmd type of messageRecord: " + messageRecordPayload);
-                    logger.error("processMessagePayload found messagePayload was: " + m_messagePayload.getM_cmd_type().toString());
-                }
-            }
-            catch(Exception e){
-                logger.error("processMessagePayload - Exception: "+e.toString());
-            }
-            return m_messagePayload;
-        }
-        else return null;
 
 
-
-    }
-
-    void update(SerialMessageRecord message) throws Exception {
+    private void update(SerialMessageRecord message) throws Exception {
 
         m_recordPayload = message.getPayload();
         isTxMessage = message.getTxMessage();
@@ -124,7 +72,7 @@ public class MessageRecordParser {
 
     }
 
-    void update(String rawData) throws Exception {
+    private void update(String rawData) throws Exception {
         timestamp = System.currentTimeMillis();
         isTxMessage = false;
         m_recordPayload = rawData;

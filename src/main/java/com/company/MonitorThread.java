@@ -36,7 +36,8 @@ public class MonitorThread extends Thread {
     private void processMessage(){
         SerialMessageRecord smr = m_queue.auditLastMessage();
         try {
-            MessagePayload messagePayload = m_parser.getMessagePayload(smr);
+            String recordPayload = m_parser.getRecordPayload(smr);
+            MessagePayload messagePayload = MessagePayload.convertRecordtoMessagePayload(recordPayload);
             if(messagePayload!=null) {
                 log.info("Message Payload Cmd detected. Is Tx?:"+smr.getTxMessage()+" Payload is: " + messagePayload.toString());
                 handleMessage(messagePayload);

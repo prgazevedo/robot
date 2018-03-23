@@ -26,10 +26,11 @@ public class MessagePayload {
 
     private final CommsProperties.cmds m_cmd_type;
     private final ArrayList<String> m_Args;
+    private static String m_messagePayload;
 
 
     public MessagePayload(MessagePayloadBuilder mpb) {
-
+        this.m_messagePayload = mpb.getM_messagePayload();
         this.m_cmd_type = mpb.getM_cmd_type();
         this.m_Args = new ArrayList<String>(mpb.getM_Args());
 
@@ -90,12 +91,62 @@ public class MessagePayload {
         }
         return s;
     }
+
+
+    private static boolean isMessagePayloadACommand(String payload)
+    {
+        if(payload !=null)
+        {
+            //If the m_recordPayload is terminated it probably is a Cmd
+            if(payload.substring(payload.length() - 1).equals(";"))
+            {
+
+                //if it does not start with "[Arduino]" it is a command
+                if(!payload.contains("[Arduino]"))
+                {
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
+        }
+        else return false;
+
+    }
+
+
+
+
+    public static MessagePayload convertRecordtoMessagePayload(String messageRecordPayload){
+        m_messagePayload = messageRecordPayload;
+        if(isMessagePayloadACommand(messageRecordPayload)) {
+            try {
+                MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
+
+                return MPB.build(messageRecordPayload);
+
+            }
+            catch(Exception e){
+                throw new RuntimeException("convertRecordtoMessagePayload - Exception: "+e.toString());
+            }
+
+        }
+        else return null;
+
+    }
+
+
     /** MessagePayloadBuilder ******************************/
     public static class MessagePayloadBuilder {
 
         private CommsProperties.cmds m_cmd_type=null;
         private  ArrayList<String> m_Args=null;
 
+        public String getM_messagePayload() {
+            return m_messagePayload;
+        }
+
+        private String m_messagePayload;
         public CommsProperties.cmds getM_cmd_type() {
             return m_cmd_type;
         }
@@ -189,6 +240,8 @@ public class MessagePayload {
         }
 
 
+
+
         private void clear(){
             m_cmd_type=null;
             m_Args.clear();
@@ -208,6 +261,7 @@ public class MessagePayload {
         }
 
         public MessagePayload build(String payload) {
+            m_messagePayload = payload;
             parseMessagePayLoad(payload);
             //Make the copy
             MessagePayload tmp =  new MessagePayload(this);

@@ -165,15 +165,18 @@ title __ROBOT's Class Diagram__\n
    MapGraph o-up- edu.uci.ics.jung.graph.Graph
 
 
-  MessagePayload o-- cmds : m_cmd_type
+    MessagePayload +-right- MessagePayloadBuilder
+    MessagePayload +-down- CommsProperties:cmds
   MessageRecordParser o-- MessagePayload : m_messagePayload
+
+  MessageRecordQueue o-- SerialMessageRecord: m_queue
 
   MonitorThread o-- MessageRecordQueue : m_queue
   MonitorThread o-- MessageRecordParser : m_parser
   MonitorThread o-- WriteThread : m_writeThread
 
   MessagePayloadBuilder o.left. MessagePayload
-  MessagePayload +-right- MessagePayloadBuilder
+
   SeriaListener o-- MessageRecordParser : m_parser
   SeriaListener o-- MessageRecordQueue : m_queue
   SeriaListener o-- com.fazecast.jSerialComm.SerialPortEvent
