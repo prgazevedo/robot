@@ -111,7 +111,7 @@ public class MessageRecordQueue {
         }
         if(messageRecord==null)
         {
-            logger.error("auditLastMessage SerialMessageRecord in Queue is null: {}",messageRecord.toString());
+            logger.error("auditLastMessage SerialMessageRecord in Queue is null.");
 
         }
         return messageRecord;

@@ -1,17 +1,6 @@
 package com.company.graph;
 
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import org.apache.commons.collections15.Transformer;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 
 public class GridLayout {
 
@@ -28,22 +17,26 @@ public class GridLayout {
 
     public GridLayout(MapGraph graph, int numRows, int numColumns) {
 
-        m_layout = new StaticLayout(graph);
+        m_layout = new StaticLayout(graph.getM_graph());
+        Layout();
 
+
+    }
+
+    private void Layout(){
         //distance between the nodes
-        int distX=1;
-        int distY=1;
+        int distX=GraphProperties.NODE_X_DISTANCE;
+        int distY=GraphProperties.NODE_Y_DISTANCE;
 
 
 
         int operatingNode = 0;
 
-        for (int i=0;i<numRows;i++) {
-            for (int j=0;j<numColumns;j++) {
+        for (int i = 0; i<GraphProperties.N_NODES_IN_COLUMNS; i++) {
+            for (int j = 0; j<GraphProperties.N_NODES_IN_ROWS; j++) {
                 m_layout.setLocation((operatingNode++), i*distX, j*distY);
             }
         }
-
     }
 
 

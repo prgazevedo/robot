@@ -18,7 +18,6 @@
 package com.company.comms;
 
 
-import com.company.ApplicationProperties;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortPacketListener;

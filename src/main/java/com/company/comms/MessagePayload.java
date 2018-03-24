@@ -14,8 +14,6 @@ package com.company.comms;
 // Arduino Requests to AskUsIfReady: 6;
 // Arduino Acknowledges is ready: 7;
 
-import com.company.ApplicationProperties;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,41 +53,41 @@ public class MessagePayload {
 
 
     public String toSerial() {
-        String s="";
-        if( m_cmd_type ==null) return s;
+        StringBuilder s= new StringBuilder();
+        if( m_cmd_type ==null) return s.toString();
         else {
 
-            s = String.valueOf(m_cmd_type.ordinal());
+            s = new StringBuilder(String.valueOf(m_cmd_type.ordinal()));
             if(m_Args!=null) {
                 for (String arg : m_Args) {
-                    s += CommsProperties.CMD_SEPARATOR;
-                    s += arg;
+                    s.append(CommsProperties.CMD_SEPARATOR);
+                    s.append(arg);
                 }
             }
-            s += CommsProperties.CMD_TERMINATOR;
+            s.append(CommsProperties.CMD_TERMINATOR);
 
         }
-        return s;
+        return s.toString();
     }
 
 
     @Override
     public String toString() {
-        String s="";
-        if( m_cmd_type ==null) return s;
+        StringBuilder s= new StringBuilder();
+        if( m_cmd_type ==null) return s.toString();
         else {
 
-            s = String.valueOf(m_cmd_type.ordinal())+"="+m_cmd_type.toString();
+            s = new StringBuilder(String.valueOf(m_cmd_type.ordinal()) + "=" + m_cmd_type.toString());
             if(m_Args!=null) {
                 for (String arg : m_Args) {
-                    s += CommsProperties.CMD_SEPARATOR;
-                    s += arg;
+                    s.append(CommsProperties.CMD_SEPARATOR);
+                    s.append(arg);
                 }
             }
-            s += CommsProperties.CMD_TERMINATOR;
+            s.append(CommsProperties.CMD_TERMINATOR);
 
         }
-        return s;
+        return s.toString();
     }
 
 
@@ -192,7 +190,7 @@ public class MessagePayload {
             }
             else
             {
-                throw new RuntimeException(String.format("There is no cmd in String (%s)",str));
+                throw new RuntimeException(String.format("Passed string is null"));
             }
         }
 

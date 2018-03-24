@@ -48,9 +48,7 @@ public class MessageRecordParser {
     }
 
     String getSerialString() {
-        StringBuffer message = new StringBuffer();
-        message.append(m_recordPayload).append("\n");
-        return message.toString();
+        return m_recordPayload + "\n";
     }
 
 
