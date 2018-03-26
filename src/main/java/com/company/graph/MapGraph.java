@@ -1,7 +1,11 @@
 package com.company.graph;
 
+import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
+import javafx.geometry.Point2D;
+
+import java.util.HashMap;
 
 public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
@@ -9,30 +13,84 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         return m_graph;
     }
 
-    private edu.uci.ics.jung.graph.Graph<Integer,String> m_graph;
+    public StaticLayout getM_layout() {
+        return m_layout;
+    }
+
+    private StaticLayout m_layout;
+    private edu.uci.ics.jung.graph.Graph<Vertex,String> m_graph;
+    private HashMap<Integer,Vertex> m_hashmapVertexes;
 
     public MapGraph(int nvertexes) {
-        m_graph = new SparseMultigraph<Integer,String>();
-        populateVertexes(nvertexes);
+        m_graph = new SparseMultigraph<Vertex,String>();
+        m_hashmapVertexes = new HashMap<Integer,Vertex>();
+        m_layout = new StaticLayout(m_graph);
+        populateVertexes();
     }
 
-    public void populateVertexes(int nvertexes)
-    {
-        //idea is to add the vertices and change and the position of each vertex to a coordinate in a grid
-        for (int n=0;n<nvertexes;n++) {
-            m_graph.addVertex(n);
-        }
+    public Vertex getVertex(int ID){
+        return m_hashmapVertexes.get(ID);
     }
+
+    public void populateVertexes()
+    {
+        int operatingNode = 0;
+        for (int i = 0; i<GraphProperties.N_NODES_IN_COLUMNS; i++) {
+            for (int j = 0; j<GraphProperties.N_NODES_IN_ROWS; j++) {
+                operatingNode++;
+                Point2D location = new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
+                Vertex v = new Vertex(operatingNode, location);
+                m_graph.addVertex(v);
+                m_hashmapVertexes.put(operatingNode,v);
+                m_layout.setLocation(operatingNode,location.getX(),location.getY());
+            }
+        }
+
+    }
+
 
     public boolean AddEdge(int vertexA, int vertexB) {
         //add an edge between vertexes
         String edgeID = String.valueOf(vertexA) + String.valueOf(vertexB);
-        if(m_graph.containsVertex(vertexA) && m_graph.containsVertex(vertexB))
+        if(m_hashmapVertexes.containsKey(vertexA) && m_hashmapVertexes.containsKey(vertexB))
         {
-            m_graph.addEdge(edgeID, vertexA, vertexB);
+
+            m_graph.addEdge(edgeID, m_hashmapVertexes.get(vertexA), m_hashmapVertexes.get(vertexB));
             return true;
         }
         else return false;
+
+    }
+
+
+
+
+
+    public class Vertex{
+        private int m_vertexID;
+        private Point2D m_coords;
+
+
+
+
+        public Vertex(int VertexId, Point2D coords) {
+            m_vertexID = VertexId;
+            m_coords = new Point2D(coords.getX(),coords.getY());
+
+        }
+
+
+        public boolean equals(Object o) {
+
+            return o instanceof Integer && m_vertexID == ((Integer) o).intValue();
+
+        }
+
+        public int hashCode() {
+            return m_vertexID;
+        }
+
+
 
     }
 }

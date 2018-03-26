@@ -3,9 +3,9 @@ package com.company.graph;
 import java.awt.*;
 
 public class GraphProperties {
-    public static final int N_VERTEXES = 10000;
-    public static final int N_NODES_IN_COLUMNS = 100;
-    public static final int N_NODES_IN_ROWS = 100;
+    public static final int N_VERTEXES = 1000000;
+    public static final int N_NODES_IN_COLUMNS = 1000;
+    public static final int N_NODES_IN_ROWS = 1000;
     public static final int WINDOW_HEIGHT = 800;
     public static final int WINDOW_WIDTH = 600;
 
