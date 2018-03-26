@@ -3,6 +3,9 @@ package com.company.graph;
 
 
 
+
+import javafx.geometry.Point2D;
+
 import java.awt.*;
 import java.util.Random;
 
@@ -47,11 +50,16 @@ public class GraphManager {
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
 
             int v0 = last_visited;
-            int new_direction = m_random.nextInt(4);
+            int i_new_direction = m_random.nextInt(4);
             //TODO add code to change direction
-            //last_visited = v1;
-            //m_mp.AddEdge(v0,v1);
-
+            Direction direction= Direction.ordinal(i_new_direction);
+            Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
+            Point2D newlocation = new Point2D(oldlocation.getX()+direction.getX(),oldlocation.getX()+direction.getY());
+            if(newlocation.getX()<0) newlocation = new Point2D(0.0,oldlocation.getY());
+            if(newlocation.getY()<0) newlocation = new Point2D(oldlocation.getX(),0.0);
+            int v1=m_mp.getVertexId(newlocation);
+            last_visited = v1;
+            m_mp.AddEdge(v0,v1);
 
         }
     }
@@ -59,6 +67,18 @@ public class GraphManager {
     public enum Direction {
 
         UP(0, -1), DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);
+
+        public static Direction ordinal(int i){
+            switch(i)
+            {
+                case 0: return UP;
+                case 1: return LEFT;
+                case 2: return DOWN;
+                case 3:
+                default:
+                        return RIGHT;
+            }
+        }
 
         private Direction(float x, float y) {
             this.x = x;

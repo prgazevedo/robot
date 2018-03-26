@@ -20,10 +20,12 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     private StaticLayout m_layout;
     private edu.uci.ics.jung.graph.Graph<Vertex,String> m_graph;
     private HashMap<Integer,Vertex> m_hashmapVertexes;
+    private HashMap<Point2D,Integer> m_hashmapLocations;
 
     public MapGraph(int nvertexes) {
         m_graph = new SparseMultigraph<Vertex,String>();
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
+        m_hashmapLocations = new HashMap<Point2D,Integer>();
         m_layout = new StaticLayout(m_graph);
         populateVertexes();
     }
@@ -31,6 +33,8 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     public Vertex getVertex(int ID){
         return m_hashmapVertexes.get(ID);
     }
+
+    public Integer getVertexId(Point2D location){return m_hashmapLocations.get(location);}
 
     public void populateVertexes()
     {
@@ -42,6 +46,7 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
                 Vertex v = new Vertex(operatingNode, location);
                 m_graph.addVertex(v);
                 m_hashmapVertexes.put(operatingNode,v);
+                m_hashmapLocations.put(location,operatingNode);
                 m_layout.setLocation(operatingNode,location.getX(),location.getY());
             }
         }
@@ -68,14 +73,18 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     public class Vertex{
         private int m_vertexID;
-        private Point2D m_coords;
 
+        public Point2D getM_coords() {
+            return m_coords;
+        }
+
+        private Point2D m_coords;
 
 
 
         public Vertex(int VertexId, Point2D coords) {
             m_vertexID = VertexId;
-            m_coords = new Point2D(coords.getX(),coords.getY());
+            this.m_coords = new Point2D(coords.getX(),coords.getY());
 
         }
 
