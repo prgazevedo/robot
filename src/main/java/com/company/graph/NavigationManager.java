@@ -2,15 +2,26 @@ package com.company.graph;
 
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
-import java.util.Random;
+
+import java.util.HashMap;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
 
 public class NavigationManager {
 
-    private Random m_random;
+
     private MapGraph m_mp;
 
+    private NavigableMap<Integer, Integer> m_path;
+
+    private RandomUtil m_random;
+
     public NavigationManager(MapGraph mg) {
-        m_random = new Random(System.currentTimeMillis());
+
+        //order,Id of vertex
+        m_path = new TreeMap<Integer, Integer>();
+        m_random = new RandomUtil(0,Direction.getNumberDirections());
         m_mp = mg;
     }
 
@@ -21,7 +32,7 @@ public class NavigationManager {
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
 
             int v0 = last_visited;
-            int v1 = m_random.nextInt(GraphProperties.N_VERTEXES);
+            int v1 = (new RandomUtil(0,GraphProperties.N_VERTEXES).getNonRepeatingRandomInt());
             last_visited = v1;
             m_mp.AddEdge(String.valueOf(i),v0,v1);
 
@@ -32,15 +43,17 @@ public class NavigationManager {
     public void mock_navigator_3(){
 
         int last_visited=0;
+
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
             System.out.println("mock_navigator_3 - iteration:"+i);
             int v0 = last_visited;
+            m_path.put(i,v0);
             int v1 = nextVertex(v0);
-            if(v1!=-1) {
+            if(v1!=-1)
+            {
                 last_visited = v1;
                 m_mp.AddEdge(String.valueOf(i), v0, v1);
                 m_mp.setVertexVisited(v1);
-
             }
             else
             {
@@ -56,23 +69,46 @@ public class NavigationManager {
         int v1=-1;
         boolean bSearching=true;
         while(bSearching) {
-            int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
-            Direction direction = Direction.navigationDirection(i_new_direction);
-            Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
-            Point2D newlocation = new Point2D(oldlocation.getX() + direction.getX(), oldlocation.getY() + direction.getY());
-            newlocation=boundNavigation(newlocation);
-
-            try {
-                v1 = m_mp.getVertexId(newlocation);
-
-            } catch (Exception e) {
-                System.out.println("mock_navigator" + e.toString());
+            //int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
+            int i_new_direction = m_random.getNonRepeatingRandomInt();
+            if(i_new_direction==-1)
+            {
+                //dead-end -> retrace the path
+                retracePath();
             }
-            if(!m_mp.wasVertexVisited(v1)) bSearching=false;
+            else
+            {
+                //not a dead end
+                Direction direction = Direction.navigationDirection(i_new_direction);
+                Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
+                Point2D newlocation = new Point2D(oldlocation.getX() + direction.getX(), oldlocation.getY() + direction.getY());
+                newlocation=boundNavigation(newlocation);
+
+                try {
+                    v1 = m_mp.getVertexId(newlocation);
+
+                } catch (Exception e) {
+                    System.out.println("mock_navigator" + e.toString());
+                }
+                if(!m_mp.wasVertexVisited(v1))
+                {
+                    //New valid node so exit the search
+                    bSearching=false;
+                }
+            }
+
         }
         return v1;
 
     }
+
+    private void retracePath(){
+
+        int newV0 = m_path.lastEntry().getValue();
+        System.out.println("retracePath go back to:" + newV0);
+        nextVertex(newV0);
+    }
+
 
     private  Point2D boundNavigation(Point2D newlocation){
         //Lower Limit: change direction
@@ -103,7 +139,7 @@ public class NavigationManager {
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
 
             int v0 = last_visited;
-            int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
+            int i_new_direction = m_random.getNonRepeatingRandomInt();//m_random.nextInt(Direction.getNumberDirections());
             //TODO add code to change direction
             Direction direction= Direction.navigationDirection(i_new_direction);
             Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
