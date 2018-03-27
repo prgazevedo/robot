@@ -1,7 +1,7 @@
 package com.company.graph;
 
 import javafx.geometry.Point2D;
-
+import javafx.util.Pair;
 import java.util.Random;
 
 public class NavigationManager {
@@ -33,12 +33,14 @@ public class NavigationManager {
 
         int last_visited=0;
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
-
+            System.out.println("mock_navigator_3 - iteration:"+i);
             int v0 = last_visited;
             int v1 = nextVertex(v0);
             if(v1!=-1) {
                 last_visited = v1;
                 m_mp.AddEdge(String.valueOf(i), v0, v1);
+                m_mp.setVertexVisited(v1);
+
             }
             else
             {
@@ -54,8 +56,8 @@ public class NavigationManager {
         int v1=-1;
         boolean bSearching=true;
         while(bSearching) {
-            int i_new_direction = m_random.nextInt(4);
-            Direction direction = Direction.ordinal(i_new_direction);
+            int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
+            Direction direction = Direction.navigationDirection(i_new_direction);
             Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
             Point2D newlocation = new Point2D(oldlocation.getX() + direction.getX(), oldlocation.getY() + direction.getY());
             newlocation=boundNavigation(newlocation);
@@ -101,9 +103,9 @@ public class NavigationManager {
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
 
             int v0 = last_visited;
-            int i_new_direction = m_random.nextInt(4);
+            int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
             //TODO add code to change direction
-            Direction direction= Direction.ordinal(i_new_direction);
+            Direction direction= Direction.navigationDirection(i_new_direction);
             Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
             Point2D newlocation = new Point2D(oldlocation.getX()+direction.getX(),oldlocation.getY()+direction.getY());
             newlocation = boundNavigation(newlocation);
@@ -121,35 +123,46 @@ public class NavigationManager {
         }
     }
 
-    public enum Direction {
 
-        UP(0, GraphProperties.NODE_Y_DISTANCE), DOWN(0, -GraphProperties.NODE_Y_DISTANCE), LEFT(-GraphProperties.NODE_X_DISTANCE, 0), RIGHT(GraphProperties.NODE_X_DISTANCE, 0);
+    public static enum Direction {
 
-        public static Direction ordinal(int i){
-            switch(i)
-            {
-                case 0: return UP;
-                case 1: return LEFT;
-                case 2: return DOWN;
-                case 3:
-                default:
-                    return RIGHT;
-            }
+        NORTH(0, new Pair(0, GraphProperties.NODE_Y_DISTANCE)),
+        SOUTH(1, new Pair(0, -GraphProperties.NODE_Y_DISTANCE)),
+        WEST(2, new Pair(-GraphProperties.NODE_X_DISTANCE, 0)),
+        EAST(3, new Pair(GraphProperties.NODE_X_DISTANCE, 0)),
+        NORTHWEST(4, new Pair(-GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
+        NORTHEAST(5, new Pair(+GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
+        SOUTHWEST(6, new Pair(-GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE)),
+        SOUTHEAST(7, new Pair(+GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE));
+
+        private final int m_index;
+        private final javafx.util.Pair<Integer,Integer> m_direction;
+
+        Direction(int index, Pair<Integer,Integer> direction) {
+            this.m_index = index;
+            this.m_direction = direction;
         }
 
-        private Direction(float x, float y) {
-            this.x = x;
-            this.y = y;
+        public int index(){return m_index;}
+        public static Direction navigationDirection(int i){
+            if(i<Direction.values().length && i>-1)
+            return Direction.values()[i];
+            else return Direction.NORTH;
+        }
+        public Pair direction(){return m_direction;}
+
+
+        public static int getNumberDirections()
+        {
+            return Direction.values().length;
         }
 
-        private float x;
-        private float y;
 
-        public float getX() {
-            return x;
+        public int getX() {
+            return m_direction.getKey();
         }
         public float getY() {
-            return y;
+            return m_direction.getValue();
         }
 
     }

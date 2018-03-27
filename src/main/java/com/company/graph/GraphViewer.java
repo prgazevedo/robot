@@ -26,11 +26,14 @@ public class GraphViewer extends JFrame {
     private Dimension m_dimension;
     private VisualizationViewer m_vv;
     private StaticLayout m_layout;
+    private MapGraph m_mp;
 
-    public GraphViewer(String title, Dimension dimension, StaticLayout layout) throws HeadlessException {
+    public GraphViewer(String title, MapGraph mp) throws HeadlessException {
         super(title);
-        m_dimension= new Dimension(dimension);
-        m_layout=layout;
+        m_mp = mp;
+        m_layout=m_mp.getM_layout();
+        m_dimension= new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH);
+
     }
 
     public void viewGraph()
@@ -53,8 +56,10 @@ public class GraphViewer extends JFrame {
 
         // Transformer maps the vertex number to a vertex property
         Transformer<MapGraph.Vertex,Paint> vertexColor = new Transformer<MapGraph.Vertex,Paint>() {
-            public Paint transform(MapGraph.Vertex i) {
-                return GraphProperties.NODE_COLOR;
+            public Paint transform(MapGraph.Vertex v) {
+                if(v.isM_wall()) return GraphProperties.WALL_COLOR;
+                else if(v.isM_visited())return GraphProperties.VISITED_NODE_COLOR;
+                else return GraphProperties.NODE_COLOR;
 
             }
         };

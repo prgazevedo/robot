@@ -21,7 +21,7 @@ public class GraphManager {
 
     public GraphManager() {
         m_mp  = new MapGraph(GraphProperties.N_VERTEXES);
-        m_gv = new GraphViewer("Graph", new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH), m_mp.getM_layout());
+        m_gv = new GraphViewer("Graph", m_mp );
         m_nm = new NavigationManager(m_mp);
 
     }
