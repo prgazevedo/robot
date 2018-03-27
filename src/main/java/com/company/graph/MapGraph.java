@@ -41,25 +41,25 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         int operatingNode = 0;
         for (int i = 0; i<GraphProperties.N_NODES_IN_COLUMNS; i++) {
             for (int j = 0; j<GraphProperties.N_NODES_IN_ROWS; j++) {
-                operatingNode++;
+
                 Point2D location = new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
                 Vertex v = new Vertex(operatingNode, location);
                 m_graph.addVertex(v);
                 m_hashmapVertexes.put(operatingNode,v);
                 m_hashmapLocations.put(location,operatingNode);
                 m_layout.setLocation(operatingNode,location.getX(),location.getY());
+                operatingNode++;
             }
         }
 
     }
 
 
-    public boolean AddEdge(int vertexA, int vertexB) {
+    public boolean AddEdge(String edgeID, int vertexA, int vertexB) {
         //add an edge between vertexes
-        String edgeID = String.valueOf(vertexA) + String.valueOf(vertexB);
+        //String edgeID = String.valueOf(vertexA) + String.valueOf(vertexB);
         if(m_hashmapVertexes.containsKey(vertexA) && m_hashmapVertexes.containsKey(vertexB))
         {
-
             m_graph.addEdge(edgeID, m_hashmapVertexes.get(vertexA), m_hashmapVertexes.get(vertexB));
             return true;
         }

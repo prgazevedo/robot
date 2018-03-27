@@ -11,6 +11,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.renderers.BasicEdgeRenderer;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.transform.shape.GraphicsDecorator;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
@@ -51,18 +52,24 @@ public class GraphViewer extends JFrame {
 
 
         // Transformer maps the vertex number to a vertex property
-        Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
-            public Paint transform(Integer i) {
+        Transformer<MapGraph.Vertex,Paint> vertexColor = new Transformer<MapGraph.Vertex,Paint>() {
+            public Paint transform(MapGraph.Vertex i) {
                 return GraphProperties.NODE_COLOR;
 
             }
         };
-        Transformer<Integer,Shape> vertexSize = new Transformer<Integer,Shape>(){
-            public Shape transform(Integer i){
+        Transformer<MapGraph.Vertex,Shape> vertexSize = new Transformer<MapGraph.Vertex,Shape>(){
+            public Shape transform(MapGraph.Vertex i){
                 Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X,GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
                 return circle;
             }
         };
+
+        m_vv.getRenderContext().setEdgeLabelTransformer(new Transformer<String, String>() {
+            public String transform(String e) {
+                return (e.toString() );
+            }
+        });
         m_vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
         m_vv.getRenderContext().setVertexShapeTransformer(vertexSize);
 
