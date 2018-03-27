@@ -8,108 +8,32 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.Timer;
 
 public class GraphManager {
 
-    private static Random m_random;
+
     private static MapGraph m_mp;
     private static GraphViewer m_gv;
+    private static NavigationManager m_nm;
 
 
 
     public GraphManager() {
-
+        m_mp  = new MapGraph(GraphProperties.N_VERTEXES);
+        m_gv = new GraphViewer("Graph", new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH), m_mp.getM_layout());
+        m_nm = new NavigationManager(m_mp);
 
     }
 
 
     public static void main(String[] args) {
-        m_mp  = new MapGraph(GraphProperties.N_VERTEXES);
-        m_gv = new GraphViewer("Graph", new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH), m_mp.getM_layout());
-        mock_navigator_2();
+       GraphManager gm = new GraphManager();
+        m_nm.mock_navigator_3();
         m_gv.viewGraph();
     }
 
-    private static void mock_navigator_1(){
-        m_random = new Random(0);
-        int last_visited=0;
-        for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
 
-            int v0 = last_visited;
-            int v1 = m_random.nextInt(GraphProperties.N_VERTEXES);
-            last_visited = v1;
-            m_mp.AddEdge(String.valueOf(i),v0,v1);
-
-
-        }
-    }
-
-    private static void mock_navigator_2(){
-        m_random = new Random(0);
-        int last_visited=0;
-        for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
-
-            int v0 = last_visited;
-            int i_new_direction = m_random.nextInt(4);
-            //TODO add code to change direction
-            Direction direction= Direction.ordinal(i_new_direction);
-            Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
-            Point2D newlocation = new Point2D(oldlocation.getX()+direction.getX(),oldlocation.getY()+direction.getY());
-            if(newlocation.getX()<0)
-            {
-                newlocation = new Point2D(-newlocation.getX(),newlocation.getY());
-            }
-            if(newlocation.getY()<0){
-                newlocation = new Point2D(newlocation.getX(),-newlocation.getY());
-            }
-            try {
-                int v1 = m_mp.getVertexId(newlocation);
-                last_visited = v1;
-                m_mp.AddEdge(String.valueOf(i),v0,v1);
-            }
-            catch (Exception e)
-            {
-                System.out.println(e.toString());
-            }
-
-
-
-
-        }
-    }
-
-    public enum Direction {
-
-        UP(0, GraphProperties.NODE_Y_DISTANCE), DOWN(0, -GraphProperties.NODE_Y_DISTANCE), LEFT(-GraphProperties.NODE_X_DISTANCE, 0), RIGHT(GraphProperties.NODE_X_DISTANCE, 0);
-
-        public static Direction ordinal(int i){
-            switch(i)
-            {
-                case 0: return UP;
-                case 1: return LEFT;
-                case 2: return DOWN;
-                case 3:
-                default:
-                        return RIGHT;
-            }
-        }
-
-        private Direction(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        private float x;
-        private float y;
-
-        public float getX() {
-            return x;
-        }
-        public float getY() {
-            return y;
-        }
-
-    }
 
 
 }

@@ -22,6 +22,17 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     private HashMap<Integer,Vertex> m_hashmapVertexes;
     private HashMap<Point2D,Integer> m_hashmapLocations;
 
+    public int getM_Upper_X_Location() {
+        return m_Upper_X_Location;
+    }
+
+    public int getM_Upper_Y_Location() {
+        return m_Upper_Y_Location;
+    }
+
+    private int m_Upper_X_Location = 0;
+    private int m_Upper_Y_Location = 0;
+
     public MapGraph(int nvertexes) {
         m_graph = new SparseMultigraph<Vertex,String>();
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
@@ -34,6 +45,10 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         return m_hashmapVertexes.get(ID);
     }
 
+    public boolean wasVertexVisited(int ID){
+        return m_hashmapVertexes.get(ID).isM_visited();
+    }
+
     public Integer getVertexId(Point2D location){return m_hashmapLocations.get(location);}
 
     public void populateVertexes()
@@ -42,7 +57,7 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         for (int i = 0; i<GraphProperties.N_NODES_IN_COLUMNS; i++) {
             for (int j = 0; j<GraphProperties.N_NODES_IN_ROWS; j++) {
 
-                Point2D location = new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
+                Point2D location = calculateNewLocation(i,j);
                 Vertex v = new Vertex(operatingNode, location);
                 m_graph.addVertex(v);
                 m_hashmapVertexes.put(operatingNode,v);
@@ -51,7 +66,21 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
                 operatingNode++;
             }
         }
+        setUpperLocationBounds();
 
+
+
+    }
+
+    private Point2D calculateNewLocation(int i, int j)
+    {
+        return new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
+    }
+
+    private void setUpperLocationBounds()
+    {
+        m_Upper_X_Location=(GraphProperties.N_NODES_IN_COLUMNS-1)*GraphProperties.NODE_X_DISTANCE;
+        m_Upper_Y_Location=(GraphProperties.N_NODES_IN_ROWS-1)*GraphProperties.NODE_Y_DISTANCE;
     }
 
 
@@ -73,16 +102,25 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     public class Vertex{
         private int m_vertexID;
+        private Point2D m_coords;
+        private boolean m_visited;
+
+        public boolean isM_visited() {
+            return m_visited;
+        }
+
+        public void setM_visited(boolean m_visited) {
+            this.m_visited = m_visited;
+        }
 
         public Point2D getM_coords() {
             return m_coords;
         }
 
-        private Point2D m_coords;
-
 
 
         public Vertex(int VertexId, Point2D coords) {
+            m_visited = false;
             m_vertexID = VertexId;
             this.m_coords = new Point2D(coords.getX(),coords.getY());
 
