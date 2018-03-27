@@ -21,6 +21,10 @@ public class RandomUtil {
         m_excludeList = new PriorityQueue<Integer>();
     }
 
+
+    public void init(){
+        m_excludeList.clear();
+    }
     /**
      * @return the random number within start-end but not one of excludes. Otherwise (no free random) returns -1
      */

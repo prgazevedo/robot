@@ -13,13 +13,16 @@ public class NavigationManager {
 
     private MapGraph m_mp;
 
+    /**
+     * Key is order of path ,Value is Id of vertex
+     */
     private NavigableMap<Integer, Integer> m_path;
 
     private RandomUtil m_random;
 
     public NavigationManager(MapGraph mg) {
 
-        //order,Id of vertex
+
         m_path = new TreeMap<Integer, Integer>();
         m_random = new RandomUtil(0,Direction.getNumberDirections());
         m_mp = mg;
@@ -43,31 +46,34 @@ public class NavigationManager {
     public void mock_navigator_3(){
 
         int last_visited=0;
-
+        m_path.put(0,last_visited);
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
             System.out.println("mock_navigator_3 - iteration:"+i);
             int v0 = last_visited;
-            m_path.put(i,v0);
+
             int v1 = nextVertex(v0);
             if(v1!=-1)
             {
                 last_visited = v1;
+                System.out.println("mock_navigator_3 navigating to:"+v1);
                 m_mp.AddEdge(String.valueOf(i), v0, v1);
                 m_mp.setVertexVisited(v1);
+                m_path.put(i+1,v1);
             }
             else
             {
-                System.out.println("Stop navigation");
+                System.out.println("mock_navigator_3 Stop navigation");
                 break;
             }
 
         }
-        System.out.println("End navigation");
+        System.out.println("mock_navigator_3 End navigation");
     }
 
     private  int nextVertex(int v0){
         int v1=-1;
         boolean bSearching=true;
+        m_random.init();
         while(bSearching) {
             //int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
             int i_new_direction = m_random.getNonRepeatingRandomInt();
@@ -103,8 +109,8 @@ public class NavigationManager {
     }
 
     private void retracePath(){
-
-        int newV0 = m_path.lastEntry().getValue();
+        int previousKey = m_path.lastEntry().getKey();
+        int newV0 = m_path.lowerEntry(previousKey).getValue();
         System.out.println("retracePath go back to:" + newV0);
         nextVertex(newV0);
     }
