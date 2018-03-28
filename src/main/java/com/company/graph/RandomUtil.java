@@ -1,11 +1,13 @@
 package com.company.graph;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Random;
 
 public class RandomUtil {
     private final Random m_random;
-    java.util.PriorityQueue<Integer> m_excludeList;
+    SortedArrayList<Integer> m_excludeList;
 
     int m_start=0;
     int m_end=0;
@@ -17,8 +19,8 @@ public class RandomUtil {
     public RandomUtil(int start, int end) {
         m_random = new Random(System.currentTimeMillis());
         m_start=start;
-        m_end=end;
-        m_excludeList = new PriorityQueue<Integer>();
+        m_end=end-1;
+        m_excludeList = new SortedArrayList<Integer>();
     }
 
 
@@ -31,13 +33,15 @@ public class RandomUtil {
     public int getNonRepeatingRandomInt() {
         Integer[] array = m_excludeList.toArray (new Integer [m_excludeList.size()]);
         int toExclude= getRandomWithExclusion(m_random,m_start,m_end, array);
-        if(!m_excludeList.contains(toExclude)) {
-            //it's a new valid random!
-            m_excludeList.add(toExclude);
-            return toExclude;
+        if(toExclude<0) return -1;
+        else if(m_excludeList.contains(toExclude)) {
+            return -1;
         }
         else {
-            return -1;
+            //it's a new valid random!
+            m_excludeList.insertSorted(toExclude);
+            return toExclude;
+
         }
     }
 
@@ -48,13 +52,32 @@ public class RandomUtil {
      * @return the random number within start-end but not one of excludes.
      */
     public int getRandomWithExclusion(Random rnd, int start, int end, Integer... exclude) {
-        int random = start + rnd.nextInt(end - start + 1 - exclude.length);
-        for (int ex : exclude) {
-            if (random < ex) {
-                break;
+        int bound = end - start + 1 - exclude.length;
+        if(bound>0) {
+            try {
+                int random = start + rnd.nextInt(bound);
+                for (int ex : exclude) {
+                    if (random < ex) {
+                        break;
+                    }
+                    random++;
+                }
+                return random;
+            } catch (Exception e) {
+                throw e;
             }
-            random++;
         }
-        return random;
+        else return -1;
+    }
+
+    class SortedArrayList<T> extends ArrayList<T> {
+
+        @SuppressWarnings("unchecked")
+        public void insertSorted(T value) {
+            add(value);
+            Comparable<T> cmp = (Comparable<T>) value;
+            for (int i = size()-1; i > 0 && cmp.compareTo(get(i-1)) < 0; i--)
+                Collections.swap(this, i, i-1);
+        }
     }
 }

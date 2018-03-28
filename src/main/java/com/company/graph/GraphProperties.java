@@ -21,5 +21,5 @@ public class GraphProperties {
     public static final int NODE_Y_DISTANCE = 5;
 
 
-    public static final int NAV_ITERATIONS = 10000;
+    public static final int NAV_ITERATIONS = 1000;
 }

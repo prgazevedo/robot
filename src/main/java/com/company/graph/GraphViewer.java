@@ -55,16 +55,17 @@ public class GraphViewer extends JFrame {
 
 
         // Transformer maps the vertex number to a vertex property
-        Transformer<MapGraph.Vertex,Paint> vertexColor = new Transformer<MapGraph.Vertex,Paint>() {
-            public Paint transform(MapGraph.Vertex v) {
-                if(v.isM_wall()) return GraphProperties.WALL_COLOR;
-                else if(v.isM_visited())return GraphProperties.VISITED_NODE_COLOR;
+        Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
+            public Paint transform(Integer vID) {
+
+                if(m_mp.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
+                else if(m_mp.wasVertexVisited(vID))return GraphProperties.VISITED_NODE_COLOR;
                 else return GraphProperties.NODE_COLOR;
 
             }
         };
-        Transformer<MapGraph.Vertex,Shape> vertexSize = new Transformer<MapGraph.Vertex,Shape>(){
-            public Shape transform(MapGraph.Vertex i){
+        Transformer<Integer,Shape> vertexSize = new Transformer<Integer,Shape>(){
+            public Shape transform(Integer i){
                 Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X,GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
                 return circle;
             }

@@ -20,12 +20,17 @@ public class NavigationManager {
 
     private RandomUtil m_random;
 
+    private Integer m_currentPositionKey;
+    private Integer m_currentPositionValue;
+
     public NavigationManager(MapGraph mg) {
 
 
         m_path = new TreeMap<Integer, Integer>();
         m_random = new RandomUtil(0,Direction.getNumberDirections());
         m_mp = mg;
+        m_currentPositionKey= 0;
+        m_currentPositionValue= 0;
     }
 
 
@@ -58,7 +63,9 @@ public class NavigationManager {
                 System.out.println("mock_navigator_3 navigating to:"+v1);
                 m_mp.AddEdge(String.valueOf(i), v0, v1);
                 m_mp.setVertexVisited(v1);
-                m_path.put(i+1,v1);
+                m_currentPositionKey=i+1;
+                m_currentPositionValue=v1;
+                m_path.put(m_currentPositionKey,m_currentPositionValue);
             }
             else
             {
@@ -80,7 +87,7 @@ public class NavigationManager {
             if(i_new_direction==-1)
             {
                 //dead-end -> retrace the path
-                retracePath();
+                bSearching=retracePath();
             }
             else
             {
@@ -108,11 +115,21 @@ public class NavigationManager {
 
     }
 
-    private void retracePath(){
-        int previousKey = m_path.lastEntry().getKey();
-        int newV0 = m_path.lowerEntry(previousKey).getValue();
-        System.out.println("retracePath go back to:" + newV0);
-        nextVertex(newV0);
+    private boolean retracePath(){
+        if(m_path.containsKey(m_currentPositionKey))
+        {
+            m_currentPositionKey = m_path.lowerKey(m_currentPositionKey);
+            m_currentPositionValue = m_path.get(m_currentPositionKey);
+            System.out.println("retracePath go back to:" + m_currentPositionValue);
+            nextVertex(m_currentPositionValue);
+            return false;
+        }
+        else
+        {
+            System.out.println("retracePath Cannot go earlier than:" + m_currentPositionValue);
+            return false;
+        }
+
     }
 
 
