@@ -5,7 +5,9 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
 import javafx.geometry.Point2D;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
@@ -74,16 +76,18 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     public void populateVertexes()
     {
         int operatingNode = 0;
-        for (int i = 0; i<GraphProperties.N_NODES_IN_COLUMNS; i++) {
-            for (int j = 0; j<GraphProperties.N_NODES_IN_ROWS; j++) {
+        for (int i = 0; i<GraphProperties.N_NODES_IN_ROWS; i++) {
+            for (int j = 0; j<GraphProperties.N_NODES_IN_COLUMNS; j++) {
 
                 Point2D location = calculateNewLocation(i,j);
                 m_graph.addVertex(operatingNode);
                 Vertex v = new Vertex(operatingNode, location);
+                mapNeighbors(v,operatingNode);
                 m_hashmapVertexes.put(operatingNode,v);
                 m_hashmapLocations.put(location,operatingNode);
                 m_layout.setLocation(operatingNode,location.getX(),location.getY());
                 operatingNode++;
+
             }
         }
         setUpperLocationBounds();
@@ -91,6 +95,43 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
 
     }
+
+
+
+    private void mapNeighbors(Vertex v,int operatingNode)
+    {
+        List<Direction> directionList = Arrays.asList(Direction.values());
+        for (Direction d:directionList)
+        {
+            if(d.equals(Direction.NORTH)) {
+                v.setM_neighbor(Direction.NORTH,operatingNode+GraphProperties.N_NODES_IN_ROWS);
+            }
+            if(d.equals(Direction.SOUTH)) {
+                v.setM_neighbor(Direction.SOUTH,operatingNode-GraphProperties.N_NODES_IN_ROWS);
+            }
+            if(d.equals(Direction.EAST)) {
+                v.setM_neighbor(Direction.EAST,operatingNode+1);
+            }
+            if(d.equals(Direction.WEST)) {
+                v.setM_neighbor(Direction.WEST,operatingNode-1);
+            }
+            if(d.equals(Direction.NORTHEAST)) {
+                v.setM_neighbor(Direction.NORTHEAST,operatingNode+GraphProperties.N_NODES_IN_ROWS+1);
+            }
+            if(d.equals(Direction.NORTHWEST)) {
+                v.setM_neighbor(Direction.NORTHWEST,operatingNode+GraphProperties.N_NODES_IN_ROWS-1);
+            }
+            if(d.equals(Direction.SOUTHEAST)) {
+                v.setM_neighbor(Direction.SOUTHEAST,operatingNode-GraphProperties.N_NODES_IN_ROWS+1);
+            }
+            if(d.equals(Direction.SOUTHWEST)) {
+                v.setM_neighbor(Direction.SOUTHWEST,operatingNode-GraphProperties.N_NODES_IN_ROWS-1);
+            }
+
+
+        }
+    }
+
 
     private Point2D calculateNewLocation(int i, int j)
     {
@@ -120,55 +161,5 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
 
 
-    public class Vertex{
-        private int m_vertexID;
-        private Point2D m_coords;
-        private boolean m_visited;
-        private boolean m_wall;
 
-        public boolean isM_visited() {
-            return m_visited;
-        }
-
-        public void setM_visited(boolean m_visited) {
-            this.m_visited = m_visited;
-        }
-
-
-        public boolean isM_wall() {
-            return m_wall;
-        }
-
-        public void setM_wall(boolean m_wall) {
-            this.m_wall = m_wall;
-        }
-
-        public Point2D getM_coords() {
-            return m_coords;
-        }
-
-
-
-        public Vertex(int VertexId, Point2D coords) {
-            m_wall = false;
-            m_visited = false;
-            m_vertexID = VertexId;
-            this.m_coords = new Point2D(coords.getX(),coords.getY());
-
-        }
-
-
-        public boolean equals(Object o) {
-
-            return o instanceof Integer && m_vertexID == ((Integer) o).intValue();
-
-        }
-
-        public int hashCode() {
-            return m_vertexID;
-        }
-
-
-
-    }
 }

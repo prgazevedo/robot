@@ -34,19 +34,6 @@ public class NavigationManager {
     }
 
 
-    private  void mock_navigator_1(){
-
-        int last_visited=0;
-        for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
-
-            int v0 = last_visited;
-            int v1 = (new RandomUtil(0,GraphProperties.N_VERTEXES).getNonRepeatingRandomInt());
-            last_visited = v1;
-            m_mp.AddEdge(String.valueOf(i),v0,v1);
-
-
-        }
-    }
 
     public void mock_navigator_3(){
 
@@ -56,7 +43,7 @@ public class NavigationManager {
             System.out.println("mock_navigator_3 - iteration:"+i);
             int v0 = last_visited;
 
-            int v1 = nextVertex(v0);
+            int v1 = navigateToNextVertex(v0);
             if(v1!=-1)
             {
                 last_visited = v1;
@@ -77,7 +64,17 @@ public class NavigationManager {
         System.out.println("mock_navigator_3 End navigation");
     }
 
-    private  int nextVertex(int v0){
+    private void exploreSurroundings(){
+
+    }
+
+    private int getFreeDirection()
+    {
+        return -1;
+        //int i_new_direction = m_random.getNonRepeatingRandomInt();
+    }
+
+    private  int navigateToNextVertex(int v0){
         int v1=-1;
         boolean bSearching=true;
         m_random.init();
@@ -121,7 +118,7 @@ public class NavigationManager {
             m_currentPositionKey = m_path.lowerKey(m_currentPositionKey);
             m_currentPositionValue = m_path.get(m_currentPositionKey);
             System.out.println("retracePath go back to:" + m_currentPositionValue);
-            nextVertex(m_currentPositionValue);
+            navigateToNextVertex(m_currentPositionValue);
             return false;
         }
         else
@@ -183,46 +180,5 @@ public class NavigationManager {
     }
 
 
-    public static enum Direction {
 
-        NORTH(0, new Pair(0, GraphProperties.NODE_Y_DISTANCE)),
-        SOUTH(1, new Pair(0, -GraphProperties.NODE_Y_DISTANCE)),
-        WEST(2, new Pair(-GraphProperties.NODE_X_DISTANCE, 0)),
-        EAST(3, new Pair(GraphProperties.NODE_X_DISTANCE, 0)),
-        NORTHWEST(4, new Pair(-GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
-        NORTHEAST(5, new Pair(+GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
-        SOUTHWEST(6, new Pair(-GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE)),
-        SOUTHEAST(7, new Pair(+GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE));
-
-        private final int m_index;
-        private final javafx.util.Pair<Integer,Integer> m_direction;
-
-        Direction(int index, Pair<Integer,Integer> direction) {
-            this.m_index = index;
-            this.m_direction = direction;
-        }
-
-        public int index(){return m_index;}
-        public static Direction navigationDirection(int i){
-            if(i<Direction.values().length && i>-1)
-            return Direction.values()[i];
-            else return Direction.NORTH;
-        }
-        public Pair direction(){return m_direction;}
-
-
-        public static int getNumberDirections()
-        {
-            return Direction.values().length;
-        }
-
-
-        public int getX() {
-            return m_direction.getKey();
-        }
-        public float getY() {
-            return m_direction.getValue();
-        }
-
-    }
 }

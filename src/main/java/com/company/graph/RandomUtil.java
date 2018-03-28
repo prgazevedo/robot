@@ -46,6 +46,26 @@ public class RandomUtil {
     }
 
     /**
+     * @param excludeList
+     * @return the random number within start-end but not one of excludes. Otherwise (no free random) returns -1
+     */
+    public int getNonRepeatingRandomInt(SortedArrayList<Integer> excludeList) {
+        //Integer[] array = m_excludeList.toArray (new Integer [m_excludeList.size()]);
+        Integer[] array = (Integer[]) excludeList.toArray();
+        int toExclude= getRandomWithExclusion(m_random,m_start,m_end, array);
+        if(toExclude<0) return -1;
+        else if(excludeList.contains(toExclude)) {
+            return -1;
+        }
+        else {
+            //it's a new valid random!
+            excludeList.insertSorted(toExclude);
+            return toExclude;
+
+        }
+    }
+
+    /**
      * @param start start of range (inclusive)
      * @param end end of range (exclusive)
      * @param exclude numbers to exclude (= numbers you do not want)
