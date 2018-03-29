@@ -51,7 +51,7 @@ public class Vertex{
         m_neighbors.put(direction,vertexID);
     }
 
-    public int getNeighborVertex(Direction direction){
+    public int getNeighborVertexID(Direction direction){
         if(m_neighbors.containsKey(direction)){
            return m_neighbors.get(direction);
         }

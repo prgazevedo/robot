@@ -1,9 +1,7 @@
 package com.company.graph;
 
 import javafx.geometry.Point2D;
-import javafx.util.Pair;
 
-import java.util.HashMap;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -20,8 +18,8 @@ public class NavigationManager {
 
     private RandomUtil m_random;
 
-    private Integer m_currentPositionKey;
-    private Integer m_currentPositionValue;
+    private Integer m_currentPositionIteration_Key;
+    private Integer m_currentPositionVertexID_Value;
 
     public NavigationManager(MapGraph mg) {
 
@@ -29,8 +27,8 @@ public class NavigationManager {
         m_path = new TreeMap<Integer, Integer>();
         m_random = new RandomUtil(0,Direction.getNumberDirections());
         m_mp = mg;
-        m_currentPositionKey= 0;
-        m_currentPositionValue= 0;
+        m_currentPositionIteration_Key = 0;
+        m_currentPositionVertexID_Value = 0;
     }
 
 
@@ -50,9 +48,9 @@ public class NavigationManager {
                 System.out.println("mock_navigator_3 navigating to:"+v1);
                 m_mp.AddEdge(String.valueOf(i), v0, v1);
                 m_mp.setVertexVisited(v1);
-                m_currentPositionKey=i+1;
-                m_currentPositionValue=v1;
-                m_path.put(m_currentPositionKey,m_currentPositionValue);
+                m_currentPositionIteration_Key =i+1;
+                m_currentPositionVertexID_Value =v1;
+                m_path.put(m_currentPositionIteration_Key, m_currentPositionVertexID_Value);
             }
             else
             {
@@ -66,12 +64,44 @@ public class NavigationManager {
 
     private void exploreSurroundings(){
 
+        //for now set left and right walls
+        System.out.println("exploreSurroundings - I am at:"+ m_currentPositionVertexID_Value +" and found wall in EAST node: "+m_mp.getNeighborID(m_currentPositionVertexID_Value,Direction.EAST));
+        m_mp.setNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.EAST,true);
+        System.out.println("exploreSurroundings - I am at:"+ m_currentPositionVertexID_Value +" and found wall in WEST node: "+m_mp.getNeighborID(m_currentPositionVertexID_Value,Direction.WEST));
+        m_mp.setNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.WEST,true);
+
     }
+
+
 
     private int getFreeDirection()
     {
+        boolean bSearching=true;
+        while(bSearching) {
+            int i_new_direction = m_random.getNonRepeatingRandomInt();
+            if(i_new_direction==-1)
+            {
+                //Exhausted the directions
+                bSearching=false;
+                return i_new_direction;
+            }
+            else if(m_mp.isNeighborOutOfBounds(m_currentPositionVertexID_Value,Direction.navigationDirection(i_new_direction)))
+            {
+                //Out of bounds --> keep searching
+                bSearching=true;
+            }
+            else
+            {
+
+                boolean isWall=m_mp.isNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.navigationDirection(i_new_direction));
+
+                if(!isWall) {
+                    bSearching=false;
+                    return i_new_direction;
+                }
+            }
+        }
         return -1;
-        //int i_new_direction = m_random.getNonRepeatingRandomInt();
     }
 
     private  int navigateToNextVertex(int v0){
@@ -80,7 +110,9 @@ public class NavigationManager {
         m_random.init();
         while(bSearching) {
             //int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
-            int i_new_direction = m_random.getNonRepeatingRandomInt();
+            //int i_new_direction = m_random.getNonRepeatingRandomInt();
+            int i_new_direction = getFreeDirection();
+
             if(i_new_direction==-1)
             {
                 //dead-end -> retrace the path
@@ -93,7 +125,7 @@ public class NavigationManager {
                 Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
                 Point2D newlocation = new Point2D(oldlocation.getX() + direction.getX(), oldlocation.getY() + direction.getY());
                 newlocation=boundNavigation(newlocation);
-
+                exploreSurroundings();
                 try {
                     v1 = m_mp.getVertexId(newlocation);
 
@@ -113,17 +145,17 @@ public class NavigationManager {
     }
 
     private boolean retracePath(){
-        if(m_path.containsKey(m_currentPositionKey))
+        if(m_path.containsKey(m_currentPositionIteration_Key))
         {
-            m_currentPositionKey = m_path.lowerKey(m_currentPositionKey);
-            m_currentPositionValue = m_path.get(m_currentPositionKey);
-            System.out.println("retracePath go back to:" + m_currentPositionValue);
-            navigateToNextVertex(m_currentPositionValue);
+            m_currentPositionIteration_Key = m_path.lowerKey(m_currentPositionIteration_Key);
+            m_currentPositionVertexID_Value = m_path.get(m_currentPositionIteration_Key);
+            System.out.println("retracePath go back to:" + m_currentPositionVertexID_Value);
+            navigateToNextVertex(m_currentPositionVertexID_Value);
             return false;
         }
         else
         {
-            System.out.println("retracePath Cannot go earlier than:" + m_currentPositionValue);
+            System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
             return false;
         }
 
@@ -153,31 +185,7 @@ public class NavigationManager {
 
 
 
-    private  void mock_navigator_2(){
 
-        int last_visited=0;
-        for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
-
-            int v0 = last_visited;
-            int i_new_direction = m_random.getNonRepeatingRandomInt();//m_random.nextInt(Direction.getNumberDirections());
-            //TODO add code to change direction
-            Direction direction= Direction.navigationDirection(i_new_direction);
-            Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
-            Point2D newlocation = new Point2D(oldlocation.getX()+direction.getX(),oldlocation.getY()+direction.getY());
-            newlocation = boundNavigation(newlocation);
-            try {
-                int v1 = m_mp.getVertexId(newlocation);
-                last_visited = v1;
-                m_mp.AddEdge(String.valueOf(i),v0,v1);
-            }
-            catch (Exception e)
-            {
-                System.out.println("mock_navigator" +e.toString());
-            }
-
-
-        }
-    }
 
 
 

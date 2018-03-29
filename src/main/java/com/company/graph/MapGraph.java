@@ -60,15 +60,19 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
 
     public void setVertexVisited(int ID){
-        Vertex v = m_hashmapVertexes.get(ID);
-        v.setM_visited(true);
-        m_hashmapVertexes.replace(ID,v);
+        if(m_hashmapVertexes.containsKey(ID)) {
+            Vertex v = m_hashmapVertexes.get(ID);
+            v.setM_visited(true);
+            m_hashmapVertexes.replace(ID, v);
+        }
     }
 
-    public void setVertexWall(int ID){
-        Vertex v = m_hashmapVertexes.get(ID);
-        v.setM_wall(true);
-        m_hashmapVertexes.replace(ID,v);
+    public void setVertexWall(int ID,boolean isWall){
+        if(m_hashmapVertexes.containsKey(ID)) {
+            Vertex v = m_hashmapVertexes.get(ID);
+            v.setM_wall(isWall);
+            m_hashmapVertexes.replace(ID, v);
+        }
     }
 
     public Integer getVertexId(Point2D location){return m_hashmapLocations.get(location);}
@@ -96,6 +100,47 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     }
 
+
+    public int getNeighborID(int myID, Direction direction){
+        int neighborID = -1;
+        if(m_hashmapVertexes.containsKey(myID)) {
+             neighborID = m_hashmapVertexes.get(myID).getNeighborVertexID(direction);
+        }
+        return neighborID;
+    }
+
+    public boolean isNeighborDirectionWall(int myID,Direction direction)
+    {
+
+        try {
+            int neighborID=getNeighborID(myID,direction);
+            return m_hashmapVertexes.get(neighborID).isM_wall();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public boolean isNeighborOutOfBounds(int myID,Direction direction)
+    {
+        int neighborID=getNeighborID(myID,direction);
+        if(m_hashmapVertexes.containsKey(neighborID))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+    }
+
+    public void setNeighborDirectionWall(int myID,Direction direction,boolean isWall)
+    {
+        int neighborID=getNeighborID(myID,direction);
+        setVertexWall(neighborID,isWall);
+    }
 
 
     private void mapNeighbors(Vertex v,int operatingNode)
