@@ -175,11 +175,29 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     }
 
-    public void setNeighborDirectionWall(int myID,Direction direction,boolean isWall)
+    public void setNeighborInDirectionAsWall(int myID,Direction direction,boolean isWall)
     {
         int neighborID=getNeighborID(myID,direction);
         setVertexWall(neighborID,isWall);
     }
+
+    private int getNeighborInDirection(int myID,Direction direction, int distance) {
+
+        for (int i = 0; i < distance; i++) {
+            myID = getNeighborID(myID, direction);
+        }
+        return myID;
+    }
+
+    public void setNeighborAsWall(int neighborID, boolean isWall){
+        setVertexWall(neighborID,isWall);
+    }
+
+    public void setNeighborInDirectionAsWall(int myID,Direction direction, int distance){
+        int ID = getNeighborInDirection(myID,direction,distance);
+        setVertexWall(ID,true);
+    }
+
 
     private void boundNeighbors(int X, int Y, Vertex v) {
         if(Y==0){

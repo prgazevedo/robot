@@ -35,12 +35,11 @@ public class NavigationManager {
 
     public void mock_navigator_3(){
 
-        int last_visited=0;
+        int last_visited=m_mp.getVertexId(new Point2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
         m_path.put(0,last_visited);
         for (int i=0; i<GraphProperties.NAV_ITERATIONS; i++) {
             System.out.println("mock_navigator_3 - iteration:"+i);
             int v0 = last_visited;
-
             int v1 = navigateToNextVertex(v0);
             if(v1!=-1)
             {
@@ -63,12 +62,14 @@ public class NavigationManager {
     }
 
     private void exploreSurroundings(){
-
+        RandomUtil RU = new RandomUtil(1,4);
         //for now set left and right walls
         System.out.println("exploreSurroundings - I am at:"+ m_currentPositionVertexID_Value +" and found wall in EAST node: "+m_mp.getNeighborID(m_currentPositionVertexID_Value,Direction.EAST));
-        m_mp.setNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.EAST,true);
+        //m_mp.setNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.EAST,true);
+        m_mp.setNeighborInDirectionAsWall(m_currentPositionVertexID_Value,Direction.EAST,RU.getNonRepeatingRandomInt());
+        m_mp.setNeighborInDirectionAsWall(m_currentPositionVertexID_Value,Direction.EAST,RU.getNonRepeatingRandomInt());
         System.out.println("exploreSurroundings - I am at:"+ m_currentPositionVertexID_Value +" and found wall in WEST node: "+m_mp.getNeighborID(m_currentPositionVertexID_Value,Direction.WEST));
-        m_mp.setNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.WEST,true);
+        //m_mp.setNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.WEST,true);
 
     }
 

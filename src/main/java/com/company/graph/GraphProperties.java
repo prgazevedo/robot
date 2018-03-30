@@ -3,11 +3,13 @@ package com.company.graph;
 import java.awt.*;
 
 public class GraphProperties {
-    public static final int N_VERTEXES = 100;
-    public static final int N_NODES_IN_COLUMNS = 10;
-    public static final int N_NODES_IN_ROWS = 10;
+
+    public static final int N_NODES_IN_COLUMNS = 100;
+    public static final int N_NODES_IN_ROWS = 100;
+    public static final int N_VERTEXES = N_NODES_IN_COLUMNS*N_NODES_IN_ROWS;
     public static final int WINDOW_HEIGHT = 800;
     public static final int WINDOW_WIDTH = 600;
+
 
     public static final int NODE_X = -5;
     public static final int NODE_Y = -5;
@@ -21,6 +23,9 @@ public class GraphProperties {
     public static final int NODE_Y_DISTANCE = 5;
     public static final int DELTA_Y = NODE_Y_DISTANCE*N_NODES_IN_COLUMNS;
     public static final int DELTA_X = NODE_X_DISTANCE*N_NODES_IN_ROWS;
+
+    public static final int START_POSITION_X = DELTA_X/2;
+    public static final int START_POSITION_Y = DELTA_Y/2;
 
     public static final int NAV_ITERATIONS = 100;
 }

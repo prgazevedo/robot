@@ -1,18 +1,23 @@
 package com.company.graph;
 
+
 import javafx.util.Pair;
+
 
 public enum Direction {
 
     NONE(-1, new Pair(0, 0)),
     NORTH(0, new Pair(0, GraphProperties.NODE_Y_DISTANCE)),
-    SOUTH(1, new Pair(0, -GraphProperties.NODE_Y_DISTANCE)),
-    WEST(2, new Pair(-GraphProperties.NODE_X_DISTANCE, 0)),
-    EAST(3, new Pair(GraphProperties.NODE_X_DISTANCE, 0)),
-    NORTHWEST(4, new Pair(-GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
-    NORTHEAST(5, new Pair(+GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
-    SOUTHWEST(6, new Pair(-GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE)),
-    SOUTHEAST(7, new Pair(+GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE));
+    NORTHEAST(1, new Pair(+GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)),
+    EAST(2, new Pair(GraphProperties.NODE_X_DISTANCE, 0)),
+    SOUTHEAST(3, new Pair(+GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE)),
+    SOUTH(4, new Pair(0, -GraphProperties.NODE_Y_DISTANCE)),
+    SOUTHWEST(5, new Pair(-GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE)),
+    WEST(6, new Pair(-GraphProperties.NODE_X_DISTANCE, 0)),
+    NORTHWEST(7, new Pair(-GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE));
+
+
+
 
     private final int m_index;
     private final javafx.util.Pair<Integer,Integer> m_coordinates;
@@ -40,6 +45,43 @@ public enum Direction {
         return Direction.values().length;
     }
 
+
+    public static int getNumberValidDirections()
+    {
+        return Direction.values().length-1;
+    }
+
+    public Direction getNext() {
+        int myOrdinal=ordinal();
+        if(myOrdinal==-1) myOrdinal++;
+        return values()[(myOrdinal + 1) % getNumberDirections()];
+    }
+
+    public Direction getNextDirection() {
+        int myOrdinal=m_index;
+        if(myOrdinal==0) myOrdinal++;
+        Direction dir = values()[(myOrdinal + 1) % getNumberValidDirections()];
+        return dir;
+    }
+
+    public int getDistanceFromDirection(Direction directionToMeasure){
+        int i=0;
+        while(!getNext().equals(directionToMeasure)){
+            i++;
+        }
+        return i;
+    }
+
+    public Direction getDirectionFromDistance(int distance){
+        int cycleNumber=getNumberValidDirections()-distance;
+        Direction dir=this;
+        for(int i=0;i<cycleNumber;i++)
+        {
+            dir=dir.getNext();
+        }
+        return dir;
+
+    }
 
 
     public int getX() {
