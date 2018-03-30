@@ -2,10 +2,9 @@ package com.company.graph;
 
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-
 public enum Direction {
 
+    NONE(-1, new Pair(0, 0)),
     NORTH(0, new Pair(0, GraphProperties.NODE_Y_DISTANCE)),
     SOUTH(1, new Pair(0, -GraphProperties.NODE_Y_DISTANCE)),
     WEST(2, new Pair(-GraphProperties.NODE_X_DISTANCE, 0)),
@@ -16,20 +15,24 @@ public enum Direction {
     SOUTHEAST(7, new Pair(+GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE));
 
     private final int m_index;
-    private final javafx.util.Pair<Integer,Integer> m_direction;
+    private final javafx.util.Pair<Integer,Integer> m_coordinates;
 
     Direction(int index, Pair<Integer,Integer> direction) {
         this.m_index = index;
-        this.m_direction = direction;
+        this.m_coordinates = direction;
+    }
+
+    public static Direction getDirection(int i){
+        if(i<Direction.values().length && i>=NONE.m_index)
+            return Direction.values()[i];
+        else return Direction.NONE;
     }
 
     public int index(){return m_index;}
-    public static Direction navigationDirection(int i){
-        if(i<Direction.values().length && i>-1)
-            return Direction.values()[i];
-        else return Direction.NORTH;
+    public static javafx.util.Pair<Integer,Integer> navigationCoordinates(int i){
+        return getDirection(i).m_coordinates;
     }
-    public Pair direction(){return m_direction;}
+    public Pair direction(){return m_coordinates;}
 
 
     public static int getNumberDirections()
@@ -40,10 +43,11 @@ public enum Direction {
 
 
     public int getX() {
-        return m_direction.getKey();
+        return m_coordinates.getKey();
     }
     public float getY() {
-        return m_direction.getValue();
+        return m_coordinates.getValue();
     }
+
 
 }

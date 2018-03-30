@@ -74,7 +74,7 @@ public class NavigationManager {
 
 
 
-    private int getFreeDirection()
+    private Direction getFreeDirection()
     {
         boolean bSearching=true;
         while(bSearching) {
@@ -82,26 +82,35 @@ public class NavigationManager {
             if(i_new_direction==-1)
             {
                 //Exhausted the directions
+                System.out.println("getFreeDirection - Exhausted the directions");
                 bSearching=false;
-                return i_new_direction;
+                                                                                    //          Direction direction = Direction.getDirection(i_new_direction);
+
             }
-            else if(m_mp.isNeighborOutOfBounds(m_currentPositionVertexID_Value,Direction.navigationDirection(i_new_direction)))
+            else if(m_mp.isNeighborOutOfBounds(m_currentPositionVertexID_Value,Direction.getDirection(i_new_direction)))
             {
                 //Out of bounds --> keep searching
+                System.out.println("getFreeDirection - Out of bounds:"+Direction.getDirection(i_new_direction));
                 bSearching=true;
             }
             else
             {
-
-                boolean isWall=m_mp.isNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.navigationDirection(i_new_direction));
+                 //is a wall
+                boolean isWall=m_mp.isNeighborDirectionWall(m_currentPositionVertexID_Value,Direction.getDirection(i_new_direction));
 
                 if(!isWall) {
+                    //is not a wall - go ahead
                     bSearching=false;
-                    return i_new_direction;
+                    return Direction.getDirection(i_new_direction);
+                }
+                else
+                {
+                    System.out.println("getFreeDirection - is a Wall:"+Direction.getDirection(i_new_direction));
+
                 }
             }
         }
-        return -1;
+        return Direction.NONE;
     }
 
     private  int navigateToNextVertex(int v0){
@@ -109,34 +118,27 @@ public class NavigationManager {
         boolean bSearching=true;
         m_random.init();
         while(bSearching) {
-            //int i_new_direction = m_random.nextInt(Direction.getNumberDirections());
-            //int i_new_direction = m_random.getNonRepeatingRandomInt();
-            int i_new_direction = getFreeDirection();
 
-            if(i_new_direction==-1)
+            exploreSurroundings();
+            Direction new_direction = getFreeDirection();
+
+            if(new_direction.equals(Direction.NONE))
             {
                 //dead-end -> retrace the path
                 bSearching=retracePath();
             }
             else
             {
-                //not a dead end
-                Direction direction = Direction.navigationDirection(i_new_direction);
-                Point2D oldlocation = m_mp.getVertex(v0).getM_coords();
-                Point2D newlocation = new Point2D(oldlocation.getX() + direction.getX(), oldlocation.getY() + direction.getY());
-                newlocation=boundNavigation(newlocation);
-                exploreSurroundings();
-                try {
-                    v1 = m_mp.getVertexId(newlocation);
 
+                try {
+
+                    v1 = m_mp.getNeighborID(v0,new_direction);
+                    //New valid node so exit the search
+                    bSearching=false;
                 } catch (Exception e) {
                     System.out.println("mock_navigator" + e.toString());
                 }
-                if(!m_mp.wasVertexVisited(v1))
-                {
-                    //New valid node so exit the search
-                    bSearching=false;
-                }
+
             }
 
         }
@@ -162,26 +164,7 @@ public class NavigationManager {
     }
 
 
-    private  Point2D boundNavigation(Point2D newlocation){
-        //Lower Limit: change direction
-        if(newlocation.getX()<0)
-        {
-            newlocation = new Point2D(-newlocation.getX(),newlocation.getY());
-        }
-        if(newlocation.getY()<0){
-            newlocation = new Point2D(newlocation.getX(),-newlocation.getY());
-        }
-        //Upper Limit: change to other border
-        if(newlocation.getX()>m_mp.getM_Upper_X_Location())
-        {
-            newlocation = new Point2D(0,newlocation.getY());
-        }
-        if(newlocation.getY()>m_mp.getM_Upper_Y_Location()){
-            newlocation = new Point2D(newlocation.getX(),0);
-        }
 
-        return newlocation;
-    }
 
 
 

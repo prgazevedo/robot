@@ -54,28 +54,11 @@ public class GraphViewer extends JFrame {
         m_vv = new VisualizationViewer(m_layout, m_dimension);
 
 
-        // Transformer maps the vertex number to a vertex property
-        Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
-            public Paint transform(Integer vID) {
+        Transformer<Integer, Paint> vertexColor = drawVertexColor();
+        Transformer<Integer, Shape> vertexSize = drawVertexShape();
+        //drawVertexCoords();
+        drawEdgeLabel();
 
-                if(m_mp.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
-                else if(m_mp.wasVertexVisited(vID))return GraphProperties.VISITED_NODE_COLOR;
-                else return GraphProperties.NODE_COLOR;
-
-            }
-        };
-        Transformer<Integer,Shape> vertexSize = new Transformer<Integer,Shape>(){
-            public Shape transform(Integer i){
-                Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X,GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
-                return circle;
-            }
-        };
-
-        m_vv.getRenderContext().setEdgeLabelTransformer(new Transformer<String, String>() {
-            public String transform(String e) {
-                return (e.toString() );
-            }
-        });
         m_vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
         m_vv.getRenderContext().setVertexShapeTransformer(vertexSize);
 
@@ -88,6 +71,43 @@ public class GraphViewer extends JFrame {
         this.getContentPane().add(m_vv);
     }
 
+
+    private Transformer<Integer, Paint> drawVertexColor() {
+        // Transformer maps the vertex number to a vertex property
+        return  new Transformer<Integer, Paint>() {
+            public Paint transform(Integer vID) {
+
+                if (m_mp.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
+                else if (m_mp.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
+                else return GraphProperties.NODE_COLOR;
+
+            }
+        };
+    }
+    private Transformer<Integer, Shape> drawVertexShape() {
+        return new Transformer<Integer, Shape>() {
+            public Shape transform(Integer i) {
+                Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X, GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
+                return circle;
+            }
+        };
+    }
+    private void drawVertexCoords(){
+        m_vv.getRenderContext().setVertexLabelTransformer(new Transformer<Integer, String>() {
+            public String transform(Integer e) {
+                String s= "C:"+m_mp.getVertex(e).getM_coords().toString();
+                return (e.toString()+s );
+            }
+        });
+    }
+
+    private void drawEdgeLabel() {
+        m_vv.getRenderContext().setEdgeLabelTransformer(new Transformer<String, String>() {
+            public String transform(String e) {
+                return (e.toString());
+            }
+        });
+    }
 
     // This method summarizes several options for improving the painting
     // performance. Enable or disable them depending on which visual features

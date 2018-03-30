@@ -3,6 +3,7 @@ package com.company.graph;
 import javafx.geometry.Point2D;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Vertex{
     private int m_vertexID;
@@ -57,6 +58,15 @@ public class Vertex{
         }
         else return -1;
 
+    }
+
+    public String printNeighbors(){
+        String s="printNeighbors:";
+        for (Map.Entry v:m_neighbors.entrySet()){
+            s+=" "+v.getKey().toString()+":"+v.getValue().toString();
+        }
+
+        return s;
     }
 
     public boolean equals(Object o) {

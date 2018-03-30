@@ -44,18 +44,37 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         m_hashmapLocations = new HashMap<Point2D,Integer>();
         m_layout = new StaticLayout(m_graph);
         populateVertexes();
+        //printMap();
     }
 
     public Vertex getVertex(int ID){
-        return m_hashmapVertexes.get(ID);
+        Vertex v=null;
+        try {
+            v =  m_hashmapVertexes.get(ID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return v;
     }
 
     public boolean wasVertexVisited(int ID){
-        return m_hashmapVertexes.get(ID).isM_visited();
+        boolean bWasvisited=false;
+        try {
+            bWasvisited =  m_hashmapVertexes.get(ID).isM_visited();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bWasvisited;
     }
 
     public boolean isVertexWall(int ID){
-        return m_hashmapVertexes.get(ID).isM_wall();
+        boolean bIsWall=false;
+        try {
+            bIsWall = m_hashmapVertexes.get(ID).isM_wall();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bIsWall;
     }
 
 
@@ -87,6 +106,7 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
                 m_graph.addVertex(operatingNode);
                 Vertex v = new Vertex(operatingNode, location);
                 mapNeighbors(v,operatingNode);
+                boundNeighbors(j,i,v);
                 m_hashmapVertexes.put(operatingNode,v);
                 m_hashmapLocations.put(location,operatingNode);
                 m_layout.setLocation(operatingNode,location.getX(),location.getY());
@@ -94,9 +114,28 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
             }
         }
+
+    }
+
+
+
+    public void printMap()
+    {
+        System.out.println("printMap");
+        int operatingNode = 0;
+        for (int i = 0; i<GraphProperties.N_NODES_IN_ROWS; i++) {
+            for (int j = 0; j<GraphProperties.N_NODES_IN_COLUMNS; j++) {
+
+
+                Vertex v  = m_hashmapVertexes.get(operatingNode);
+                System.out.println("Vertex Id:"+operatingNode);
+                System.out.println("Vertex Location:"+v.getM_coords().toString());
+                System.out.println("Neighbors:"+v.printNeighbors());
+                operatingNode++;
+
+            }
+        }
         setUpperLocationBounds();
-
-
 
     }
 
@@ -142,7 +181,32 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         setVertexWall(neighborID,isWall);
     }
 
-
+    private void boundNeighbors(int X, int Y, Vertex v) {
+        if(Y==0){
+            //SOUTH WALL
+            v.setM_neighbor(Direction.SOUTH,-1);
+            v.setM_neighbor(Direction.SOUTHEAST,-1);
+            v.setM_neighbor(Direction.SOUTHWEST,-1);
+        }
+        if(X==0){
+            //WEST WALL
+            v.setM_neighbor(Direction.WEST,-1);
+            v.setM_neighbor(Direction.SOUTHWEST,-1);
+            v.setM_neighbor(Direction.NORTHWEST,-1);
+        }
+        if(Y==GraphProperties.N_NODES_IN_COLUMNS-1){
+            //NORTH WALL
+            v.setM_neighbor(Direction.NORTH,-1);
+            v.setM_neighbor(Direction.NORTHWEST,-1);
+            v.setM_neighbor(Direction.NORTHEAST,-1);
+        }
+        if(X==GraphProperties.N_NODES_IN_ROWS-1){
+            //EAST WALL
+            v.setM_neighbor(Direction.EAST,-1);
+            v.setM_neighbor(Direction.NORTHEAST,-1);
+            v.setM_neighbor(Direction.SOUTHEAST,-1);
+        }
+    }
     private void mapNeighbors(Vertex v,int operatingNode)
     {
         List<Direction> directionList = Arrays.asList(Direction.values());
@@ -180,7 +244,8 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     private Point2D calculateNewLocation(int i, int j)
     {
-        return new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
+        //return new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
+        return new Point2D( j*GraphProperties.NODE_X_DISTANCE, -i*GraphProperties.NODE_Y_DISTANCE+(GraphProperties.DELTA_Y-GraphProperties.NODE_Y_DISTANCE));
     }
 
     private void setUpperLocationBounds()
