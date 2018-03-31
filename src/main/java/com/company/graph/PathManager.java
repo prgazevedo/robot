@@ -53,10 +53,11 @@ public class PathManager {
     }
 
     public void Init(){
-        m_MyOrientation = new Orientation(Direction.NONE);
+        m_MyOrientation = new Orientation(Direction.NORTH);
         m_currentPositionIteration_Key = 0;
         m_currentPositionVertexID_Value=m_mp.getVertexId(new Point2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
-        updatePosition(m_currentPositionVertexID_Value);
+        m_currentPositionVertexID_Value =m_currentPositionVertexID_Value;
+        m_mp.setVertexVisited(m_currentPositionVertexID_Value,true);
         PathItem newPathItem = new PathItem(m_currentPositionVertexID_Value, m_MyOrientation.getMy_Direction());
         m_path.put(m_currentPositionIteration_Key, newPathItem);
 
@@ -66,7 +67,7 @@ public class PathManager {
     private void updatePosition(int location){
         m_currentPositionIteration_Key++;
         m_currentPositionVertexID_Value =location;
-        m_mp.setVertexVisited(location);
+        m_mp.setVertexVisited(location,true);
     }
 
     private void resetRetrace(){
@@ -84,6 +85,7 @@ public class PathManager {
         m_path.put(m_currentPositionIteration_Key, newPathItem);
         //And the Edge to Jung Graph
         m_mp.AddEdge(String.valueOf(m_currentPositionIteration_Key), v0, v1);
+        m_mp.setNeighborInDirectionVisited(v0,direction,true);
 
     }
 

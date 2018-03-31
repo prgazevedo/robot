@@ -28,7 +28,12 @@ public class Orientation {
         for(int i=0;i<testDirection.getNumberValidDirections();i++)
         {
             if(fixedDirection.equals(testDirection)) return i;
-            else testDirection=testDirection.getNext();
+            else {
+                testDirection=testDirection.getNext();
+                if(testDirection.equals(Direction.NONE)){
+                    testDirection=testDirection.getNext();
+                }
+            }
         }
         return -1;
     }
@@ -39,6 +44,9 @@ public class Orientation {
         for(int i=0;i<cycleNumber;i++)
         {
             testDirection=testDirection.getNext();
+            if(testDirection.equals(Direction.NONE)){
+                testDirection=testDirection.getNext();
+            }
         }
         return testDirection;
 

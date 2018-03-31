@@ -78,10 +78,10 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     }
 
 
-    public void setVertexVisited(int ID){
+    public void setVertexVisited(int ID,boolean bVisited){
         if(m_hashmapVertexes.containsKey(ID)) {
             Vertex v = m_hashmapVertexes.get(ID);
-            v.setM_visited(true);
+            v.setM_visited(bVisited);
             m_hashmapVertexes.replace(ID, v);
         }
     }
@@ -93,6 +93,8 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
             m_hashmapVertexes.replace(ID, v);
         }
     }
+
+
 
     public Integer getVertexId(Point2D location){return m_hashmapLocations.get(location);}
 
@@ -161,6 +163,22 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     }
 
+
+
+    public boolean wasVertexNeighborVisited(int myID,Direction direction)
+    {
+
+        try {
+            int neighborID=getNeighborID(myID,direction);
+            return m_hashmapVertexes.get(neighborID).isM_visited();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+
     public boolean isNeighborOutOfBounds(int myID,Direction direction)
     {
         int neighborID=getNeighborID(myID,direction);
@@ -179,6 +197,12 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     {
         int neighborID=getNeighborID(myID,direction);
         setVertexWall(neighborID,isWall);
+    }
+
+    public void setNeighborInDirectionVisited(int myID,Direction direction,boolean bVisited)
+    {
+        int neighborID=getNeighborID(myID,direction);
+        setVertexVisited(neighborID,bVisited);
     }
 
     private int getNeighborInDirection(int myID,Direction direction, int distance) {

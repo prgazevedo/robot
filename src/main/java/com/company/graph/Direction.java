@@ -53,14 +53,14 @@ public enum Direction {
 
     public Direction getNext() {
         int myOrdinal=ordinal();
-        if(myOrdinal==-1) myOrdinal++;
+        //if(myOrdinal==-1) myOrdinal++;
         return values()[(myOrdinal + 1) % getNumberDirections()];
     }
 
     public Direction getNextDirection() {
         int myOrdinal=m_index;
         if(myOrdinal==0) myOrdinal++;
-        Direction dir = values()[(myOrdinal + 1) % getNumberValidDirections()];
+        Direction dir = values()[(myOrdinal + 1) % getNumberDirections()];
         return dir;
     }
 

@@ -128,22 +128,27 @@ public class NavigationManager {
         boolean bSearching=true;
         while(bSearching) {
             int i_new_direction = m_random.getNonRepeatingRandomInt();
-            if (i_new_direction == -1) {
+            Direction testDirection = Direction.getDirection(i_new_direction);
+            if (testDirection.equals(Direction.NONE)) {
                 //Exhausted the directions
                 System.out.println("getFreeDirection - Exhausted the directions");
                 bSearching = false;
                 return Direction.NONE;
-
-            } else if (m_mp.isNeighborOutOfBounds(vID, Direction.getDirection(i_new_direction))) {
-                //Out of bounds --> keep searching
-                System.out.println("getFreeDirection - Out of bounds:" + Direction.getDirection(i_new_direction) + "continuing search");
+            }
+            else if(m_mp.wasVertexNeighborVisited(vID,testDirection)){
+                System.out.println("getFreeDirection - Node already visited:" + testDirection + "continuing search");
                 bSearching = true;
-            } else if (m_mp.isNeighborDirectionWall(vID, Direction.getDirection(i_new_direction))) {
+            }
+            else if (m_mp.isNeighborOutOfBounds(vID,testDirection )) {
+                //Out of bounds --> keep searching
+                System.out.println("getFreeDirection - Out of bounds:" + testDirection + "continuing search");
+                bSearching = true;
+            } else if (m_mp.isNeighborDirectionWall(vID, testDirection)) {
                 //is a wall
-                System.out.println("getFreeDirection - is a Wall:" + Direction.getDirection(i_new_direction) + "continuing search");
+                System.out.println("getFreeDirection - is a Wall:" + testDirection + "continuing search");
                 bSearching = true;
             } else {
-                System.out.println("getFreeDirection - valid direction:" + Direction.getDirection(i_new_direction));
+                System.out.println("getFreeDirection - valid direction:" + testDirection);
                 //is not a wall - go ahead
                 bSearching = false;
                 return Direction.getDirection(i_new_direction);
@@ -157,24 +162,6 @@ public class NavigationManager {
     }
 
 
-/*
-    private boolean retracePath(){
-        if(m_path.containsKey(m_PathManager.getM_currentPositionIteration_Key() ))
-        {
-            m_currentPositionIteration_Key = m_path.lowerKey(m_PathManager.getM_currentPositionIteration_Key());
-            m_currentPositionVertexID_Value = m_path.get(m_PathManager.getM_currentPositionIteration_Key());
-            System.out.println("retracePath go back to:" + m_PathManager.getM_currentPositionVertexID_Value());
-            navigateToNextVertex(m_PathManager.getM_currentPositionVertexID_Value());
-            return false;
-        }
-        else
-        {
-            System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
-            return false;
-        }
-
-    }
-*/
 
 
 
