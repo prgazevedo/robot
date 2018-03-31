@@ -15,10 +15,16 @@ public class PathManager {
     /**
      * Key is order of path ,Value is Id of vertex
      */
+    private Integer m_retracePositionIteration_Key;
     private Integer m_currentPositionIteration_Key;
     private Integer m_currentPositionVertexID_Value;
     private NavigableMap<Integer, PathItem> m_path;
     private MapGraph m_mp;
+
+    public Orientation getM_MyOrientation() {
+        return m_MyOrientation;
+    }
+
     private Orientation m_MyOrientation;
 
     public Integer getM_currentPositionIteration_Key() {
@@ -42,7 +48,7 @@ public class PathManager {
     public PathManager(MapGraph mg) {
         m_mp=mg;
         m_path = new TreeMap<Integer, PathItem>();
-        //Init();
+
 
     }
 
@@ -57,24 +63,53 @@ public class PathManager {
     }
 
 
-    public void updatePosition( int location){
+    private void updatePosition(int location){
         m_currentPositionIteration_Key++;
         m_currentPositionVertexID_Value =location;
-
+        m_mp.setVertexVisited(location);
     }
 
-    public void updateDirection(Direction direction){
+    private void resetRetrace(){
+        m_retracePositionIteration_Key=m_currentPositionIteration_Key;
+    }
+
+    private void updateDirection(Direction direction){
         m_MyOrientation.setMy_Direction(direction);
     }
 
-    public void updatePath( int v1, Direction direction){
-        m_currentPositionVertexID_Value=v1;
-        m_MyOrientation.setMy_Direction(direction);
-        PathItem newPathItem = new PathItem(m_currentPositionVertexID_Value, m_MyOrientation.getMy_Direction());
+    private void updatePath(int v0, int v1, Direction direction){
+
+        updateDirection(direction);
+        PathItem newPathItem = new PathItem(v1, m_MyOrientation.getMy_Direction());
         m_path.put(m_currentPositionIteration_Key, newPathItem);
         //And the Edge to Jung Graph
-        m_mp.AddEdge(String.valueOf(m_currentPositionIteration_Key), m_currentPositionVertexID_Value, v1);
-        m_mp.setVertexVisited(m_currentPositionVertexID_Value);
+        m_mp.AddEdge(String.valueOf(m_currentPositionIteration_Key), v0, v1);
+
+    }
+
+    public void goTo(PathItem Item){
+        int tempPosition = m_currentPositionVertexID_Value;
+        updatePosition(Item.getM_VertexId());
+        resetRetrace();
+        updatePath(tempPosition,Item.getM_VertexId(),Item.getM_Direction());
+    }
+
+    public int retracePath(){
+        if(m_path.containsKey(m_currentPositionIteration_Key))
+        {
+            m_retracePositionIteration_Key = m_path.lowerKey(m_currentPositionIteration_Key);
+            m_currentPositionVertexID_Value = m_path.get(m_retracePositionIteration_Key).getM_VertexId();
+            System.out.println("retracePath go back to:" + m_currentPositionVertexID_Value);
+            int tempPosition = m_currentPositionVertexID_Value;
+            updatePosition(m_currentPositionVertexID_Value);
+            updatePath(tempPosition,m_currentPositionVertexID_Value,m_MyOrientation.getDirectionFromOrientation(Direction.SOUTH));
+            return m_currentPositionVertexID_Value;
+        }
+        else
+        {
+            System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
+            return -1;
+        }
 
     }
 

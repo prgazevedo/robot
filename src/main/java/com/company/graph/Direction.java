@@ -64,24 +64,7 @@ public enum Direction {
         return dir;
     }
 
-    public int getDistanceFromDirection(Direction directionToMeasure){
-        int i=0;
-        while(!getNext().equals(directionToMeasure)){
-            i++;
-        }
-        return i;
-    }
 
-    public Direction getDirectionFromDistance(int distance){
-        int cycleNumber=getNumberValidDirections()-distance;
-        Direction dir=this;
-        for(int i=0;i<cycleNumber;i++)
-        {
-            dir=dir.getNext();
-        }
-        return dir;
-
-    }
 
 
     public int getX() {

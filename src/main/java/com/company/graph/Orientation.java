@@ -16,11 +16,34 @@ public class Orientation {
     }
 
     public Direction getDirectionFromOrientation(Direction directionToConvert){
-        int distance = directionToConvert.getDistanceFromDirection(Direction.NORTH);
-        Direction dir = my_Direction.getDirectionFromDistance(distance);
+        int distance = getDistanceFromDirections(Direction.NORTH,directionToConvert);
+        Direction dir = getDirectionFromDistance(my_Direction,distance);
         return dir;
 
     }
+
+
+    public static int getDistanceFromDirections(Direction fixedDirection, Direction relativeDirection){
+        Direction testDirection = relativeDirection;
+        for(int i=0;i<testDirection.getNumberValidDirections();i++)
+        {
+            if(fixedDirection.equals(testDirection)) return i;
+            else testDirection=testDirection.getNext();
+        }
+        return -1;
+    }
+
+    public Direction getDirectionFromDistance(Direction startDirection,int distance){
+        int cycleNumber=startDirection.getNumberValidDirections()-distance;
+        Direction testDirection =startDirection;
+        for(int i=0;i<cycleNumber;i++)
+        {
+            testDirection=testDirection.getNext();
+        }
+        return testDirection;
+
+    }
+
 
     public static void main(String[] args) {
         Direction testDirection = Direction.WEST;
