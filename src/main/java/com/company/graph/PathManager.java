@@ -97,21 +97,38 @@ public class PathManager {
     }
 
     public int retracePath(){
-        if(m_path.containsKey(m_currentPositionIteration_Key))
-        {
-            m_retracePositionIteration_Key = m_path.lowerKey(m_currentPositionIteration_Key);
-            m_currentPositionVertexID_Value = m_path.get(m_retracePositionIteration_Key).getM_VertexId();
-            System.out.println("retracePath go back to:" + m_currentPositionVertexID_Value);
-            int tempPosition = m_currentPositionVertexID_Value;
-            updatePosition(m_currentPositionVertexID_Value);
-            updatePath(tempPosition,m_currentPositionVertexID_Value,m_MyOrientation.getDirectionFromOrientation(Direction.SOUTH));
-            return m_currentPositionVertexID_Value;
+        try {
+            if(m_path.containsKey(m_retracePositionIteration_Key))
+            {
+                m_retracePositionIteration_Key = m_path.lowerKey(m_retracePositionIteration_Key);
+                if(m_retracePositionIteration_Key==null){
+                    System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
+                    return -1;
+                }
+                else if(m_path.containsKey(m_retracePositionIteration_Key)) {
+                    m_currentPositionVertexID_Value = m_path.get(m_retracePositionIteration_Key).getM_VertexId();
+                    System.out.println("retracePath go back to:" + m_currentPositionVertexID_Value);
+                    int tempPosition = m_currentPositionVertexID_Value;
+                    updatePosition(m_currentPositionVertexID_Value);
+                    updatePath(tempPosition, m_currentPositionVertexID_Value, m_MyOrientation.getDirectionFromOrientation(Direction.SOUTH));
+                    return m_currentPositionVertexID_Value;
+                }
+                else
+                {
+                    System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
+                    return -1;
+                }
+
+            }
+            else
+            {
+                System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
+                return -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else
-        {
-            System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
-            return -1;
-        }
+        return -1;
 
     }
 

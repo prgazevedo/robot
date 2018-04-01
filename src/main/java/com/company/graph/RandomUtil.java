@@ -90,7 +90,7 @@ public class RandomUtil {
         else return -1;
     }
 
-    class SortedArrayList<T> extends ArrayList<T> {
+    public class SortedArrayList<T> extends ArrayList<T> {
 
         @SuppressWarnings("unchecked")
         public void insertSorted(T value) {

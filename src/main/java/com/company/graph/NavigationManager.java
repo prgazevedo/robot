@@ -35,8 +35,6 @@ public class NavigationManager {
     public void mock_navigator_3(){
 
         m_PathManager.Init();
-        //int last_visited=m_mp.getVertexId(new Point2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
-        //updatePositionAndPath(0,last_visited);
 
         for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
             System.out.println("mock_navigator_3 - iteration:"+i);
@@ -125,33 +123,36 @@ public class NavigationManager {
     private Direction getFreeDirection()
     {
         int vID=m_PathManager.getM_currentPositionVertexID_Value();
+
         boolean bSearching=true;
         while(bSearching) {
-            int i_new_direction = m_random.getNonRepeatingRandomInt();
-            Direction testDirection = Direction.getDirection(i_new_direction);
-            if (testDirection.equals(Direction.NONE)) {
+            int randomInt = m_random.getNonRepeatingRandomInt();
+            Direction testDirection = Direction.getDirection(randomInt);
+            if (randomInt==-1) {
                 //Exhausted the directions
                 System.out.println("getFreeDirection - Exhausted the directions");
                 bSearching = false;
                 return Direction.NONE;
             }
-            else if(m_mp.wasVertexNeighborVisited(vID,testDirection)){
-                System.out.println("getFreeDirection - Node already visited:" + testDirection + "continuing search");
-                bSearching = true;
-            }
             else if (m_mp.isNeighborOutOfBounds(vID,testDirection )) {
                 //Out of bounds --> keep searching
                 System.out.println("getFreeDirection - Out of bounds:" + testDirection + "continuing search");
                 bSearching = true;
-            } else if (m_mp.isNeighborDirectionWall(vID, testDirection)) {
+            }
+            else if (m_mp.isNeighborDirectionWall(vID, testDirection)) {
                 //is a wall
                 System.out.println("getFreeDirection - is a Wall:" + testDirection + "continuing search");
                 bSearching = true;
-            } else {
+            }
+            else if(m_mp.wasVertexNeighborVisited(vID,testDirection)){
+                System.out.println("getFreeDirection - Node already visited:" + testDirection + "continuing search");
+                bSearching = true;
+            }
+             else {
                 System.out.println("getFreeDirection - valid direction:" + testDirection);
                 //is not a wall - go ahead
                 bSearching = false;
-                return Direction.getDirection(i_new_direction);
+                return testDirection;
 
             }
 

@@ -28,9 +28,13 @@ public enum Direction {
     }
 
     public static Direction getDirection(int i){
-        if(i<Direction.values().length && i>=NONE.m_index)
-            return Direction.values()[i];
-        else return Direction.NONE;
+        if(i<Direction.values().length && i>0)
+            try {
+                return Direction.values()[i];
+            } catch (Exception e) {
+                e.printStackTrace();
+        }
+        return Direction.NONE;
     }
 
     public int index(){return m_index;}

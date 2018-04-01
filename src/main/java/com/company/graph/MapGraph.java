@@ -144,21 +144,26 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     public int getNeighborID(int myID, Direction direction){
         int neighborID = -1;
-        if(m_hashmapVertexes.containsKey(myID)) {
-             neighborID = m_hashmapVertexes.get(myID).getNeighborVertexID(direction);
+        if(direction.equals(Direction.NONE))return neighborID;
+        else {
+            if (m_hashmapVertexes.containsKey(myID)) {
+                neighborID = m_hashmapVertexes.get(myID).getNeighborVertexID(direction);
+            }
+            return neighborID;
         }
-        return neighborID;
     }
 
     public boolean isNeighborDirectionWall(int myID,Direction direction)
     {
-
-        try {
-            int neighborID=getNeighborID(myID,direction);
-            return m_hashmapVertexes.get(neighborID).isM_wall();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        if(direction.equals(Direction.NONE))return false;
+        else {
+            try {
+                int neighborID = getNeighborID(myID, direction);
+                return m_hashmapVertexes.get(neighborID).isM_wall();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
     }
@@ -167,14 +172,17 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     public boolean wasVertexNeighborVisited(int myID,Direction direction)
     {
-
-        try {
-            int neighborID=getNeighborID(myID,direction);
-            return m_hashmapVertexes.get(neighborID).isM_visited();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        if(direction.equals(Direction.NONE))return false;
+        else{
+            try {
+                int neighborID=getNeighborID(myID,direction);
+                return m_hashmapVertexes.get(neighborID).isM_visited();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
+
 
     }
 
@@ -193,11 +201,7 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     }
 
-    public void setNeighborInDirectionAsWall(int myID,Direction direction,boolean isWall)
-    {
-        int neighborID=getNeighborID(myID,direction);
-        setVertexWall(neighborID,isWall);
-    }
+
 
     public void setNeighborInDirectionVisited(int myID,Direction direction,boolean bVisited)
     {
@@ -213,9 +217,7 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         return myID;
     }
 
-    public void setNeighborAsWall(int neighborID, boolean isWall){
-        setVertexWall(neighborID,isWall);
-    }
+
 
     public void setNeighborInDirectionAsWall(int myID,Direction direction, int distance){
         int ID = getNeighborInDirection(myID,direction,distance);
