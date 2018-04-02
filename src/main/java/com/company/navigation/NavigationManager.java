@@ -60,6 +60,32 @@ public class NavigationManager {
         writeLog(Level.INFO,"runMockNavigator End navigation");
     }
 
+    public void runRealNavigator(){
+
+        m_PathManager.Init();
+        while(m_PathManager.getM_currentPositionIteration_Key()<GraphProperties.NAV_ITERATIONS)
+        {
+            //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
+            writeLog(Level.INFO,"runRealNavigator - iteration:"+m_PathManager.getM_currentPositionIteration_Key());
+            int v0 = m_PathManager.getM_currentPositionVertexID_Value();
+            PathItem pathItem = navigateToNextVertex(v0);
+            int VID = pathItem.getM_VertexId();
+            if(VID!=-1)
+            {
+                writeLog(Level.INFO,"runRealNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with direction:"+pathItem.getM_Direction());
+                m_PathManager.goTo(pathItem);
+
+            }
+            else
+            {
+                writeLog(Level.INFO,"runRealNavigator Stop navigation");
+                break;
+            }
+
+        }
+        writeLog(Level.INFO,"runRealNavigator End navigation");
+    }
+
 
 
     private void exploreSurroundings(){
