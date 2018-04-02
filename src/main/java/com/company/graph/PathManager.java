@@ -64,6 +64,8 @@ public class PathManager {
     }
 
 
+
+
     private void updatePosition(int location){
         m_currentPositionIteration_Key++;
         m_currentPositionVertexID_Value =location;
@@ -105,9 +107,14 @@ public class PathManager {
                     System.out.println("retracePath Cannot go earlier than:" + m_currentPositionVertexID_Value);
                     return -1;
                 }
+                else if(m_currentPositionIteration_Key>GraphProperties.NAV_ITERATIONS)
+                {
+                    System.out.println("retracePath exceeded number of Navigation Iterations:" + m_currentPositionVertexID_Value);
+                    return -1;
+                }
                 else if(m_path.containsKey(m_retracePositionIteration_Key)) {
                     m_currentPositionVertexID_Value = m_path.get(m_retracePositionIteration_Key).getM_VertexId();
-                    System.out.println("retracePath go back to:" + m_currentPositionVertexID_Value);
+                    System.out.println("retracePath: Iteration:"+m_currentPositionIteration_Key+"Retrace Iteration"+m_retracePositionIteration_Key+" go back to node:" + m_currentPositionVertexID_Value);
                     int tempPosition = m_currentPositionVertexID_Value;
                     updatePosition(m_currentPositionVertexID_Value);
                     updatePath(tempPosition, m_currentPositionVertexID_Value, m_MyOrientation.getDirectionFromOrientation(Direction.SOUTH));

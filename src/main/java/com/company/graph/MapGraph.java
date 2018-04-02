@@ -142,6 +142,22 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     }
 
 
+    public Point2D getVertexCoordinates(Integer VID)
+    {
+        if(m_hashmapVertexes.containsKey(VID)) {
+            try {
+                Vertex v = m_hashmapVertexes.get(VID);
+                return v.getM_coords();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else return null;
+    }
+
+
+
     public int getNeighborID(int myID, Direction direction){
         int neighborID = -1;
         if(direction.equals(Direction.NONE))return neighborID;

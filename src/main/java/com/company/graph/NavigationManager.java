@@ -35,15 +35,16 @@ public class NavigationManager {
     public void mock_navigator_3(){
 
         m_PathManager.Init();
-
-        for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
-            System.out.println("mock_navigator_3 - iteration:"+i);
+        while(m_PathManager.getM_currentPositionIteration_Key()<GraphProperties.NAV_ITERATIONS)
+        {
+        //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
+            System.out.println("mock_navigator_3 - iteration:"+m_PathManager.getM_currentPositionIteration_Key());
             int v0 = m_PathManager.getM_currentPositionVertexID_Value();
             PathItem pathItem = navigateToNextVertex(v0);
-
-            if(pathItem.getM_VertexId()!=-1)
+            int VID = pathItem.getM_VertexId();
+            if(VID!=-1)
             {
-                System.out.println("mock_navigator_3 navigating to:"+pathItem.getM_VertexId());
+                System.out.println("mock_navigator_3 navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with direction:"+pathItem.getM_Direction());
                 m_PathManager.goTo(pathItem);
 
             }
@@ -60,18 +61,18 @@ public class NavigationManager {
 
 
     private void exploreSurroundings(){
-        int vID=m_PathManager.getM_currentPositionVertexID_Value();
+        int VID=m_PathManager.getM_currentPositionVertexID_Value();
         Direction wallOrientationEAST = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(Direction.EAST);
         Direction wallOrientationWEST = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(Direction.WEST);
-        int eastNeighborID = m_mp.getNeighborID(vID,Direction.EAST);
-        int westNeighborID = m_mp.getNeighborID(vID,Direction.WEST);
+        int eastNeighborID = m_mp.getNeighborID(VID,Direction.EAST);
+        int westNeighborID = m_mp.getNeighborID(VID,Direction.WEST);
         RandomUtil RU = new RandomUtil(1,4);
         int distanceOfWall = 1;//RU.getNonRepeatingRandomInt();
         //for now set left and right walls (but converted to our orientation)
-        m_mp.setNeighborInDirectionAsWall(vID,wallOrientationEAST,distanceOfWall);
-        m_mp.setNeighborInDirectionAsWall(vID,wallOrientationWEST,distanceOfWall);
-        System.out.println("exploreSurroundings - I am at:"+ vID+"with Orientation"+m_PathManager.getM_MyOrientation()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+distanceOfWall);
-        System.out.println("exploreSurroundings - I am at:"+ vID+"with Orientation"+m_PathManager.getM_MyOrientation()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+distanceOfWall);
+        m_mp.setNeighborInDirectionAsWall(VID,wallOrientationEAST,distanceOfWall);
+        m_mp.setNeighborInDirectionAsWall(VID,wallOrientationWEST,distanceOfWall);
+        System.out.println("exploreSurroundings - I am at:"+ VID+" at position:"+m_mp.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+distanceOfWall);
+        System.out.println("exploreSurroundings - I am at:"+ VID+" at position:"+m_mp.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+distanceOfWall);
 
 
     }
@@ -91,6 +92,7 @@ public class NavigationManager {
                 //dead-end -> retrace the path -> but continue searching
                 v1=m_PathManager.retracePath();
                 if(v1!=-1) {
+                    m_random.init();
                     bSearching = true;
                 } else {
                     //no more retrace
@@ -136,20 +138,20 @@ public class NavigationManager {
             }
             else if (m_mp.isNeighborOutOfBounds(vID,testDirection )) {
                 //Out of bounds --> keep searching
-                System.out.println("getFreeDirection - Out of bounds:" + testDirection + "continuing search");
+                System.out.println("getFreeDirection - Out of bounds at direction: " + testDirection + "continuing search");
                 bSearching = true;
             }
             else if (m_mp.isNeighborDirectionWall(vID, testDirection)) {
                 //is a wall
-                System.out.println("getFreeDirection - is a Wall:" + testDirection + "continuing search");
+                System.out.println("getFreeDirection - Node is a Wall: "+m_mp.getNeighborID(vID,testDirection)+" at direction: " + testDirection + "continuing search");
                 bSearching = true;
             }
             else if(m_mp.wasVertexNeighborVisited(vID,testDirection)){
-                System.out.println("getFreeDirection - Node already visited:" + testDirection + "continuing search");
+                System.out.println("getFreeDirection - Node already visited: "+m_mp.getNeighborID(vID,testDirection)+" at direction: " + testDirection + "continuing search");
                 bSearching = true;
             }
              else {
-                System.out.println("getFreeDirection - valid direction:" + testDirection);
+                System.out.println("getFreeDirection - Node is a valid direction: " +m_mp.getNeighborID(vID,testDirection)+" at direction: " + testDirection);
                 //is not a wall - go ahead
                 bSearching = false;
                 return testDirection;
