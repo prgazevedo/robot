@@ -1,4 +1,4 @@
-package com.company.graph;
+package com.company.navigation;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
@@ -11,7 +11,6 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.renderers.BasicEdgeRenderer;
-import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.transform.shape.GraphicsDecorator;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
@@ -26,9 +25,9 @@ public class GraphViewer extends JFrame {
     private Dimension m_dimension;
     private VisualizationViewer m_vv;
     private StaticLayout m_layout;
-    private MapGraph m_mp;
+    private GraphManager m_mp;
 
-    public GraphViewer(String title, MapGraph mp) throws HeadlessException {
+    public GraphViewer(String title, GraphManager mp) throws HeadlessException {
         super(title);
         m_mp = mp;
         m_layout=m_mp.getM_layout();
@@ -175,7 +174,7 @@ public class GraphViewer extends JFrame {
 
         // NOTE: By default, edges will NOT be included in the visualization
         // when ONE of their vertices is NOT included in the visualization.
-        // This may look a bit odd when zooming and panning over the graph.
+        // This may look a bit odd when zooming and panning over the navigation.
         // Calling the following method will cause the edges to be skipped
         // ONLY when BOTH their vertices are NOT included in the visualization,
         // which may look nicer and more intuitive

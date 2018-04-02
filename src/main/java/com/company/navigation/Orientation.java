@@ -1,4 +1,4 @@
-package com.company.graph;
+package com.company.navigation;
 
 public class Orientation {
     public Direction getMy_Direction() {
@@ -53,16 +53,5 @@ public class Orientation {
     }
 
 
-    public static void main(String[] args) {
-        Direction testDirection = Direction.WEST;
-        Orientation orientation = new Orientation(Direction.NORTH);
-        System.out.println("Test Orientation");
-        for(int i=0;i<10;i++)
-        {
-            System.out.println(testDirection);
-            testDirection=testDirection.getNext();
-        }
-
-    }
 
 }

@@ -1,15 +1,18 @@
-package com.company.graph;
+package com.company.navigation;
 
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
 import javafx.geometry.Point2D;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
+public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph {
 
 
 
@@ -19,6 +22,8 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
     private HashMap<Point2D,Integer> m_hashmapLocations;
     private int m_Upper_X_Location = 0;
     private int m_Upper_Y_Location = 0;
+    /** The logger we shall use */
+    private final static Logger logger =  LogManager.getLogger(GraphManager.class);
 
     public Graph getM_graph() {
         return m_graph;
@@ -36,9 +41,11 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
         return m_Upper_Y_Location;
     }
 
+    private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
+        logger.log(messageLevel,message);
+    }
 
-
-    public MapGraph(int nvertexes) {
+    public GraphManager(int nvertexes) {
         m_graph = new SparseMultigraph<Integer,String>();
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
         m_hashmapLocations = new HashMap<Point2D,Integer>();
@@ -123,16 +130,16 @@ public class MapGraph extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     public void printMap()
     {
-        System.out.println("printMap");
+        writeLog(Level.INFO,"printMap");
         int operatingNode = 0;
         for (int i = 0; i<GraphProperties.N_NODES_IN_ROWS; i++) {
             for (int j = 0; j<GraphProperties.N_NODES_IN_COLUMNS; j++) {
 
 
                 Vertex v  = m_hashmapVertexes.get(operatingNode);
-                System.out.println("Vertex Id:"+operatingNode);
-                System.out.println("Vertex Location:"+v.getM_coords().toString());
-                System.out.println("Neighbors:"+v.printNeighbors());
+                writeLog(Level.INFO,"Vertex Id:"+operatingNode);
+                writeLog(Level.INFO,"Vertex Location:"+v.getM_coords().toString());
+                writeLog(Level.INFO,"Neighbors:"+v.printNeighbors());
                 operatingNode++;
 
             }

@@ -1,8 +1,7 @@
-package com.company.graph;
+package com.company.navigation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 public class RandomUtil {

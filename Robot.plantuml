@@ -16,7 +16,7 @@ title __ROBOT's Class Diagram__\n
 
   package  {
     package com.company {
-      package com.company.graph {
+      package com.company.navigation {
         class GraphManager {
         }
       }
@@ -26,7 +26,7 @@ title __ROBOT's Class Diagram__\n
 
   package  {
     package com.company {
-      package com.company.graph {
+      package com.company.navigation {
         class GraphViewer {
         }
       }
@@ -36,7 +36,7 @@ title __ROBOT's Class Diagram__\n
 
   package  {
     package com.company {
-      package com.company.graph {
+      package com.company.navigation {
         class GridLayout {
         }
       }
@@ -56,7 +56,7 @@ title __ROBOT's Class Diagram__\n
 
   package  {
     package com.company {
-      package com.company.graph {
+      package com.company.navigation {
         class MapGraph {
         }
       }

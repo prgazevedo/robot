@@ -34,7 +34,7 @@ public final class SeriaListener implements SerialPortPacketListener
     private MessageRecordQueue m_queue=null;
     StringBuilder rawMessage = new StringBuilder();
     private boolean isNameSet=false;
-    //private static final Logger log = LogManager.getRootLogger();
+
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
 
     public SeriaListener(SerialPort serial,MessageRecordQueue queue) {
