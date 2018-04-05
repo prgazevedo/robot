@@ -7,9 +7,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/jSerialComm" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/junit5-master" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/jung2-2_0_1" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/jSerialComm" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/colt" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/collections-generic-4.01" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/arduino" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apache-log4j-2.10.0-bin" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/Other_Projects" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

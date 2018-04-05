@@ -1,6 +1,8 @@
 package com.company.graphviewer;
 
+import com.company.IManager;
 import com.company.MainRobot;
+import com.company.Manager;
 import com.company.navigation.GraphManager;
 import com.company.navigation.GraphProperties;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -17,13 +19,14 @@ import edu.uci.ics.jung.visualization.renderers.BasicEdgeRenderer;
 import edu.uci.ics.jung.visualization.transform.shape.GraphicsDecorator;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
+import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
-public class GraphViewer extends JFrame {
+public class GraphViewer extends JFrame implements IManager {
 
     private Dimension m_dimension;
     private VisualizationViewer m_vv;
@@ -222,4 +225,10 @@ public class GraphViewer extends JFrame {
         });
     }
 
+
+    @Override
+    public void initialize() { }
+
+    @Override
+    public void writeLog(Level messageLevel, String message) { }
 }

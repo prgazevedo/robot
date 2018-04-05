@@ -21,6 +21,7 @@ package com.company.comms;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortPacketListener;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -34,14 +35,18 @@ public final class SeriaListener implements SerialPortPacketListener
     private MessageRecordQueue m_queue=null;
     StringBuilder rawMessage = new StringBuilder();
     private boolean isNameSet=false;
+    private CommsManager m_commsManager;
 
-    private final static Logger log =  LogManager.getLogger(SeriaListener.class);
 
-    public SeriaListener(SerialPort serial,MessageRecordQueue queue) {
-        m_serialPort = serial;
-        m_queue=queue;
+    public SeriaListener(CommsManager commsManager) {
+        m_commsManager = commsManager;
         m_parser= new MessageRecordParser();
 
+    }
+
+    public void initialize(SerialPort serial,MessageRecordQueue queue){
+        m_serialPort = serial;
+        m_queue=queue;
     }
 
     public final void initThreadName(){
@@ -73,7 +78,7 @@ public final class SeriaListener implements SerialPortPacketListener
         }
         catch (Exception rEx)
         {
-            log.error("serialEvent - exception:",rEx.toString());
+            m_commsManager.writeLog(Level.ERROR,"serialEvent - exception:"+rEx.toString());
         }
     }
 
@@ -88,7 +93,7 @@ public final class SeriaListener implements SerialPortPacketListener
                 if (CommsProperties.isMessageSplitter(b) && rawMessage.length() > 0)
                 {
                     String toProcess = rawMessage.toString();
-                    log.trace(prefix + "Received a rawMessage:[{}]", toProcess);
+                    m_commsManager.writeLog(Level.TRACE,prefix + "Received a rawMessage:[{}]"+ toProcess);
 
                     //Send Message
                     SerialMessageRecord message = m_parser.getMessage( toProcess.getBytes());
@@ -101,26 +106,26 @@ public final class SeriaListener implements SerialPortPacketListener
                 }
                 else if (!CommsProperties.isMessageSplitter(b))
                 {
-                    log.trace("Received a char:[{}]", ((char) b));
+                   // m_commsManager.writeLog(Level.TRACE,"Received a char:"+ ((char) b));
                     rawMessage.append((char) b);
                 }
                 else if (CommsProperties.isMessageOversize(rawMessage.length() ) )
                 {
-                    log.warn(
-                            "Serial receive buffer size reached to MAX level[{} chars], "
-                                    + "Now clearing the buffer. Existing data:[{}]",
-                            CommsProperties.getSerialDataMaxSize(), rawMessage.toString());
+                    m_commsManager.writeLog(Level.WARN, "Serial receive buffer size reached to MAX level[{} chars], " +
+                                    "Now clearing the buffer. Existing data:[{}]"+
+                            CommsProperties.getSerialDataMaxSize()+
+                            rawMessage.toString());
                     rawMessage.setLength(0);
                 }
                 else {
-                    log.trace("Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
+                    m_commsManager.writeLog(Level.TRACE,"Received MESSAGE_SPLITTER and current rawMessage length is ZERO! Nothing to do");
                 }
             }
            if(!m_queue.isEmpty()) m_queue.logContents();
         }
         catch(Exception e){
             e.printStackTrace();
-            log.error("Exception: ",e);
+            m_commsManager.writeLog(Level.ERROR,"Exception: "+e);
             rawMessage.setLength(0);
 
         }

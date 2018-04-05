@@ -1,10 +1,9 @@
 package com.company.navigation;
 
 import com.company.MainRobot;
+import com.company.Manager;
 import javafx.geometry.Point2D;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -12,7 +11,7 @@ import java.util.TreeMap;
 /*
  * Stores and manages all current path choices (vertexID and Direction)
  */
-public class PathManager {
+public class PathManager extends Manager {
 
 
     /**
@@ -23,7 +22,7 @@ public class PathManager {
     private Integer m_currentPositionVertexID_Value;
     private NavigableMap<Integer, PathItem> m_path;
     private GraphManager m_graphManager;
-    private MainRobot m_MainRobot;
+    private MainRobot m_mainRobot;
     private Orientation m_MyOrientation;
 
     public Orientation getM_MyOrientation() {
@@ -40,24 +39,25 @@ public class PathManager {
         return m_path.get(m_retracePositionIteration_Key).getM_VertexId();
     }
 
-    private  void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_MainRobot.writeLog(messageLevel,message); }
-
-    public PathManager(MainRobot mainRobot) {
-        m_MainRobot = mainRobot;
-        m_graphManager =mainRobot.getM_GraphManager();
-        m_path = new TreeMap<Integer, PathItem>();
-    }
-
-
-    public void initialize(){
+    @Override
+    public void initialize() {
         m_MyOrientation = new Orientation(Direction.NORTH);
         m_currentPositionIteration_Key = 0;
         m_currentPositionVertexID_Value=getStartVertexID();
         m_graphManager.setVertexVisited(m_currentPositionVertexID_Value,true);
         PathItem newPathItem = new PathItem(m_currentPositionVertexID_Value, m_MyOrientation.getMy_Direction());
         m_path.put(m_currentPositionIteration_Key, newPathItem);
-
     }
+
+
+
+    public PathManager(MainRobot mainRobot) {
+        m_mainRobot = mainRobot;
+        m_graphManager =mainRobot.getM_GraphManager();
+        m_path = new TreeMap<Integer, PathItem>();
+    }
+
+
 
     public PathItem getNewPathItem(Direction new_direction)
     {

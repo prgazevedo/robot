@@ -2,21 +2,24 @@ package com.company.movement;
 
 
 import com.company.MainRobot;
+import com.company.Manager;
 import com.company.WorkingThreads.RobotProxy;
 import com.company.navigation.Direction;
+import org.apache.logging.log4j.Level;
 
-public class MovementManager {
+public class MovementManager extends Manager {
 
     /** RobotProxy **/
     private MainRobot m_mainRobot;
     private RobotProxy m_roboProxy;
-    public  void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_mainRobot.writeLog(messageLevel,message); }
+
 
 
     public MovementManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
         m_roboProxy = mainRobot.getM_Proxy();
     }
+
 
 
     public void test() {
@@ -77,4 +80,6 @@ public class MovementManager {
             m_roboProxy.move(false,MovementProperties.ROT_SPEED_OF_MOVEMENT,move_time);
         }
     }
+
+
 }

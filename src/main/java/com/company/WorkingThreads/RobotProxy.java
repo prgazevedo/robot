@@ -1,7 +1,9 @@
 package com.company.WorkingThreads;
 
 
+import com.company.IManager;
 import com.company.MainRobot;
+import com.company.Manager;
 import com.company.WorkingThreads.MonitorThread;
 import com.company.WorkingThreads.WriteThread;
 import com.company.comms.CommsProperties;
@@ -12,7 +14,7 @@ import org.apache.logging.log4j.Level;
 
 import java.util.concurrent.TimeUnit;
 
-public class RobotProxy implements Movement{
+public class RobotProxy extends Manager implements Movement,IManager {
 
 
     private static WriteThread m_writeThread=null;
@@ -22,7 +24,16 @@ public class RobotProxy implements Movement{
     public  WriteThread getM_writeThread() { return m_writeThread; }
     public  MonitorThread getM_monitorThread() { return m_monitorThread; }
 
-    private void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_mainRobot.writeLog(messageLevel,this.getClass().toString()+":"+message); }
+
+    @Override
+    public void initialize(){
+        startWriteThread();
+        startMonitorThread();
+    }
+
+    @Override
+    public void writeLog(Level messageLevel, String message) { m_mainRobot.writeLog(messageLevel,this.getClass().toString()+":"+message); }
+
 
     public RobotProxy(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
@@ -32,10 +43,7 @@ public class RobotProxy implements Movement{
     }
 
 
-    public void initialize(){
-        startWriteThread();
-        startMonitorThread();
-    }
+
 
 
     public void move(boolean fwd_direction, int speed, int time) {

@@ -1,6 +1,8 @@
 package com.company.navigation;
 
+import com.company.IManager;
 import com.company.MainRobot;
+import com.company.Manager;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
@@ -13,7 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph {
+public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph implements IManager {
 
 
     private MainRobot m_mainRobot;
@@ -36,7 +38,11 @@ public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     public int getM_Upper_Y_Location() { return m_Upper_Y_Location; }
 
-    private void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_mainRobot.writeLog(messageLevel,message); }
+    @Override
+    public void initialize() { populateVertexes();}
+
+    @Override
+    public void writeLog(Level messageLevel, String message) { m_mainRobot.writeLog(messageLevel,message); }
 
     public GraphManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
@@ -47,10 +53,7 @@ public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph {
 
     }
 
-    public void initialize(){
-        populateVertexes();
-        //printMap();
-    }
+
 
     public Vertex getVertex(int ID){
         Vertex v=null;

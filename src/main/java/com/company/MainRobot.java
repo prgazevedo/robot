@@ -34,52 +34,32 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 
-public class MainRobot {
-
-    /** The logger we shall use */
-    private final static Logger logger =  LogManager.getLogger(MainRobot.class);
-
-    private RobotProxy m_RobotProxy =null;
-    private GraphViewer m_GraphViewer;
-    private NavigationManager m_NavigationManager;
-    private MovementManager m_MovementManager;
-    private CommsManager m_CommsManager;
-    private PathManager m_PathManager;
-    private GraphManager m_GraphManager;
+public class MainRobot extends Manager {
 
 
-    public GraphManager getM_GraphManager() { return m_GraphManager; }
-    public  MovementManager getM_MovementManager() { return m_MovementManager; }
-    public  NavigationManager getM_NavigationManager() { return m_NavigationManager; }
-    public PathManager getM_PathManager() { return m_PathManager; }
-    public CommsManager getM_CommsManager() { return m_CommsManager; }
-    public RobotProxy getM_Proxy() { return m_RobotProxy; }
+
+    public ManagerFactory getMF() {
+        return m_managerFactory;
+    }
+
+    private ManagerFactory m_managerFactory;
+
+    public RobotProxy getM_Proxy() { return (RobotProxy)getMF().getRobotProxy(); }
+    public GraphViewer getM_GraphViewer() { return (GraphViewer)getMF().getGraphViewer(); }
+    public  NavigationManager getM_NavigationManager() { return (NavigationManager) getMF().getNavigationManager(); }
+    public  MovementManager getM_MovementManager() { return (MovementManager) getMF().getMovementManager(); }
+    public CommsManager getM_CommsManager() { return (CommsManager)getMF().getCommsManager(); }
+    public PathManager getM_PathManager() { return (PathManager)getMF().getPathManager(); }
+    public GraphManager getM_GraphManager() { return (GraphManager)getMF().getGraphManager(); }
 
 
-    public void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ logger.log(messageLevel,"[Raspberry]:"+message); }
 
     public MainRobot() {
-
-
-        m_GraphManager = new GraphManager(this);
-        m_PathManager = new PathManager(this);
-        m_GraphViewer = new GraphViewer(this);
-        m_CommsManager = new CommsManager(this);
-        m_NavigationManager = new NavigationManager(this);
-        m_RobotProxy = new RobotProxy(this);
-        m_MovementManager = new MovementManager(this);
-
-
+        m_managerFactory = new ManagerFactory(this);
+        m_managerFactory.initialize();
     }
 
-    private void initialize(){
-        m_GraphManager.initialize();
-        m_PathManager.initialize();
-        m_CommsManager.initialize();
-        m_RobotProxy.initialize();
-        Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
-        writeLog(Level.INFO, "Robot initialized");
-    }
+
 
 
     public String getName(){
@@ -90,9 +70,10 @@ public class MainRobot {
         MainRobot robot = new MainRobot();
         robot.writeLog(Level.INFO, "Robot main start");
         robot.initialize();
-        robot.m_MovementManager.test();
-        robot.m_NavigationManager.runMockNavigator();
-        robot.m_GraphViewer.viewGraph();
+        robot.writeLog(Level.INFO, "Robot main initialize");
+        robot.getM_MovementManager().test();
+        robot.getM_NavigationManager().runMockNavigator();
+        robot.getM_GraphViewer().viewGraph();
 
 
     }

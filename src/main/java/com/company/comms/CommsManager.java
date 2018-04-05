@@ -2,22 +2,21 @@ package com.company.comms;
 
 import com.company.ApplicationProperties;
 import com.company.MainRobot;
+import com.company.Manager;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class CommsManager {
+public class CommsManager extends Manager {
 
     /** The the serial port we shall use */
     private  SerialPort m_comPort=null;
     /** Handle back to Robot*/
-    private MainRobot m_MainRobot = null;
+    private MainRobot m_mainRobot = null;
     /** The Message queue that holds serial messages*/
     private  MessageRecordQueue m_queue=null;
     /** List of serial ports */
@@ -38,19 +37,10 @@ public class CommsManager {
 
     public  SerialPort getM_comPort() { return m_comPort; }
     public  MessageRecordQueue getM_queue() { return m_queue; }
-    public  void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_MainRobot.writeLog(messageLevel,message); }
-
-    public CommsManager(MainRobot mainRobot) {
-        m_MainRobot = mainRobot;
-        m_queue = new MessageRecordQueue(String.valueOf(this.toString()));
-        m_portMap = new HashMap<String, SerialPort>();
-        m_serialPortlist = new ArrayList<SerialPort>();
-    }
 
 
-
+    @Override
     public void initialize() {
-
         String portId = null;
         m_serialPortlist = Arrays.asList(SerialPort.getCommPorts());
 
@@ -73,6 +63,16 @@ public class CommsManager {
             writeLog(Level.ERROR, e.toString());
         }
     }
+
+    public CommsManager(MainRobot mainRobot) {
+        m_mainRobot = mainRobot;
+        m_queue = new MessageRecordQueue(String.valueOf(this.toString()));
+        m_portMap = new HashMap<String, SerialPort>();
+        m_serialPortlist = new ArrayList<SerialPort>();
+    }
+
+
+
 
     private void openPort( String portID)
     {
@@ -136,7 +136,8 @@ public class CommsManager {
     private void addEventListeners(SerialPort comPort)
     {
         writeLog(Level.INFO," addEventListeners called");
-        SeriaListener listener = new SeriaListener(comPort,m_queue);
+        SeriaListener listener = new SeriaListener(this);
+        listener.initialize(comPort,m_queue);
         comPort.addDataListener(listener);
 
     }

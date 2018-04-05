@@ -3,27 +3,26 @@ package com.company.navigation;
 import java.util.NavigableMap;
 
 import com.company.MainRobot;
+import com.company.Manager;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public class NavigationManager {
+public class NavigationManager extends Manager {
 
     /**
      * Key is order of path ,Value is Id of vertex
      */
     private NavigableMap<Integer, Integer> m_path;
-    private MainRobot m_MainRobot;
+    private MainRobot m_mainRobot;
     private GraphManager m_GraphManager;
     private PathManager  m_PathManager;
     private RandomUtil m_random;
 
-    private  void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_MainRobot.writeLog(messageLevel,message); }
+
 
     public NavigationManager(MainRobot mainRobot) {
-        m_MainRobot = mainRobot;
-        m_PathManager = m_MainRobot.getM_PathManager();
-        m_GraphManager = m_MainRobot.getM_GraphManager();
+        m_mainRobot = mainRobot;
+        m_PathManager = m_mainRobot.getM_PathManager();
+        m_GraphManager = m_mainRobot.getM_GraphManager();
         m_random = new RandomUtil(0,Direction.getNumberDirections());
     }
 
