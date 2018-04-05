@@ -1,4 +1,4 @@
-package com.company;
+package com.company.WorkingThreads;
 
 import com.company.comms.*;
 import com.company.movement.MovementProperties;

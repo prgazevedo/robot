@@ -1,22 +1,23 @@
 package com.company.movement;
 
-import com.company.WriteThread;
+
+import com.company.RobotProxy;
 import com.company.navigation.Direction;
 
 import java.util.concurrent.TimeUnit;
 
-public class MovementManager extends Thread{
+public class MovementManager {
 
-    /** MoveRobot **/
-    private static MoveRobot m_moveRobot=null;
+    /** RobotProxy **/
+    private static Movement m_movement =null;
 
-    public MovementManager( MoveRobot moveRobot) {
-        m_moveRobot= moveRobot;
+    public MovementManager( Movement movement) {
+        m_movement = movement;
     }
 
 
     public void init() throws Exception{
-        m_moveRobot.checkComms();
+
 
         //Test write to Arduino
         move(Direction.NORTH,10);
@@ -56,10 +57,10 @@ public class MovementManager extends Thread{
 
         if(degrees<0) {
 
-            m_moveRobot.rotate(true,MovementProperties.ROT_SPEED_OF_MOVEMENT,rotation_time);
+            m_movement.rotate(true,MovementProperties.ROT_SPEED_OF_MOVEMENT,rotation_time);
         }
         else{
-            m_moveRobot.rotate(false,MovementProperties.ROT_SPEED_OF_MOVEMENT,rotation_time);
+            m_movement.rotate(false,MovementProperties.ROT_SPEED_OF_MOVEMENT,rotation_time);
         }
     }
 
@@ -69,10 +70,10 @@ public class MovementManager extends Thread{
 
         if(distance>0) {
 
-            m_moveRobot.move(true,MovementProperties.ROT_SPEED_OF_MOVEMENT,move_time);
+            m_movement.move(true,MovementProperties.ROT_SPEED_OF_MOVEMENT,move_time);
         }
         else{
-            m_moveRobot.move(false,MovementProperties.ROT_SPEED_OF_MOVEMENT,move_time);
+            m_movement.move(false,MovementProperties.ROT_SPEED_OF_MOVEMENT,move_time);
         }
     }
 }

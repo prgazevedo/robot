@@ -1,4 +1,4 @@
-package com.company;
+package com.company.WorkingThreads;
 
 import com.company.comms.*;
 import org.apache.logging.log4j.LogManager;

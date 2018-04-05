@@ -19,11 +19,12 @@
 package com.company;
 
 
+import com.company.WorkingThreads.MonitorThread;
+import com.company.WorkingThreads.WriteThread;
 import com.company.comms.CommsProperties;
 import com.company.comms.MessageRecordQueue;
 import com.company.comms.SeriaListener;
 
-import com.company.movement.MoveRobot;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -60,7 +61,7 @@ public class MainRobot {
     /** Read Thread */
     private static MonitorThread m_monitorThread=null;
 
-    private static MoveRobot m_moveRobot=null;
+    private static RobotProxy m_RobotProxy =null;
 
 
     public static WriteThread getM_writeThread() {
@@ -230,7 +231,7 @@ public class MainRobot {
         robot.initialize();
         robot.startWriteThread();
         robot.startMonitorThread();
-        m_moveRobot = new MoveRobot(robot);
+        m_RobotProxy = new RobotProxy(robot);
 
     }
 

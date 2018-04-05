@@ -1,17 +1,14 @@
-package com.company.movement;
+package com.company;
 
 
-import com.company.MainRobot;
-import com.company.MonitorThread;
-import com.company.WriteThread;
+import com.company.movement.Movement;
+import com.company.movement.MovementManager;
 import com.company.navigation.GraphManager;
 import com.company.navigation.GraphProperties;
 import com.company.navigation.GraphViewer;
 import com.company.navigation.NavigationManager;
 
-import java.util.concurrent.TimeUnit;
-
-public class MoveRobot {
+public class RobotProxy implements Movement{
 
 
     private static GraphManager m_mp;
@@ -40,7 +37,7 @@ public class MoveRobot {
 
     }
 
-    public MoveRobot(MainRobot mainRobot) {
+    public RobotProxy(MainRobot mainRobot) {
         m_mainRobot = new MainRobot();
 
         m_mp  = new GraphManager(GraphProperties.N_VERTEXES);
