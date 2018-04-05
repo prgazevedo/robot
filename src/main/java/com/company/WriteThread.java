@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.comms.*;
+import com.company.movement.MovementProperties;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +9,18 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Scanner;
+
+
+// This is the list of recognized commands.
+// In order to receive, attach a callback function to these events:
+// Return the command list: 0;
+// Move: 1, <direction:FWD(0)/BWD(1)>,<speed:0-150>,<time: in ms>;
+// Rotate: 2, <direction:LEFT(0)/RIGHT(1)>,<speed:0-150>,<time: in ms>;
+// Scan: 3, <angle:0-180>;
+// Ping Arduino - AreYouReady:4; Command to ask if we are ready
+// Ack Arduino - Acknowledge:5; Ack from Arduino
+// Arduino Requests to AskUsIfReady: 6;
+// Arduino Acknowledges is ready: 7;
 
 public class WriteThread extends Thread {
 
@@ -135,10 +148,14 @@ public class WriteThread extends Thread {
     }
 
 
-    public void moveForward(int speed, int time )
+
+
+
+    public void move(boolean fwd_direction,int speed, int time )
     {
         m_MPB.setM_cmd_type(CommsProperties.cmds.Move);
-        m_MPB.addArg("1");
+        if(fwd_direction) m_MPB.addArg("1");
+        else m_MPB.addArg("0");
         m_MPB.addArg(String.valueOf(speed));
         m_MPB.addArg(String.valueOf(time));
         MessagePayload payload= m_MPB.build();
@@ -146,15 +163,18 @@ public class WriteThread extends Thread {
 
     }
 
-    public void moveBackward(int speed, int time )
+    public void rotate(boolean west_direction,int speed, int time )
     {
         m_MPB.setM_cmd_type(CommsProperties.cmds.Move);
-        m_MPB.addArg("0");
+        if(west_direction) m_MPB.addArg("1"); //LEFT
+        else  m_MPB.addArg("0"); //RIGHT
         m_MPB.addArg(String.valueOf(speed));
         m_MPB.addArg(String.valueOf(time));
         MessagePayload payload= m_MPB.build();
         sendMessage(payload.toSerial());
     }
+
+
 
 
     private void sendMessage(String cmd)

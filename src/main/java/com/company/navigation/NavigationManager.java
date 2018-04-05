@@ -46,7 +46,7 @@ public class NavigationManager {
             int VID = pathItem.getM_VertexId();
             if(VID!=-1)
             {
-                writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with direction:"+pathItem.getM_Direction());
+                writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
                 m_PathManager.goTo(pathItem);
 
             }
@@ -72,7 +72,7 @@ public class NavigationManager {
             int VID = pathItem.getM_VertexId();
             if(VID!=-1)
             {
-                writeLog(Level.INFO,"runRealNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with direction:"+pathItem.getM_Direction());
+                writeLog(Level.INFO,"runRealNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
                 m_PathManager.goTo(pathItem);
 
             }
@@ -160,20 +160,20 @@ public class NavigationManager {
             }
             else if (m_mp.isNeighborOutOfBounds(vID,testDirection )) {
                 //Out of bounds --> keep searching
-                writeLog(Level.INFO,"getFreeDirection - Out of bounds at direction: " + testDirection + "continuing search");
+                writeLog(Level.INFO,"getFreeDirection - Out of bounds at getDirection: " + testDirection + "continuing search");
                 bSearching = true;
             }
             else if (m_mp.isNeighborDirectionWall(vID, testDirection)) {
                 //is a wall
-                writeLog(Level.INFO,"getFreeDirection - Node is a Wall: "+m_mp.getNeighborID(vID,testDirection)+" at direction: " + testDirection + "continuing search");
+                writeLog(Level.INFO,"getFreeDirection - Node is a Wall: "+m_mp.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection + "continuing search");
                 bSearching = true;
             }
             else if(m_mp.wasVertexNeighborVisited(vID,testDirection)){
-                writeLog(Level.INFO,"getFreeDirection - Node already visited: "+m_mp.getNeighborID(vID,testDirection)+" at direction: " + testDirection + "continuing search");
+                writeLog(Level.INFO,"getFreeDirection - Node already visited: "+m_mp.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection + "continuing search");
                 bSearching = true;
             }
              else {
-                writeLog(Level.INFO,"getFreeDirection - Node is a valid direction: " +m_mp.getNeighborID(vID,testDirection)+" at direction: " + testDirection);
+                writeLog(Level.INFO,"getFreeDirection - Node is a valid getDirection: " +m_mp.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection);
                 //is not a wall - go ahead
                 bSearching = false;
                 return testDirection;

@@ -22,6 +22,8 @@ package com.company;
 import com.company.comms.CommsProperties;
 import com.company.comms.MessageRecordQueue;
 import com.company.comms.SeriaListener;
+
+import com.company.movement.MoveRobot;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -31,8 +33,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 
 
 public class MainRobot {
@@ -59,6 +59,17 @@ public class MainRobot {
     private static WriteThread m_writeThread=null;
     /** Read Thread */
     private static MonitorThread m_monitorThread=null;
+
+    private static MoveRobot m_moveRobot=null;
+
+
+    public static WriteThread getM_writeThread() {
+        return m_writeThread;
+    }
+
+    public static MonitorThread getM_monitorThread() {
+        return m_monitorThread;
+    }
 
     /** port names to use in different machines */
     private static final String PORT_NAMES[] = {
@@ -186,13 +197,8 @@ public class MainRobot {
 
 
 
-
-    public static void main(String[] args) throws Exception {
-        MainRobot robot = new MainRobot();
-        writeLog(Level.INFO, "Robot initialize");
-        robot.initialize();
-
-
+    private void startWriteThread()
+    {
         if(m_comPort!=null){
             if(m_comPort.isOpen()){
                 writeLog(Level.INFO," Port: "+ m_comPort.getSystemPortName()+" is Open");
@@ -206,26 +212,26 @@ public class MainRobot {
             }
 
         }
+    }
 
-        m_monitorThread=new MonitorThread(robot.m_queue);
+    private void startMonitorThread()
+    {
+        m_monitorThread=new MonitorThread(this.m_queue);
         m_monitorThread.setWriteThread(m_writeThread);
         m_monitorThread.start();
         writeLog(Level.INFO," monitorThread Started");
-        TimeUnit.SECONDS.sleep(10);
-        m_writeThread.requestCmdList();
-        TimeUnit.SECONDS.sleep(1);
-        m_writeThread.pingArduinoAskUsIfReady();
-        TimeUnit.SECONDS.sleep(1);
-        m_writeThread.pingArduinoAskUsIfReady();
-        TimeUnit.SECONDS.sleep(1);
-        //Test write to Arduino
-        m_writeThread.moveForward(100,1000);
-        TimeUnit.SECONDS.sleep(1);
-        m_writeThread.moveBackward(100,1000);
-        TimeUnit.SECONDS.sleep(1);
-        m_writeThread.moveForward(100,1000);
-        TimeUnit.SECONDS.sleep(1);
-        m_writeThread.moveBackward(100,1000);
+    }
+
+
+
+    public static void main(String[] args) throws Exception {
+        MainRobot robot = new MainRobot();
+        writeLog(Level.INFO, "Robot initialize");
+        robot.initialize();
+        robot.startWriteThread();
+        robot.startMonitorThread();
+        m_moveRobot = new MoveRobot(robot);
+
     }
 
 }
