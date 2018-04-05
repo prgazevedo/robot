@@ -1,5 +1,6 @@
 package com.company.navigation;
 
+import com.company.MainRobot;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
@@ -15,7 +16,7 @@ import java.util.List;
 public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph {
 
 
-
+    private MainRobot m_mainRobot;
     private StaticLayout m_layout;
     private edu.uci.ics.jung.graph.Graph<Integer,String> m_graph;
     private HashMap<Integer,Vertex> m_hashmapVertexes;
@@ -29,27 +30,24 @@ public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph {
         return m_graph;
     }
 
-    public StaticLayout getM_layout() {
-        return m_layout;
-    }
+    public StaticLayout getM_layout() { return m_layout; }
 
-    public int getM_Upper_X_Location() {
-        return m_Upper_X_Location;
-    }
+    public int getM_Upper_X_Location() { return m_Upper_X_Location; }
 
-    public int getM_Upper_Y_Location() {
-        return m_Upper_Y_Location;
-    }
+    public int getM_Upper_Y_Location() { return m_Upper_Y_Location; }
 
-    private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
-        logger.log(messageLevel,message);
-    }
+    private void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_mainRobot.writeLog(messageLevel,message); }
 
-    public GraphManager(int nvertexes) {
+    public GraphManager(MainRobot mainRobot) {
+        m_mainRobot = mainRobot;
         m_graph = new SparseMultigraph<Integer,String>();
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
         m_hashmapLocations = new HashMap<Point2D,Integer>();
         m_layout = new StaticLayout(m_graph);
+
+    }
+
+    public void initialize(){
         populateVertexes();
         //printMap();
     }

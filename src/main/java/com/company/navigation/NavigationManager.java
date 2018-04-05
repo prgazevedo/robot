@@ -1,42 +1,36 @@
 package com.company.navigation;
 
 import java.util.NavigableMap;
+
+import com.company.MainRobot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class NavigationManager {
-    /** The logger we shall use */
-    private final static Logger logger =  LogManager.getLogger(NavigationManager.class);
 
-    private GraphManager m_mp;
-    private PathManager m_PathManager;
     /**
      * Key is order of path ,Value is Id of vertex
      */
     private NavigableMap<Integer, Integer> m_path;
-
+    private MainRobot m_MainRobot;
+    private GraphManager m_GraphManager;
+    private PathManager  m_PathManager;
     private RandomUtil m_random;
 
+    private  void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_MainRobot.writeLog(messageLevel,message); }
 
-
-    public NavigationManager(GraphManager mg) {
-
-        m_PathManager = new PathManager(mg);
-
-        //m_path = new TreeMap<Integer, Integer>();
+    public NavigationManager(MainRobot mainRobot) {
+        m_MainRobot = mainRobot;
+        m_PathManager = m_MainRobot.getM_PathManager();
+        m_GraphManager = m_MainRobot.getM_GraphManager();
         m_random = new RandomUtil(0,Direction.getNumberDirections());
-        m_mp = mg;
-
     }
 
-    private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
-        logger.log(messageLevel,message);
-    }
 
     public void runMockNavigator(){
 
-        m_PathManager.Init();
+
         while(m_PathManager.getM_currentPositionIteration_Key()<GraphProperties.NAV_ITERATIONS)
         {
         //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
@@ -46,7 +40,7 @@ public class NavigationManager {
             int VID = pathItem.getM_VertexId();
             if(VID!=-1)
             {
-                writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
+                writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
                 m_PathManager.goTo(pathItem);
 
             }
@@ -62,28 +56,6 @@ public class NavigationManager {
 
     public void runRealNavigator(){
 
-        m_PathManager.Init();
-        while(m_PathManager.getM_currentPositionIteration_Key()<GraphProperties.NAV_ITERATIONS)
-        {
-            //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
-            writeLog(Level.INFO,"runRealNavigator - iteration:"+m_PathManager.getM_currentPositionIteration_Key());
-            int v0 = m_PathManager.getM_currentPositionVertexID_Value();
-            PathItem pathItem = navigateToNextVertex(v0);
-            int VID = pathItem.getM_VertexId();
-            if(VID!=-1)
-            {
-                writeLog(Level.INFO,"runRealNavigator navigating to:"+VID+" at position:"+m_mp.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
-                m_PathManager.goTo(pathItem);
-
-            }
-            else
-            {
-                writeLog(Level.INFO,"runRealNavigator Stop navigation");
-                break;
-            }
-
-        }
-        writeLog(Level.INFO,"runRealNavigator End navigation");
     }
 
 
@@ -92,15 +64,15 @@ public class NavigationManager {
         int VID=m_PathManager.getM_currentPositionVertexID_Value();
         Direction wallOrientationEAST = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(Direction.EAST);
         Direction wallOrientationWEST = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(Direction.WEST);
-        int eastNeighborID = m_mp.getNeighborID(VID,Direction.EAST);
-        int westNeighborID = m_mp.getNeighborID(VID,Direction.WEST);
+        int eastNeighborID = m_GraphManager.getNeighborID(VID,Direction.EAST);
+        int westNeighborID = m_GraphManager.getNeighborID(VID,Direction.WEST);
         RandomUtil RU = new RandomUtil(1,4);
         int distanceOfWall = 1;//RU.getNonRepeatingRandomInt();
         //for now set left and right walls (but converted to our orientation)
-        m_mp.setNeighborInDirectionAsWall(VID,wallOrientationEAST,distanceOfWall);
-        m_mp.setNeighborInDirectionAsWall(VID,wallOrientationWEST,distanceOfWall);
-        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+m_mp.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+distanceOfWall);
-        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+m_mp.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+distanceOfWall);
+        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationEAST,distanceOfWall);
+        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationWEST,distanceOfWall);
+        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+distanceOfWall);
+        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+distanceOfWall);
 
 
     }
@@ -158,22 +130,22 @@ public class NavigationManager {
                 bSearching = false;
                 return Direction.NONE;
             }
-            else if (m_mp.isNeighborOutOfBounds(vID,testDirection )) {
+            else if (m_GraphManager.isNeighborOutOfBounds(vID,testDirection )) {
                 //Out of bounds --> keep searching
                 writeLog(Level.INFO,"getFreeDirection - Out of bounds at getDirection: " + testDirection + "continuing search");
                 bSearching = true;
             }
-            else if (m_mp.isNeighborDirectionWall(vID, testDirection)) {
+            else if (m_GraphManager.isNeighborDirectionWall(vID, testDirection)) {
                 //is a wall
-                writeLog(Level.INFO,"getFreeDirection - Node is a Wall: "+m_mp.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection + "continuing search");
+                writeLog(Level.INFO,"getFreeDirection - Node is a Wall: "+ m_GraphManager.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection + "continuing search");
                 bSearching = true;
             }
-            else if(m_mp.wasVertexNeighborVisited(vID,testDirection)){
-                writeLog(Level.INFO,"getFreeDirection - Node already visited: "+m_mp.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection + "continuing search");
+            else if(m_GraphManager.wasVertexNeighborVisited(vID,testDirection)){
+                writeLog(Level.INFO,"getFreeDirection - Node already visited: "+ m_GraphManager.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection + "continuing search");
                 bSearching = true;
             }
              else {
-                writeLog(Level.INFO,"getFreeDirection - Node is a valid getDirection: " +m_mp.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection);
+                writeLog(Level.INFO,"getFreeDirection - Node is a valid getDirection: " + m_GraphManager.getNeighborID(vID,testDirection)+" at getDirection: " + testDirection);
                 //is not a wall - go ahead
                 bSearching = false;
                 return testDirection;
@@ -209,13 +181,6 @@ public class NavigationManager {
         return -1;
 
     }
-
-
-
-
-
-
-
 
 
 

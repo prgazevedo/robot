@@ -6,7 +6,7 @@ public class CommsProperties {
     public static final String CMD_SEPARATOR=",";
     public static final String CMD_TERMINATOR=";";
     /** Milliseconds to block while waiting for port open */
-    public static final int TIME_OUT = 2000;
+    public static final int DEFAULT_SLEEP = 1000;
     /** Default bits per second for COM port. */
     public static final int DATA_RATE = 115200;
     /** Data bits to be sent: We shall use 8-N-1: one start bit, the eight data bits, and the one stop bit */

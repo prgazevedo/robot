@@ -19,21 +19,19 @@
 package com.company;
 
 
-import com.company.WorkingThreads.MonitorThread;
-import com.company.WorkingThreads.WriteThread;
-import com.company.comms.CommsProperties;
-import com.company.comms.MessageRecordQueue;
-import com.company.comms.SeriaListener;
+import com.company.WorkingThreads.RobotProxy;
 
-import com.fazecast.jSerialComm.SerialPort;
+import com.company.comms.CommsManager;
+import com.company.movement.MovementManager;
+import com.company.navigation.GraphManager;
+import com.company.navigation.GraphProperties;
+import com.company.graphviewer.GraphViewer;
+import com.company.navigation.NavigationManager;
+import com.company.navigation.PathManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.*;
 
 
 public class MainRobot {
@@ -41,197 +39,61 @@ public class MainRobot {
     /** The logger we shall use */
     private final static Logger logger =  LogManager.getLogger(MainRobot.class);
 
-    /** The the serial port we shall use */
-    private static SerialPort m_comPort=null;
-    /** The output stream to the port */
-    private static OutputStream m_outputStream=null;
-    /** The input stream to the port */
-    private static InputStreamReader m_inputStream=null;
-    /** List of serial ports */
-    private List<SerialPort> m_serialPortlist=null;
-     /** Map of serial ports and names */
-    private HashMap<String, SerialPort> m_portMap=null;
-     /** The Message queue that holds serial messages*/
-    private static MessageRecordQueue m_queue;
-    //private MessagePayload.MessagePayloadBuilder m_MPB;
-     /** PortName of this machine */
-    private static final String portName1 = "cu.usbmodem1441";
-    /** Write Thread */
-    private static WriteThread m_writeThread=null;
-    /** Read Thread */
-    private static MonitorThread m_monitorThread=null;
-
-    private static RobotProxy m_RobotProxy =null;
+    private RobotProxy m_RobotProxy =null;
+    private GraphViewer m_GraphViewer;
+    private NavigationManager m_NavigationManager;
+    private MovementManager m_MovementManager;
+    private CommsManager m_CommsManager;
+    private PathManager m_PathManager;
+    private GraphManager m_GraphManager;
 
 
-    public static WriteThread getM_writeThread() {
-        return m_writeThread;
-    }
+    public GraphManager getM_GraphManager() { return m_GraphManager; }
+    public  MovementManager getM_MovementManager() { return m_MovementManager; }
+    public  NavigationManager getM_NavigationManager() { return m_NavigationManager; }
+    public PathManager getM_PathManager() { return m_PathManager; }
+    public CommsManager getM_CommsManager() { return m_CommsManager; }
+    public RobotProxy getM_Proxy() { return m_RobotProxy; }
 
-    public static MonitorThread getM_monitorThread() {
-        return m_monitorThread;
-    }
 
-    /** port names to use in different machines */
-    private static final String PORT_NAMES[] = {
-           // "/dev/tty.usbserial-A9007UX1", // Mac OS X
-            "/dev/tty.usbmodem1411", //Mac OS X
-            "/dev/tty.usbmodem1431",
-            "cu.usbmodem1441", //call-out
-            "tty.usbmodem1441", //call-in
-            "/dev/ttyACM0", // Raspberry Pi
-            "/dev/ttyUSB0", // Linux
-            "COM3", // Windows
-    };
-
-    private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
-        logger.log(messageLevel,"[Raspberry]:"+message);
-    }
+    public void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ logger.log(messageLevel,"[Raspberry]:"+message); }
 
     public MainRobot() {
-        if (m_queue == null) {
-            m_queue = new MessageRecordQueue(String.valueOf(this.toString()));
-        }
-        //Create Port Map
-        if (m_portMap == null) {
-            m_portMap = new HashMap<String, SerialPort>();
-        }
-        //Create Serial Port List
-        if (m_serialPortlist == null) {
-            m_serialPortlist = new ArrayList<SerialPort>();
-        }
 
 
+        m_GraphManager = new GraphManager(this);
+        m_PathManager = new PathManager(this);
+        m_GraphViewer = new GraphViewer(this);
+        m_CommsManager = new CommsManager(this);
+        m_NavigationManager = new NavigationManager(this);
+        m_RobotProxy = new RobotProxy(this);
+        m_MovementManager = new MovementManager(this);
 
+
+    }
+
+    private void initialize(){
+        m_GraphManager.initialize();
+        m_PathManager.initialize();
+        m_CommsManager.initialize();
+        m_RobotProxy.initialize();
         Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
+        writeLog(Level.INFO, "Robot initialized");
     }
 
 
-    private void openPort( String portID)
-    {
-        SerialPort sPort;
-        writeLog(Level.INFO," openPort: " + portID);
-        if(m_portMap.containsKey(portID)){
-            writeLog(Level.INFO," openPort: Found port in portMap: "+portID);
-             sPort = m_portMap.get(portID);
-            // Try to open port, terminate execution if not possible
-            if (sPort.openPort()) {
-                m_comPort=sPort;
-                writeLog(Level.INFO," "+m_comPort.getSystemPortName() + " successfully opened.");
-
-            } else {
-                writeLog(Level.WARN, "failed to open: " +portID);
-
-            }
-        }
-        else
-        {
-            writeLog(Level.WARN, " openPort: Could not find port in portMap: "+portID);
-        }
-
-
+    public String getName(){
+        return ApplicationProperties.APPLICATION_NAME;
     }
-
-    /**
-     * This should be called when you stop using the port.
-     * This will prevent port locking on platforms like Linux.
-     */
-    public synchronized void close() {
-        if (m_comPort != null) {
-            m_comPort.removeDataListener();
-            m_comPort.closePort();
-        }
-    }
-
-
-
-    private void setPortDefaultParams(SerialPort comPort)
-    {
-
-        writeLog(Level.INFO," setPortDefaultParams called");
-        comPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
-        // set port parameters
-        comPort.setBaudRate(CommsProperties.DATA_RATE);
-        comPort.setNumDataBits(CommsProperties.DATABITS);
-        comPort.setNumStopBits(CommsProperties.STOPBITS);
-        comPort.setParity(CommsProperties.PARITY);
-    }
-
-    private void addEventListeners(SerialPort comPort)
-    {
-        writeLog(Level.INFO," addEventListeners called");
-        SeriaListener listener = new SeriaListener(comPort,m_queue);
-        comPort.addDataListener(listener);
-
-    }
-
-
-    private void initialize() {
-
-        String portId = null;
-        m_serialPortlist = Arrays.asList(SerialPort.getCommPorts());
-
-        for (SerialPort serialP : m_serialPortlist) {
-            m_portMap.put(serialP.getSystemPortName(), serialP);
-            writeLog(Level.INFO," Ports in Map: "+serialP.getSystemPortName() );
-        }
-
-        try {
-
-            writeLog(Level.INFO," Will open: " + portName1);
-            openPort( portName1 );
-            setPortDefaultParams(m_comPort);
-
-
-            // open the streams
-            m_inputStream = new InputStreamReader(m_comPort.getInputStream());
-            m_outputStream = m_comPort.getOutputStream();
-
-            //add event listeners
-            addEventListeners(m_comPort);
-
-        } catch (Exception e) {
-            writeLog(Level.ERROR, e.toString());
-        }
-    }
-
-
-
-
-    private void startWriteThread()
-    {
-        if(m_comPort!=null){
-            if(m_comPort.isOpen()){
-                writeLog(Level.INFO," Port: "+ m_comPort.getSystemPortName()+" is Open");
-                m_writeThread = new WriteThread(m_queue,m_comPort) {
-
-                };
-                m_writeThread.start();
-                writeLog(Level.INFO," writeThread Started");
-                //Small test
-
-            }
-
-        }
-    }
-
-    private void startMonitorThread()
-    {
-        m_monitorThread=new MonitorThread(this.m_queue);
-        m_monitorThread.setWriteThread(m_writeThread);
-        m_monitorThread.start();
-        writeLog(Level.INFO," monitorThread Started");
-    }
-
-
 
     public static void main(String[] args) throws Exception {
         MainRobot robot = new MainRobot();
-        writeLog(Level.INFO, "Robot initialize");
+        robot.writeLog(Level.INFO, "Robot main start");
         robot.initialize();
-        robot.startWriteThread();
-        robot.startMonitorThread();
-        m_RobotProxy = new RobotProxy(robot);
+        robot.m_MovementManager.test();
+        robot.m_NavigationManager.runMockNavigator();
+        robot.m_GraphViewer.viewGraph();
+
 
     }
 

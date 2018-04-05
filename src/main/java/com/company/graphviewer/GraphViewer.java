@@ -1,5 +1,8 @@
-package com.company.navigation;
+package com.company.graphviewer;
 
+import com.company.MainRobot;
+import com.company.navigation.GraphManager;
+import com.company.navigation.GraphProperties;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
@@ -25,12 +28,12 @@ public class GraphViewer extends JFrame {
     private Dimension m_dimension;
     private VisualizationViewer m_vv;
     private StaticLayout m_layout;
-    private GraphManager m_mp;
+    private GraphManager m_graphManager;
 
-    public GraphViewer(String title, GraphManager mp) throws HeadlessException {
-        super(title);
-        m_mp = mp;
-        m_layout=m_mp.getM_layout();
+    public GraphViewer(MainRobot mainRobot) throws HeadlessException {
+        super(mainRobot.getName());
+        m_graphManager = mainRobot.getM_GraphManager();
+        m_layout= m_graphManager.getM_layout();
         m_dimension= new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH);
 
     }
@@ -76,8 +79,8 @@ public class GraphViewer extends JFrame {
         return  new Transformer<Integer, Paint>() {
             public Paint transform(Integer vID) {
 
-                if (m_mp.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
-                else if (m_mp.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
+                if (m_graphManager.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
+                else if (m_graphManager.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
                 else return GraphProperties.NODE_COLOR;
 
             }
@@ -94,7 +97,7 @@ public class GraphViewer extends JFrame {
     private void drawVertexCoords(){
         m_vv.getRenderContext().setVertexLabelTransformer(new Transformer<Integer, String>() {
             public String transform(Integer e) {
-                String s= "C:"+m_mp.getVertex(e).getM_coords().toString();
+                String s= "C:"+ m_graphManager.getVertex(e).getM_coords().toString();
                 return (e.toString()+s );
             }
         });

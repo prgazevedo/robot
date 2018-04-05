@@ -1,5 +1,6 @@
 package com.company.navigation;
 
+import com.company.MainRobot;
 import javafx.geometry.Point2D;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -14,8 +15,6 @@ import java.util.TreeMap;
 public class PathManager {
 
 
-
-
     /**
      * Key is order of path ,Value is Id of vertex
      */
@@ -23,60 +22,38 @@ public class PathManager {
     private Integer m_currentPositionIteration_Key;
     private Integer m_currentPositionVertexID_Value;
     private NavigableMap<Integer, PathItem> m_path;
-    private GraphManager m_mp;
-
-    private final static Logger logger =  LogManager.getLogger(PathManager.class);
+    private GraphManager m_graphManager;
+    private MainRobot m_MainRobot;
+    private Orientation m_MyOrientation;
 
     public Orientation getM_MyOrientation() {
         return m_MyOrientation;
     }
-
-    private Orientation m_MyOrientation;
-
     public Integer getM_currentPositionIteration_Key() {
         return m_currentPositionIteration_Key;
     }
-
-    public void setM_currentPositionIteration_Key(Integer m_currentPositionIteration_Key) {
-        this.m_currentPositionIteration_Key = m_currentPositionIteration_Key;
-    }
-
     public Integer getM_currentPositionVertexID_Value() {
         return m_currentPositionVertexID_Value;
     }
-
-    public void setM_currentPositionVertexID_Value(Integer m_currentPositionVertexID_Value) {
-        this.m_currentPositionVertexID_Value = m_currentPositionVertexID_Value;
-    }
-
-    public Integer getM_retracePositionIteration_Key() {
-        return m_retracePositionIteration_Key;
-    }
-
+    public Integer getM_retracePositionIteration_Key() { return m_retracePositionIteration_Key; }
     public Integer getRetracePositionVertexID(){
         return m_path.get(m_retracePositionIteration_Key).getM_VertexId();
     }
 
-    public PathManager(GraphManager mg) {
-        m_mp=mg;
+    private  void writeLog(org.apache.logging.log4j.Level messageLevel,String message){ m_MainRobot.writeLog(messageLevel,message); }
+
+    public PathManager(MainRobot mainRobot) {
+        m_MainRobot = mainRobot;
+        m_graphManager =mainRobot.getM_GraphManager();
         m_path = new TreeMap<Integer, PathItem>();
-
-
     }
 
-    public int getStartVertexID(){
-        return m_mp.getVertexId(new Point2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
-    }
 
-    private static void writeLog(org.apache.logging.log4j.Level messageLevel,String message){
-        logger.log(messageLevel,message);
-    }
-
-    public void Init(){
+    public void initialize(){
         m_MyOrientation = new Orientation(Direction.NORTH);
         m_currentPositionIteration_Key = 0;
         m_currentPositionVertexID_Value=getStartVertexID();
-        m_mp.setVertexVisited(m_currentPositionVertexID_Value,true);
+        m_graphManager.setVertexVisited(m_currentPositionVertexID_Value,true);
         PathItem newPathItem = new PathItem(m_currentPositionVertexID_Value, m_MyOrientation.getMy_Direction());
         m_path.put(m_currentPositionIteration_Key, newPathItem);
 
@@ -86,7 +63,7 @@ public class PathManager {
     {
         //Due to retrace we might have changed position
         int v0 = getM_currentPositionVertexID_Value();
-        int v1= m_mp.getNeighborID(v0,new_direction);
+        int v1= m_graphManager.getNeighborID(v0,new_direction);
         return new PathItem(v1,new_direction);
     }
 
@@ -94,7 +71,7 @@ public class PathManager {
     public boolean newPosition(int location){
         m_currentPositionIteration_Key++;
         m_currentPositionVertexID_Value =location;
-        m_mp.setVertexVisited(location,true);
+        m_graphManager.setVertexVisited(location,true);
         if(m_currentPositionIteration_Key>GraphProperties.NAV_ITERATIONS)
         {
             writeLog(Level.INFO,"newPosition exceeded number of Navigation Iterations:" + m_currentPositionVertexID_Value);
@@ -117,8 +94,8 @@ public class PathManager {
         PathItem newPathItem = new PathItem(v1, m_MyOrientation.getMy_Direction());
         m_path.put(m_currentPositionIteration_Key, newPathItem);
         //And the Edge to Jung Graph
-        m_mp.AddEdge(String.valueOf(m_currentPositionIteration_Key), v0, v1);
-        m_mp.setNeighborInDirectionVisited(v0,direction,true);
+        m_graphManager.AddEdge(String.valueOf(m_currentPositionIteration_Key), v0, v1);
+        m_graphManager.setNeighborInDirectionVisited(v0,direction,true);
 
     }
 
@@ -147,6 +124,8 @@ public class PathManager {
     }
 
 
-
+    public int getStartVertexID(){
+        return m_graphManager.getVertexId(new Point2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
+    }
 
 }
