@@ -39,21 +39,20 @@ public class WriteThread extends Thread {
     public boolean isM_shouldRun() {
         return m_shouldRun;
     }
-
     public void setM_shouldRun(boolean m_shouldRun) {
         this.m_shouldRun = m_shouldRun;
     }
-
-
+    private ThreadManager m_threadManager;
 
     public WriteThread(String name) {
         super(name);
     }
 
-    public WriteThread(MessageRecordQueue queue, SerialPort serialPort) {
+    public WriteThread(ThreadManager threadManager){
         super("writeThread");
-        m_queue=queue;
-        m_comPort=serialPort;
+        m_threadManager = threadManager;
+        m_queue=m_threadManager.getM_queue();
+        m_comPort=threadManager.getM_comPort();
         m_shouldRun=true;
         m_parser= new MessageRecordParser();
         m_outputStream = m_comPort.getOutputStream();
@@ -174,7 +173,13 @@ public class WriteThread extends Thread {
         sendMessage(payload.toSerial());
     }
 
-
+    public void look(int degrees )
+    {
+        m_MPB.setM_cmd_type(CommsProperties.cmds.Rotate);
+        m_MPB.addArg(String.valueOf(degrees));
+        MessagePayload payload = m_MPB.build();
+        sendMessage(payload.toSerial());
+    }
 
 
     private void sendMessage(String cmd)

@@ -3,7 +3,7 @@ package com.company.movement;
 
 import com.company.MainRobot;
 import com.company.Manager;
-import com.company.WorkingThreads.RobotProxy;
+import com.company.WorkingThreads.ThreadManager;
 import com.company.navigation.Direction;
 import org.apache.logging.log4j.Level;
 
@@ -11,7 +11,7 @@ public class MovementManager extends Manager {
 
     /** RobotProxy **/
     private MainRobot m_mainRobot;
-    private RobotProxy m_roboProxy;
+    private ThreadManager m_roboProxy;
 
 
 
@@ -22,8 +22,8 @@ public class MovementManager extends Manager {
 
 
 
-    public void test() {
-
+    public void testEngines() {
+        writeLog(Level.INFO,"MovementManager:testEngines");
         //Test write to Arduino
         move(Direction.NORTH,10);
 
@@ -57,7 +57,8 @@ public class MovementManager extends Manager {
         }
     }
 
-    private void rotate(Integer degrees){
+
+    public void rotate(Integer degrees){
         int rotation_time=MovementProperties.ROT_MULTIPLIER*degrees;
 
         if(degrees<0) {
@@ -69,7 +70,7 @@ public class MovementManager extends Manager {
     }
 
 
-    private void move(Integer distance){
+    public void move(Integer distance){
         int move_time=MovementProperties.TIME_MOVE_MULTIPLIER*distance;
 
         if(distance>0) {
@@ -80,6 +81,13 @@ public class MovementManager extends Manager {
             m_roboProxy.move(false,MovementProperties.ROT_SPEED_OF_MOVEMENT,move_time);
         }
     }
+
+    public void look(Integer degrees){
+        if(degrees>0 && degrees<180) {
+            m_roboProxy.look(degrees);
+        }
+    }
+
 
 
 }

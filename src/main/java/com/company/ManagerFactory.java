@@ -1,6 +1,6 @@
 package com.company;
 
-import com.company.WorkingThreads.RobotProxy;
+import com.company.WorkingThreads.ThreadManager;
 import com.company.comms.CommsManager;
 import com.company.graphviewer.GraphViewer;
 import com.company.movement.MovementManager;
@@ -13,7 +13,7 @@ public class ManagerFactory implements IManager{
 
     MainRobot m_mainRobot;
 
-    private RobotProxy m_RobotProxy;
+    private ThreadManager m_ThreadManager;
     private GraphViewer m_GraphViewer;
     private NavigationManager m_NavigationManager;
     private MovementManager m_MovementManager;
@@ -86,11 +86,11 @@ public class ManagerFactory implements IManager{
     }
 
     public IManager getRobotProxy(){
-        if(m_RobotProxy==null){
-            m_RobotProxy =  new RobotProxy(m_mainRobot);
-            m_RobotProxy.initialize();
+        if(m_ThreadManager ==null){
+            m_ThreadManager =  new ThreadManager(m_mainRobot);
+            m_ThreadManager.initialize();
         }
-        return m_RobotProxy;
+        return m_ThreadManager;
 
     }
 

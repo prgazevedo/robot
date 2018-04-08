@@ -120,9 +120,10 @@ void ShowCommands()
   writeToSerial(F(" 2,<direction:LEFT/RIGHT>,<speed:0-150>,<time: in ms>; "));
   writeToSerial(F(" 3,<angle:0-180>; "));
   writeToSerial(F(" 4;Ping Arduino"));
-  writeToSerial(F(" 5;Ack Ping"));
+  writeToSerial(F(" 5,ID;Ack Ping"));
   writeToSerial(F(" 6;Ping from Arduino to verify readiness of counterpart"));
   writeToSerial(F(" 7;Ack from Arduino counterpart"));
+
 }
 
 // ------------------  C A L L B A C K S -----------------------
@@ -139,11 +140,11 @@ void OnUnknownCommand()
   cmdMessenger.sendCmdEnd();
 }
 
-void OnArduinoReady()
+void OnArduinoReady(int ID)
 {
-  // In response to ping. We just send a throw-away Acknowledgment to say "i'm ready"
+  // In response to ping/cmd. In case of ping We just send a throw-away Acknowledgment to say "i'm ready"
   writeToSerialAndFlush(F("OnArduinoReady"));
-  cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
+  cmdMessenger.sendCmd(kAcknowledge,String(ID)+",Arduino ready");
 }
 
 void OnAskUsIfReady()
@@ -194,7 +195,7 @@ void OnMove()
       
     }
     //send ack
-    //OnArduinoReady();
+    OnArduinoReady();
     
 }
 
@@ -220,7 +221,7 @@ void OnRotate()
       
     }
     //send ack
-    //OnArduinoReady();
+    OnArduinoReady();
     
 }
 

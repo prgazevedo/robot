@@ -47,7 +47,7 @@ public class MessagePayload {
         return null;
     }
 
-    public ArrayList<String> getM_Args(int i) {
+    public ArrayList<String> getM_Args() {
         return this.m_Args;
     }
 

@@ -19,19 +19,15 @@
 package com.company;
 
 
-import com.company.WorkingThreads.RobotProxy;
+import com.company.WorkingThreads.ThreadManager;
 
 import com.company.comms.CommsManager;
 import com.company.movement.MovementManager;
 import com.company.navigation.GraphManager;
-import com.company.navigation.GraphProperties;
 import com.company.graphviewer.GraphViewer;
 import com.company.navigation.NavigationManager;
 import com.company.navigation.PathManager;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 
 
 public class MainRobot extends Manager {
@@ -44,7 +40,7 @@ public class MainRobot extends Manager {
 
     private ManagerFactory m_managerFactory;
 
-    public RobotProxy getM_Proxy() { return (RobotProxy)getMF().getRobotProxy(); }
+    public ThreadManager getM_Proxy() { return (ThreadManager)getMF().getRobotProxy(); }
     public GraphViewer getM_GraphViewer() { return (GraphViewer)getMF().getGraphViewer(); }
     public  NavigationManager getM_NavigationManager() { return (NavigationManager) getMF().getNavigationManager(); }
     public  MovementManager getM_MovementManager() { return (MovementManager) getMF().getMovementManager(); }
@@ -71,7 +67,7 @@ public class MainRobot extends Manager {
         robot.writeLog(Level.INFO, "Robot main start");
         robot.initialize();
         robot.writeLog(Level.INFO, "Robot main initialize");
-        robot.getM_MovementManager().test();
+        robot.getM_MovementManager().testEngines();
         robot.getM_NavigationManager().runMockNavigator();
         robot.getM_GraphViewer().viewGraph();
 

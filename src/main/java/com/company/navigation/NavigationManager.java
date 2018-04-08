@@ -4,9 +4,10 @@ import java.util.NavigableMap;
 
 import com.company.MainRobot;
 import com.company.Manager;
+import com.company.events.IEvent;
 import org.apache.logging.log4j.Level;
 
-public class NavigationManager extends Manager {
+public class NavigationManager extends Manager implements IEvent {
 
     /**
      * Key is order of path ,Value is Id of vertex
@@ -51,10 +52,6 @@ public class NavigationManager extends Manager {
 
         }
         writeLog(Level.INFO,"runMockNavigator End navigation");
-    }
-
-    public void runRealNavigator(){
-
     }
 
 
@@ -182,5 +179,18 @@ public class NavigationManager extends Manager {
     }
 
 
+    @Override
+    public synchronized void carMoved(boolean fwd, int distance) {
 
+    }
+
+    @Override
+    public synchronized void carRotated(Direction direction) {
+
+    }
+
+    @Override
+    public synchronized void distanceTaken(int distance, Direction direction) {
+
+    }
 }

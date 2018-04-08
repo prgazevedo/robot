@@ -6,9 +6,10 @@ import org.apache.logging.log4j.Logger;
 
 public class MonitorThread extends Thread {
 
-    MessageRecordQueue m_queue=null;
-    MessageRecordParser m_parser=null;
-    WriteThread m_writeThread=null;
+    ThreadManager m_threadManager;
+    MessageRecordQueue m_queue;
+    MessageRecordParser m_parser;
+    WriteThread m_writeThread;
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
 
@@ -26,9 +27,10 @@ public class MonitorThread extends Thread {
         super(name);
     }
 
-    public MonitorThread(MessageRecordQueue queue) {
+    public MonitorThread(ThreadManager threadManager) {
         super("monitorThread");
-        m_queue=queue;
+        m_threadManager = threadManager;
+        m_queue= threadManager.getM_queue();
         m_shouldRun=true;
         m_parser= new MessageRecordParser();
     }
@@ -54,10 +56,7 @@ public class MonitorThread extends Thread {
 
     private void handleMessage(MessagePayload messagePayload)
     {
-        if(messagePayload.getM_cmd_type().equals(CommsProperties.cmds.AreYouReady))
-        {
-            m_writeThread.AckWeAreReady();
-        }
+        m_threadManager.Process(messagePayload.getM_Args(),messagePayload.getM_cmd_type());
     }
 
     public void run() {
