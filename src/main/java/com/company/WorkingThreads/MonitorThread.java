@@ -1,8 +1,13 @@
 package com.company.WorkingThreads;
 
 import com.company.comms.*;
+import com.company.events.EventCaller;
+import com.company.events.EventNotifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class MonitorThread extends Thread {
 
@@ -10,6 +15,7 @@ public class MonitorThread extends Thread {
     MessageRecordQueue m_queue;
     MessageRecordParser m_parser;
     WriteThread m_writeThread;
+    LinkedList<EventNotifier> m_caller;
     private final static Logger log =  LogManager.getLogger(SeriaListener.class);
     private boolean m_shouldRun = false;
 
@@ -56,7 +62,7 @@ public class MonitorThread extends Thread {
 
     private void handleMessage(MessagePayload messagePayload)
     {
-        m_threadManager.Process(messagePayload.getM_Args(),messagePayload.getM_cmd_type());
+        Process(messagePayload.getM_Args(),messagePayload.getM_cmd_type());
     }
 
     public void run() {
@@ -77,5 +83,21 @@ public class MonitorThread extends Thread {
 
     public void setWriteThread(WriteThread writeThread) {
         m_writeThread=writeThread;
+    }
+
+    public void notifyME(EventNotifier eventNotifier) {
+        m_caller.add(eventNotifier);
+
+    }
+
+    public void Process(ArrayList<String> m_args, CommsProperties.cmds m_cmd_type) {
+        if(m_cmd_type.equals(CommsProperties.cmds.AreYouReady))
+        {
+            m_writeThread.AckWeAreReady();
+        }
+        else if(m_cmd_type.equals(CommsProperties.cmds.Acknowledge))
+        {
+            m_caller.getLast().doWork(m_args);
+        }
     }
 }

@@ -40,7 +40,7 @@ public class MainRobot extends Manager {
 
     private ManagerFactory m_managerFactory;
 
-    public ThreadManager getM_Proxy() { return (ThreadManager)getMF().getRobotProxy(); }
+    public ThreadManager getM_ThreadManager() { return (ThreadManager)getMF().getThreadManager(); }
     public GraphViewer getM_GraphViewer() { return (GraphViewer)getMF().getGraphViewer(); }
     public  NavigationManager getM_NavigationManager() { return (NavigationManager) getMF().getNavigationManager(); }
     public  MovementManager getM_MovementManager() { return (MovementManager) getMF().getMovementManager(); }

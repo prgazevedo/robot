@@ -29,8 +29,7 @@ public class NavigationManager extends Manager implements IEvent {
 
 
     public void runMockNavigator(){
-
-
+        m_mainRobot.getM_MovementManager().move(10);
         while(m_PathManager.getM_currentPositionIteration_Key()<GraphProperties.NAV_ITERATIONS)
         {
         //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
@@ -181,7 +180,7 @@ public class NavigationManager extends Manager implements IEvent {
 
     @Override
     public synchronized void carMoved(boolean fwd, int distance) {
-
+        System.out.println("MOVED");
     }
 
     @Override

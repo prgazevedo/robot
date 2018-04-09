@@ -1,42 +1,43 @@
 package com.company.events;
 
+import com.company.movement.IMovement;
 import com.company.navigation.Direction;
+
+import java.util.ArrayList;
 
 public class EventNotifier
 {
-    private IEvent ie;
-    private boolean somethingHappened;
-    public EventNotifier (IEvent event)
+
+
+    private EventCaller m_caller;
+    public EventNotifier (EventCaller caller)
     {
         // Save the event object for later use.
-        ie = event;
+        m_caller=caller;
         // Nothing to report yet.
-        somethingHappened = false;
-    }
-    //...
-
-
-    public void carMoved (boolean fwd,int distance){
-
-    }
-    public void carRotated (Direction direction ){
-
-    }
-    public void distanceTaken (int distance, Direction direction){
 
     }
 
 
-
-    public void doWork ()
+    public void doWork(ArrayList<String> args)
     {
-        // Check the predicate, which is set elsewhere.
-        if (somethingHappened)
-        {
-            // Signal the even by invoking the interface's method.
-            ie.interestingEvent ();
-        }
-        //...
+        System.out.println("doWork called");
+        //TODO for now hardcoded
+        doCallback(IEvent.EVENT.CAR_MOVED,1,10);
     }
+
+
+    public void doCallback (IEvent.EVENT event, Object ... args)
+    {
+        System.out.println("doCallBAck called");
+
+       if(event.equals(IEvent.EVENT.CAR_MOVED)){
+           m_caller.carMoved((boolean)args[0],(int)args[1]);
+       }
+
+
+    }
+
+
     // ...
 }

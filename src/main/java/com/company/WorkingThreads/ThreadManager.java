@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Level;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class ThreadManager extends Manager implements IMovement,IManager {
+public class ThreadManager extends Manager implements IManager {
 
 
 
@@ -47,25 +47,6 @@ public class ThreadManager extends Manager implements IMovement,IManager {
     public void writeLog(Level messageLevel, String message) { m_mainRobot.writeLog(messageLevel,this.getClass().toString()+":"+message); }
 
 
-
-    @Override
-    public void look(int degrees) {
-        m_writeThread.look(degrees);
-        sleep();
-    }
-
-    @Override
-    public void move(boolean fwd_direction, int speed, int time) {
-        m_writeThread.move(fwd_direction,speed,time);
-        sleep();
-    }
-
-    @Override
-    public void rotate(boolean west_direction, int speed, int time) {
-        m_writeThread.rotate(west_direction,speed,time);
-        sleep();
-
-    }
 
 
     public ThreadManager(MainRobot mainRobot) {
@@ -134,14 +115,5 @@ public class ThreadManager extends Manager implements IMovement,IManager {
     }
 
 
-    public void Process(ArrayList<String> m_args, CommsProperties.cmds m_cmd_type) {
-        if(m_cmd_type.equals(CommsProperties.cmds.AreYouReady))
-        {
-            m_writeThread.AckWeAreReady();
-        }
-        else if(m_cmd_type.equals(CommsProperties.cmds.Acknowledge))
-        {
-           //TODO
-        }
-    }
+
 }

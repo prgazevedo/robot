@@ -35,7 +35,7 @@ public class ManagerFactory implements IManager{
         getGraphManager();
         getNavigationManager();
         getPathManager();
-        getRobotProxy();
+        getThreadManager();
         getGraphViewer();
     }
 
@@ -85,7 +85,7 @@ public class ManagerFactory implements IManager{
 
     }
 
-    public IManager getRobotProxy(){
+    public IManager getThreadManager(){
         if(m_ThreadManager ==null){
             m_ThreadManager =  new ThreadManager(m_mainRobot);
             m_ThreadManager.initialize();
