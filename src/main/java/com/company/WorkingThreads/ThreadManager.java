@@ -39,6 +39,8 @@ public class ThreadManager extends Manager implements IManager {
     public void initialize(){
         m_queue = m_mainRobot.getM_CommsManager().getM_queue();
         m_comPort = m_mainRobot.getM_CommsManager().getM_comPort();
+        createWriteThread();
+        createMonitorThread();
         startWriteThread();
         startMonitorThread();
     }
@@ -51,8 +53,7 @@ public class ThreadManager extends Manager implements IManager {
 
     public ThreadManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
-        createWriteThread();
-        createMonitorThread();
+
 
     }
 

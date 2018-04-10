@@ -86,6 +86,7 @@ const PROGMEM enum {
   kMove              , // 1-Command to move
   kRotate    ,        // 2-Command to rotate
   kScan              , // 3-Command to scan
+
   // Setup connection test
     kAreYouReady              , // 4-Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
     kAcknowledge              , // 5-Command to acknowledge that cmd was received
@@ -93,6 +94,9 @@ const PROGMEM enum {
     kAskUsIfReady             , // 6-Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
     kYouAreReady              , // 7-Command to acknowledge that other is ready
     kError,                     // 8-Error
+        kAckMove              , // 9-Command to move
+  kAckRotate    ,        // 10-Command to rotate
+  kAckScan              , // 11-Command to scan
 } cmds;
 
 // Callbacks define on which received commands we take action
@@ -140,11 +144,11 @@ void OnUnknownCommand()
   cmdMessenger.sendCmdEnd();
 }
 
-void OnArduinoReady(int ID)
+void OnArduinoReady()
 {
   // In response to ping/cmd. In case of ping We just send a throw-away Acknowledgment to say "i'm ready"
   writeToSerialAndFlush(F("OnArduinoReady"));
-  cmdMessenger.sendCmd(kAcknowledge,String(ID)+",Arduino ready");
+  cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
 }
 
 void OnAskUsIfReady()
@@ -154,6 +158,38 @@ void OnAskUsIfReady()
    int isAck = cmdMessenger.sendCmd(kAreYouReady, "Asking PC if ready", true, kAcknowledge,1000 );
   // Now we send back whether or not we got an acknowledgments
   cmdMessenger.sendCmd(kYouAreReady,isAck?1:0);
+}
+
+void AckMove(boolean bMove, int speed, int time)
+{
+  writeToSerialAndFlush(F("AckMove"));
+  
+  cmdMessenger.sendCmdStart(kAckMove);
+  cmdMessenger.sendCmdArg(String(bMove));
+  cmdMessenger.sendCmdArg(String(speed));
+  cmdMessenger.sendCmdArg(String(time));
+  cmdMessenger.sendCmdEnd();
+}
+
+void AckRotate(boolean bRotate, int speed, int time)
+{
+  writeToSerialAndFlush(F("AckMove"));
+  
+  cmdMessenger.sendCmdStart(kAckRotate);
+  cmdMessenger.sendCmdArg(String(bRotate));
+  cmdMessenger.sendCmdArg(String(speed));
+  cmdMessenger.sendCmdArg(String(time));
+  cmdMessenger.sendCmdEnd();
+}
+
+void AckScan(int angle, int distance)
+{
+  writeToSerialAndFlush(F("AckMove"));
+  
+  cmdMessenger.sendCmdStart(kAckScan);
+  cmdMessenger.sendCmdArg(String(angle));
+  cmdMessenger.sendCmdArg(String(distance));
+  cmdMessenger.sendCmdEnd();
 }
 
 // Callback function that shows a list of commands
@@ -195,7 +231,8 @@ void OnMove()
       
     }
     //send ack
-    OnArduinoReady();
+    AckMove(bdir,speed,time);
+
     
 }
 
@@ -221,7 +258,7 @@ void OnRotate()
       
     }
     //send ack
-    OnArduinoReady();
+    AckRotate(bdir,speed,time);
     
 }
 
@@ -232,9 +269,9 @@ void OnScan()
    int angle = cmdMessenger.readInt16Arg();
     writeToSerial("Rotate angle is: "+String(angle));
     servoLook(angle);
-    testDistance();
+    int dist = distanceTest();
     //send ack
-    OnArduinoReady();
+    AckScan(angle,dist);
     
 
 }
@@ -347,7 +384,7 @@ void moveStop()
 // ------------------  UltraSonic Code -----------------------
 
  /*Ultrasonic distance measurement Sub function*/
-int Distance_test()
+int distanceTest()
 {
 
   digitalWrite(Trig, LOW);
@@ -361,11 +398,6 @@ int Distance_test()
   return (int)Fdistance;
 }
 
-void testDistance()
-{
-    writeToSerialAndFlush(F("testDistance"));
-    Distance_test();
-}
 
 void setupUSServo()
 {
@@ -459,7 +491,7 @@ void setup() {
   delay(500);
   testEngines();
   delay(500);
-  testDistance();
+  distanceTest();
   ShowCommands();
   writeToSerialAndFlush("setup ended");
 

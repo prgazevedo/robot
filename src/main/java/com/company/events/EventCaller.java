@@ -1,28 +1,33 @@
 package com.company.events;
 
+import com.company.ApplicationProperties;
+import com.company.MainRobot;
 import com.company.Manager;
 import com.company.WorkingThreads.ThreadManager;
 import com.company.movement.IMovement;
 import com.company.navigation.Direction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class EventCaller implements IMovement,IEvent{
+public class EventCaller extends Manager implements IMovement,IEvent{
 
     private ThreadManager m_threadManager;
-    private HashMap<EVENT,IEvent> managerArrayList;
+    private HashMap<EVENT,IEvent> m_CallerMap;
     private EventNotifier en;
-    public EventCaller (ThreadManager threadManager)
+    public EventCaller (MainRobot mainRobot)
     {
-        m_threadManager= threadManager;
+        m_threadManager= mainRobot.getM_ThreadManager();
+        m_CallerMap = new HashMap<EVENT,IEvent>();
 
     }
 
 
     public void addEventCaller(IEvent caller,IEvent.EVENT event){
         System.out.println("addEventCaller move called");
-        managerArrayList.put(event,caller);
+        m_CallerMap.put(event,caller);
         // Create the event notifier and pass ourself to it.
         en = new EventNotifier (this);
         //make the call
@@ -32,20 +37,20 @@ public class EventCaller implements IMovement,IEvent{
 
 
     public IEvent getCalleeFromEvent(IEvent.EVENT key){
-        return managerArrayList.get(key);
+        return m_CallerMap.get(key);
     }
     //...
     @Override
-    public void carMoved (boolean fwd,int distance){
+    public void carMoved (boolean fwd,int speed, int time){
         System.out.println("EventCaller cardMoved called");
-        getCalleeFromEvent(EVENT.CAR_MOVED).carMoved(fwd,distance);
+        getCalleeFromEvent(EVENT.CAR_MOVED).carMoved(fwd,speed,time);
     }
     @Override
-    public void carRotated (Direction direction ){
+    public void carRotated (boolean left,int speed, int time){
 
     }
     @Override
-    public void distanceTaken (int distance, Direction direction){
+    public void distanceTaken (int angle,int distance ){
 
     }
 

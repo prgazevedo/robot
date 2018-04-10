@@ -136,7 +136,7 @@ public class CommsManager extends Manager {
     private void addEventListeners(SerialPort comPort)
     {
         writeLog(Level.INFO," addEventListeners called");
-        SeriaListener listener = new SeriaListener(this);
+        SerialListener listener = new SerialListener(this);
         listener.initialize(comPort,m_queue);
         comPort.addDataListener(listener);
 

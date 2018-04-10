@@ -1,7 +1,6 @@
 package com.company.WorkingThreads;
 
 import com.company.comms.*;
-import com.company.movement.MovementProperties;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +31,7 @@ public class WriteThread extends Thread {
     /** The input stream to the port */
     private static InputStreamReader m_inputStream=null;
     private static MessageRecordQueue m_queue=null;
-    private static Logger log =  LogManager.getLogger(SeriaListener.class);
+    private static Logger log =  LogManager.getLogger(SerialListener.class);
     private boolean m_shouldRun = false;
     private static MessageRecordParser m_parser=null;
     private MessagePayload.MessagePayloadBuilder m_MPB;

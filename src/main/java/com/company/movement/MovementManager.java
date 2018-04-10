@@ -8,7 +8,7 @@ import com.company.events.IEvent;
 import com.company.navigation.Direction;
 import org.apache.logging.log4j.Level;
 
-public class MovementManager extends Manager {
+public class MovementManager extends Manager implements IEvent {
 
     /** RobotProxy **/
     private MainRobot m_mainRobot;
@@ -18,7 +18,7 @@ public class MovementManager extends Manager {
 
     public MovementManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
-        m_eventCaller = new EventCaller(m_mainRobot.getM_ThreadManager());
+        m_eventCaller = new EventCaller(m_mainRobot);
 
     }
 
@@ -61,7 +61,8 @@ public class MovementManager extends Manager {
 
 
     public void rotate(Integer degrees){
-
+        m_eventCaller.addEventCaller(this, EVENT.CAR_ROTATED);
+        writeLog(Level.INFO,"Movement Manager-rotate called degrees:"+degrees);
         int rotation_time=MovementProperties.ROT_MULTIPLIER*degrees;
 
         if(degrees<0) {
@@ -74,8 +75,8 @@ public class MovementManager extends Manager {
 
 
     public void move(Integer distance){
-        m_eventCaller.addEventCaller(m_mainRobot.getM_NavigationManager(), IEvent.EVENT.CAR_MOVED);
-        writeLog(Level.INFO,"Movement Manager-move called:"+distance);
+        m_eventCaller.addEventCaller(this, IEvent.EVENT.CAR_MOVED);
+        writeLog(Level.INFO,"Movement Manager-rotate called distance:"+distance);
         int move_time=MovementProperties.TIME_MOVE_MULTIPLIER*distance;
 
         if(distance>0) {
@@ -88,11 +89,26 @@ public class MovementManager extends Manager {
     }
 
     public void look(Integer degrees){
+        m_eventCaller.addEventCaller(this, EVENT.DISTANCE_TAKEN);
+        writeLog(Level.INFO,"Movement Manager-look called, degrees:"+degrees);
         if(degrees>0 && degrees<180) {
             m_eventCaller.look(degrees);
         }
     }
 
+    @Override
+    public synchronized void carMoved(boolean fwd, int speed, int time) {
+        System.out.println("MOVED:"+fwd+",Speed:"+speed+",Time:"+time);
+    }
 
+    @Override
+    public synchronized void carRotated(boolean fwd, int speed, int time)  {
+        System.out.println("ROTATED:"+fwd+",Speed:"+speed+",Time:"+time);
+    }
+
+    @Override
+    public synchronized void distanceTaken(int degrees, int distance) {
+        System.out.println("DISTANCE TAKEN:"+distance+",degrees:"+degrees+" distance:"+distance);
+    }
 
 }

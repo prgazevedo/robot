@@ -36,6 +36,9 @@ public class CommsProperties {
         AskUsIfReady             , // 6-Command to ask other side to ask if ready Arduino -> RPI: "AskUsIfReady" will cause RPI -> Arduino: "YouAreReady"
         AckYouAreReady              , // 7-Command to acknowledge that other is ready
         Error,                      // 8-Error
+        AckMove              , // 9-Command to move
+        AckRotate    , // 10-Command to rotate
+        AckScan              , // 11-Command to scan
         None, //No comand was identified
     } ;
 

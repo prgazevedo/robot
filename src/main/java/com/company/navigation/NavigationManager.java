@@ -7,7 +7,7 @@ import com.company.Manager;
 import com.company.events.IEvent;
 import org.apache.logging.log4j.Level;
 
-public class NavigationManager extends Manager implements IEvent {
+public class NavigationManager extends Manager  {
 
     /**
      * Key is order of path ,Value is Id of vertex
@@ -178,18 +178,5 @@ public class NavigationManager extends Manager implements IEvent {
     }
 
 
-    @Override
-    public synchronized void carMoved(boolean fwd, int distance) {
-        System.out.println("MOVED");
-    }
 
-    @Override
-    public synchronized void carRotated(Direction direction) {
-
-    }
-
-    @Override
-    public synchronized void distanceTaken(int distance, Direction direction) {
-
-    }
 }

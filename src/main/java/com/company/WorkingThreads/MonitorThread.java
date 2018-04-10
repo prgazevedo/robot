@@ -1,8 +1,9 @@
 package com.company.WorkingThreads;
 
 import com.company.comms.*;
-import com.company.events.EventCaller;
 import com.company.events.EventNotifier;
+import com.company.events.IEvent;
+import org.apache.commons.collections15.map.LinkedMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,8 +16,9 @@ public class MonitorThread extends Thread {
     MessageRecordQueue m_queue;
     MessageRecordParser m_parser;
     WriteThread m_writeThread;
-    LinkedList<EventNotifier> m_caller;
-    private final static Logger log =  LogManager.getLogger(SeriaListener.class);
+    EventNotifier m_caller;
+    //LinkedMap<IEvent.EVENT,EventNotifier> m_caller;
+    private final static Logger log =  LogManager.getLogger(SerialListener.class);
     private boolean m_shouldRun = false;
 
     public boolean isM_shouldRun() {
@@ -39,6 +41,7 @@ public class MonitorThread extends Thread {
         m_queue= threadManager.getM_queue();
         m_shouldRun=true;
         m_parser= new MessageRecordParser();
+        //m_caller = new LinkedMap<IEvent.EVENT,EventNotifier>();
     }
 
     private void processMessage(){
@@ -47,11 +50,21 @@ public class MonitorThread extends Thread {
             String recordPayload = m_parser.getRecordPayload(smr);
             MessagePayload messagePayload = MessagePayload.convertRecordtoMessagePayload(recordPayload);
             if(messagePayload!=null) {
-                log.info("Message Payload Cmd detected. Is Tx?:"+smr.getTxMessage()+" Payload is: " + messagePayload.toString());
-                handleMessage(messagePayload);
+                if(smr.getTxMessage()){
+                    log.info("Message Payload Cmd detected. Is Tx?:"+smr.getTxMessage()+" Payload is: " + messagePayload.toString());
+                }
+                else
+                {
+                    log.info("process() called:"+messagePayload.getM_cmd_type().toString());
+                    Process(messagePayload.getM_Args(),messagePayload.getM_cmd_type());
+                }
+
             }
             else{
+
                 log.info("No Message Payload Cmd detected. SerialMessageRecord was: " + smr.toString());
+
+
             }
         }
         catch(Exception e)
@@ -60,10 +73,6 @@ public class MonitorThread extends Thread {
         }
     }
 
-    private void handleMessage(MessagePayload messagePayload)
-    {
-        Process(messagePayload.getM_Args(),messagePayload.getM_cmd_type());
-    }
 
     public void run() {
 
@@ -86,7 +95,7 @@ public class MonitorThread extends Thread {
     }
 
     public void notifyME(EventNotifier eventNotifier) {
-        m_caller.add(eventNotifier);
+        m_caller=eventNotifier;
 
     }
 
@@ -95,9 +104,14 @@ public class MonitorThread extends Thread {
         {
             m_writeThread.AckWeAreReady();
         }
-        else if(m_cmd_type.equals(CommsProperties.cmds.Acknowledge))
+        else if(m_cmd_type.equals(CommsProperties.cmds.AckMove) ||
+                m_cmd_type.equals(CommsProperties.cmds.AckRotate) ||
+                m_cmd_type.equals(CommsProperties.cmds.AckRotate))
         {
-            m_caller.getLast().doWork(m_args);
+
+            log.info("Process called doWork()");
+            m_caller.doCallback(m_cmd_type, m_args);
+
         }
     }
 }

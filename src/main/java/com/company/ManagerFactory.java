@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.WorkingThreads.ThreadManager;
 import com.company.comms.CommsManager;
+import com.company.events.EventCaller;
 import com.company.graphviewer.GraphViewer;
 import com.company.movement.MovementManager;
 import com.company.navigation.GraphManager;
@@ -20,6 +21,7 @@ public class ManagerFactory implements IManager{
     private CommsManager m_CommsManager;
     private PathManager m_PathManager;
     private GraphManager m_GraphManager;
+    private EventCaller m_EventCaller;
 
 
 
@@ -31,12 +33,14 @@ public class ManagerFactory implements IManager{
     @Override
     public void initialize() {
         getCommsManager();
+        getThreadManager();
         getMovementManager();
         getGraphManager();
         getNavigationManager();
         getPathManager();
-        getThreadManager();
+
         getGraphViewer();
+        getEventCaller();
     }
 
     @Override
@@ -102,6 +106,13 @@ public class ManagerFactory implements IManager{
         return m_GraphViewer;
     }
 
-
+    public IManager getEventCaller(){
+        EventCaller m_EventCaller = null;
+        if(m_EventCaller==null) {
+            m_EventCaller = new EventCaller(m_mainRobot);
+            m_EventCaller.initialize();
+        }
+        return m_EventCaller;
+    }
 
 }

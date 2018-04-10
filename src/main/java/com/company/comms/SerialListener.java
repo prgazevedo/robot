@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public final class SeriaListener implements SerialPortPacketListener
+public final class SerialListener implements SerialPortPacketListener
 {
 
 
@@ -38,7 +38,7 @@ public final class SeriaListener implements SerialPortPacketListener
     private CommsManager m_commsManager;
 
 
-    public SeriaListener(CommsManager commsManager) {
+    public SerialListener(CommsManager commsManager) {
         m_commsManager = commsManager;
         m_parser= new MessageRecordParser();
 

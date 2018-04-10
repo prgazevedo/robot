@@ -113,7 +113,26 @@ public class MessagePayload {
     }
 
 
+    private static boolean isMessagePayloadAAnswer(String payload)
+    {
+        if(payload !=null)
+        {
+            //If the m_recordPayload is terminated it probably is a Ans
+            if(payload.substring(payload.length() - 1).equals(";"))
+            {
 
+                //if it  starts with "[Arduino]" it is a command
+                if(payload.contains("[Arduino]"))
+                {
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
+        }
+        else return false;
+
+    }
 
     public static MessagePayload convertRecordtoMessagePayload(String messageRecordPayload){
         m_messagePayload = messageRecordPayload;
@@ -129,6 +148,19 @@ public class MessagePayload {
             }
 
         }
+        if(isMessagePayloadAAnswer(messageRecordPayload)) {
+            try {
+                MessagePayload.MessagePayloadBuilder MPB = new MessagePayload.MessagePayloadBuilder();
+
+                return MPB.build(messageRecordPayload);
+
+            }
+            catch(Exception e){
+                throw new RuntimeException("convertRecordtoMessagePayload - Exception: "+e.toString());
+            }
+
+        }
+
         else return null;
 
     }

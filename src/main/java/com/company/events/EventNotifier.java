@@ -1,5 +1,6 @@
 package com.company.events;
 
+import com.company.comms.CommsProperties;
 import com.company.movement.IMovement;
 import com.company.navigation.Direction;
 
@@ -19,25 +20,33 @@ public class EventNotifier
     }
 
 
-    public void doWork(ArrayList<String> args)
+    public void doCallback(CommsProperties.cmds cmds, ArrayList<String> args)
     {
         System.out.println("doWork called");
-        //TODO for now hardcoded
-        doCallback(IEvent.EVENT.CAR_MOVED,1,10);
+        IEvent.EVENT event = convertCmdToEvent(cmds);
+        if(event.equals(IEvent.EVENT.CAR_MOVED)) m_caller.carMoved(convertToBoolean(args.get(0)),Integer.valueOf(args.get(1)),Integer.valueOf(args.get(2)));
+        if(event.equals(IEvent.EVENT.CAR_ROTATED)) m_caller.carRotated(convertToBoolean(args.get(0)),Integer.valueOf(args.get(1)),Integer.valueOf(args.get(2)));
+        if(event.equals(IEvent.EVENT.CAR_MOVED))  m_caller.distanceTaken(Integer.valueOf(args.get(0)),Integer.valueOf(args.get(1)));
+    }
+
+    private IEvent.EVENT convertCmdToEvent(CommsProperties.cmds cmds){
+        switch(cmds){
+            case AckMove: return IEvent.EVENT.CAR_MOVED;
+            case AckRotate: return IEvent.EVENT.CAR_ROTATED;
+            case AckScan: return IEvent.EVENT.DISTANCE_TAKEN;
+            default: return IEvent.EVENT.NONE;
+        }
     }
 
 
-    public void doCallback (IEvent.EVENT event, Object ... args)
-    {
-        System.out.println("doCallBAck called");
 
-       if(event.equals(IEvent.EVENT.CAR_MOVED)){
-           m_caller.carMoved((boolean)args[0],(int)args[1]);
-       }
-
-
+    private boolean convertToBoolean(String value) {
+        boolean returnValue = false;
+        if ("1".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value) ||
+                "true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value))
+            returnValue = true;
+        return returnValue;
     }
-
 
     // ...
 }
