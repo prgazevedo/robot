@@ -9,5 +9,5 @@ public class MovementProperties {
     /** Rotation Engine Strength*/
     public static final int ROT_SPEED_OF_MOVEMENT = 100;
     /** Rotation Milliseconds to move Multiplier for degree*/
-    public static final int ROT_MULTIPLIER = 100;
+    public static final int ROT_MULTIPLIER = 10;
 }

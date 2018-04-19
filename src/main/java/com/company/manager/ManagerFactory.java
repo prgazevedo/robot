@@ -1,18 +1,20 @@
-package com.company;
+package com.company.manager;
 
+import com.company.MainRobot;
 import com.company.WorkingThreads.ThreadManager;
 import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
-import com.company.graphviewer.GraphViewer;
+import com.company.graph.GraphViewer;
 import com.company.movement.MovementManager;
-import com.company.navigation.GraphManager;
+import com.company.graph.GraphManager;
 import com.company.navigation.NavigationManager;
 import com.company.navigation.PathManager;
+import com.company.state.StateManager;
 import org.apache.logging.log4j.Level;
 
-public class ManagerFactory implements IManager{
+public class ManagerFactory extends Manager implements IManager{
 
-    MainRobot m_mainRobot;
+
 
     private ThreadManager m_ThreadManager;
     private GraphViewer m_GraphViewer;
@@ -22,6 +24,7 @@ public class ManagerFactory implements IManager{
     private PathManager m_PathManager;
     private GraphManager m_GraphManager;
     private EventCaller m_EventCaller;
+    private StateManager m_StateManager;
 
 
 
@@ -32,19 +35,19 @@ public class ManagerFactory implements IManager{
 
     @Override
     public void initialize() {
+        super.initialize();
         getCommsManager();
         getThreadManager();
         getMovementManager();
         getGraphManager();
         getNavigationManager();
         getPathManager();
-
         getGraphViewer();
         getEventCaller();
+        getStateManager();
     }
 
-    @Override
-    public  void writeLog(Level messageLevel, String message){ m_mainRobot.writeLog(messageLevel,message); }
+
 
 
     public IManager getCommsManager(){
@@ -107,12 +110,20 @@ public class ManagerFactory implements IManager{
     }
 
     public IManager getEventCaller(){
-        EventCaller m_EventCaller = null;
         if(m_EventCaller==null) {
             m_EventCaller = new EventCaller(m_mainRobot);
             m_EventCaller.initialize();
         }
         return m_EventCaller;
     }
+
+    public IManager getStateManager(){
+        if(m_StateManager==null) {
+            m_StateManager = new StateManager(m_mainRobot);
+            m_StateManager.initialize();
+        }
+        return m_StateManager;
+    }
+
 
 }

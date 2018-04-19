@@ -3,8 +3,9 @@ package com.company.navigation;
 import java.util.NavigableMap;
 
 import com.company.MainRobot;
-import com.company.Manager;
-import com.company.events.IEvent;
+import com.company.graph.GraphManager;
+import com.company.graph.GraphProperties;
+import com.company.manager.Manager;
 import org.apache.logging.log4j.Level;
 
 public class NavigationManager extends Manager  {
@@ -13,12 +14,14 @@ public class NavigationManager extends Manager  {
      * Key is order of path ,Value is Id of vertex
      */
     private NavigableMap<Integer, Integer> m_path;
-    private MainRobot m_mainRobot;
     private GraphManager m_GraphManager;
     private PathManager  m_PathManager;
     private RandomUtil m_random;
 
-
+    @Override
+    public void initialize() {
+        super.initialize();
+    }
 
     public NavigationManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
@@ -30,7 +33,7 @@ public class NavigationManager extends Manager  {
 
     public void runMockNavigator(){
         m_mainRobot.getM_MovementManager().move(10);
-        while(m_PathManager.getM_currentPositionIteration_Key()<GraphProperties.NAV_ITERATIONS)
+        while(m_PathManager.getM_currentPositionIteration_Key()< GraphProperties.NAV_ITERATIONS)
         {
         //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
             writeLog(Level.INFO,"runMockNavigator - iteration:"+m_PathManager.getM_currentPositionIteration_Key());

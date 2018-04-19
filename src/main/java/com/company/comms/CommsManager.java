@@ -2,7 +2,7 @@ package com.company.comms;
 
 import com.company.ApplicationProperties;
 import com.company.MainRobot;
-import com.company.Manager;
+import com.company.manager.Manager;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
 
@@ -15,8 +15,6 @@ public class CommsManager extends Manager {
 
     /** The the serial port we shall use */
     private  SerialPort m_comPort=null;
-    /** Handle back to Robot*/
-    private MainRobot m_mainRobot = null;
     /** The Message queue that holds serial messages*/
     private  MessageRecordQueue m_queue=null;
     /** List of serial ports */
@@ -41,6 +39,7 @@ public class CommsManager extends Manager {
 
     @Override
     public void initialize() {
+        super.initialize();
         String portId = null;
         m_serialPortlist = Arrays.asList(SerialPort.getCommPorts());
 

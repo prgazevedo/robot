@@ -99,6 +99,7 @@ const PROGMEM enum {
   kAckScan              , // 11-Command to scan
 } cmds;
 
+boolean bREADY=false;
 // Callbacks define on which received commands we take action
 void attachCommandCallbacks()
 {
@@ -148,16 +149,25 @@ void OnArduinoReady()
 {
   // In response to ping/cmd. In case of ping We just send a throw-away Acknowledgment to say "i'm ready"
   writeToSerialAndFlush(F("OnArduinoReady"));
-  cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
+  if(bREADY)cmdMessenger.sendCmd(kAcknowledge,"Arduino ready");
 }
 
 void OnAskUsIfReady()
 {
   // The other side asks us to send kAreYouReady command, wait for acknowledge
+  // Order is PC->Arduino(6-AskUs) Arduino->PC(4-AreYou) PC->Arduino(5-Ack) Arduino->PC(7-YouAre) 
   writeToSerialAndFlush(F("OnAskUsIfReady"));
    int isAck = cmdMessenger.sendCmd(kAreYouReady, "Asking PC if ready", true, kAcknowledge,1000 );
   // Now we send back whether or not we got an acknowledgments
   cmdMessenger.sendCmd(kYouAreReady,isAck?1:0);
+}
+
+
+void NotifyReady()
+{
+  writeToSerialAndFlush(F("NotifyReady"));
+  cmdMessenger.sendCmd(kAcknowledge);
+  
 }
 
 void AckMove(boolean bMove, int speed, int time)
@@ -475,7 +485,7 @@ void testEngines()
 
 void setup() {
 
-  
+  bREADY = false;  
   Serial.begin(115200);
   writeToSerialAndFlush(F("setup: Serial opened"));
   //writeToSerialAndFlush(F("setup begin"));
@@ -492,8 +502,10 @@ void setup() {
   testEngines();
   delay(500);
   distanceTest();
-  ShowCommands();
+  //ShowCommands();
   writeToSerialAndFlush("setup ended");
+  bREADY=true;
+  NotifyReady();
 
 }
 

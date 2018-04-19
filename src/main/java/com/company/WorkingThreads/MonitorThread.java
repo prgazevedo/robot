@@ -106,7 +106,8 @@ public class MonitorThread extends Thread {
         }
         else if(m_cmd_type.equals(CommsProperties.cmds.AckMove) ||
                 m_cmd_type.equals(CommsProperties.cmds.AckRotate) ||
-                m_cmd_type.equals(CommsProperties.cmds.AckRotate))
+                m_cmd_type.equals(CommsProperties.cmds.AckRotate) ||
+                m_cmd_type.equals(CommsProperties.cmds.Acknowledge))
         {
 
             log.info("Process called doWork()");

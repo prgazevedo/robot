@@ -1,7 +1,9 @@
 package com.company.navigation;
 
 import com.company.MainRobot;
-import com.company.Manager;
+import com.company.graph.GraphManager;
+import com.company.graph.GraphProperties;
+import com.company.manager.Manager;
 import javafx.geometry.Point2D;
 import org.apache.logging.log4j.Level;
 
@@ -22,7 +24,6 @@ public class PathManager extends Manager {
     private Integer m_currentPositionVertexID_Value;
     private NavigableMap<Integer, PathItem> m_path;
     private GraphManager m_graphManager;
-    private MainRobot m_mainRobot;
     private Orientation m_MyOrientation;
 
     public Orientation getM_MyOrientation() {
@@ -41,6 +42,7 @@ public class PathManager extends Manager {
 
     @Override
     public void initialize() {
+        super.initialize();
         m_MyOrientation = new Orientation(Direction.NORTH);
         m_currentPositionIteration_Key = 0;
         m_currentPositionVertexID_Value=getStartVertexID();
@@ -72,7 +74,7 @@ public class PathManager extends Manager {
         m_currentPositionIteration_Key++;
         m_currentPositionVertexID_Value =location;
         m_graphManager.setVertexVisited(location,true);
-        if(m_currentPositionIteration_Key>GraphProperties.NAV_ITERATIONS)
+        if(m_currentPositionIteration_Key> GraphProperties.NAV_ITERATIONS)
         {
             writeLog(Level.INFO,"newPosition exceeded number of Navigation Iterations:" + m_currentPositionVertexID_Value);
             return false;

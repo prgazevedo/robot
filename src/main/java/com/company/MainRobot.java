@@ -23,14 +23,19 @@ import com.company.WorkingThreads.ThreadManager;
 
 import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
+import com.company.manager.Manager;
+import com.company.manager.ManagerFactory;
 import com.company.movement.MovementManager;
-import com.company.navigation.GraphManager;
-import com.company.graphviewer.GraphViewer;
+import com.company.graph.GraphManager;
+import com.company.graph.GraphViewer;
 import com.company.navigation.NavigationManager;
 import com.company.navigation.PathManager;
+import com.company.state.StateManager;
 import org.apache.logging.log4j.Level;
 
-
+/**
+ * Responsible to initialize the Managers
+ */
 public class MainRobot extends Manager {
 
 
@@ -49,6 +54,7 @@ public class MainRobot extends Manager {
     public PathManager getM_PathManager() { return (PathManager)getMF().getPathManager(); }
     public GraphManager getM_GraphManager() { return (GraphManager)getMF().getGraphManager(); }
     public EventCaller getM_EventCaller() { return (EventCaller)getMF().getEventCaller(); }
+    public StateManager getM_StateManager() { return (StateManager)getMF().getStateManager(); }
 
 
     public MainRobot() {
@@ -68,6 +74,13 @@ public class MainRobot extends Manager {
         robot.writeLog(Level.INFO, "Robot main start");
         robot.initialize();
         robot.writeLog(Level.INFO, "Robot main initialize");
+        robot.getM_StateManager().testIfArduinoReady();
+        robot.writeLog(Level.INFO, "Robot Test if Arduino Ready");
+        while(!robot.getM_StateManager().isM_bIsArduinoReady())
+        {
+            robot.writeLog(Level.INFO, "Robot waiting for Arduino to be ready...(sleep 1 sec)");
+            robot.getM_ThreadManager().sleep();
+        }
         robot.getM_MovementManager().testEngines();
         //robot.getM_NavigationManager().runMockNavigator();
         robot.getM_GraphViewer().viewGraph();

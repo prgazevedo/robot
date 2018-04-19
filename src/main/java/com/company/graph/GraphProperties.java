@@ -1,4 +1,4 @@
-package com.company.navigation;
+package com.company.graph;
 
 import java.awt.*;
 

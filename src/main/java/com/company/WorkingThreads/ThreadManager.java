@@ -1,19 +1,15 @@
 package com.company.WorkingThreads;
 
 
-import com.company.IManager;
+import com.company.manager.IManager;
 import com.company.MainRobot;
-import com.company.Manager;
-import com.company.WorkingThreads.MonitorThread;
-import com.company.WorkingThreads.WriteThread;
+import com.company.manager.Manager;
 import com.company.comms.CommsProperties;
 import com.company.comms.MessageRecordQueue;
-import com.company.movement.IMovement;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
 
 
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadManager extends Manager implements IManager {
@@ -26,7 +22,6 @@ public class ThreadManager extends Manager implements IManager {
     MessageRecordQueue m_queue;
     private static WriteThread m_writeThread;
     private static MonitorThread m_monitorThread;
-    private MainRobot m_mainRobot;
 
 
     public SerialPort getM_comPort() { return m_comPort; }
@@ -37,6 +32,7 @@ public class ThreadManager extends Manager implements IManager {
 
     @Override
     public void initialize(){
+        super.initialize();
         m_queue = m_mainRobot.getM_CommsManager().getM_queue();
         m_comPort = m_mainRobot.getM_CommsManager().getM_comPort();
         createWriteThread();
@@ -58,15 +54,17 @@ public class ThreadManager extends Manager implements IManager {
     }
 
 
-    private void sleep(){
+    public void sleep(){
+      sleep(CommsProperties.DEFAULT_SLEEP);
+    }
+
+    public void sleep(int seconds){
         try {
-            TimeUnit.SECONDS.sleep(CommsProperties.DEFAULT_SLEEP);
+            TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-
 
     private void createWriteThread() {
         if(m_mainRobot.getM_CommsManager().isComPortOpen()){
@@ -88,31 +86,26 @@ public class ThreadManager extends Manager implements IManager {
 
 
 
-
-
-    //TODO: Move into a Comms Manager class
-    public void checkComms() {
-
-
-        m_writeThread.pingArduinoAskUsIfReady();
-        sleep();
-        m_writeThread.pingArduinoAskUsIfReady();
-        sleep();
-
-    }
-
     private void startWriteThread()
     {
 
         m_writeThread.start();
-        writeLog(Level.INFO," writeThread Started");
+        try {
+            writeLog(Level.INFO," writeThread Started");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void startMonitorThread()
     {
 
-        m_monitorThread.start();
-        writeLog(Level.INFO," monitorThread Started");
+        try {
+            m_monitorThread.start();
+            writeLog(Level.INFO," monitorThread Started");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

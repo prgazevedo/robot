@@ -163,7 +163,7 @@ public class WriteThread extends Thread {
 
     public void rotate(boolean west_direction,int speed, int time )
     {
-        m_MPB.setM_cmd_type(CommsProperties.cmds.Move);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.Rotate);
         if(west_direction) m_MPB.addArg("1"); //LEFT
         else  m_MPB.addArg("0"); //RIGHT
         m_MPB.addArg(String.valueOf(speed));
@@ -174,7 +174,7 @@ public class WriteThread extends Thread {
 
     public void look(int degrees )
     {
-        m_MPB.setM_cmd_type(CommsProperties.cmds.Rotate);
+        m_MPB.setM_cmd_type(CommsProperties.cmds.Look);
         m_MPB.addArg(String.valueOf(degrees));
         MessagePayload payload = m_MPB.build();
         sendMessage(payload.toSerial());

@@ -1,17 +1,18 @@
 package com.company.events;
 
-import com.company.ApplicationProperties;
 import com.company.MainRobot;
-import com.company.Manager;
+import com.company.manager.Manager;
 import com.company.WorkingThreads.ThreadManager;
 import com.company.movement.IMovement;
-import com.company.navigation.Direction;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.Level;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Responsible to record the caller
+ * Dispatches the request to writeThread
+ * Dispatches the callback to the caller when is received from Notifier
+ */
 public class EventCaller extends Manager implements IMovement,IEvent{
 
     private ThreadManager m_threadManager;
@@ -24,9 +25,18 @@ public class EventCaller extends Manager implements IMovement,IEvent{
 
     }
 
+    @Override
+    public void initialize() {
+        super.initialize();
+    }
 
-    public void addEventCaller(IEvent caller,IEvent.EVENT event){
-        System.out.println("addEventCaller move called");
+    @Override
+    public void writeLog(Level messageLevel, String message) {
+        super.writeLog(messageLevel, message);
+    }
+
+    public void addEventCaller(IEvent caller, IEvent.EVENT event){
+        writeLog(Level.INFO,"addEventCaller called: "+event.toString());
         m_CallerMap.put(event,caller);
         // Create the event notifier and pass ourself to it.
         en = new EventNotifier (this);
@@ -42,31 +52,48 @@ public class EventCaller extends Manager implements IMovement,IEvent{
     //...
     @Override
     public void carMoved (boolean fwd,int speed, int time){
-        System.out.println("EventCaller cardMoved called");
+        writeLog(Level.INFO,"EventCaller Callback:cardMoved called");
         getCalleeFromEvent(EVENT.CAR_MOVED).carMoved(fwd,speed,time);
     }
     @Override
     public void carRotated (boolean left,int speed, int time){
-
+        writeLog(Level.INFO,"EventCaller Callback:carRotated called");
+        getCalleeFromEvent(EVENT.CAR_ROTATED).carRotated(left,speed,time);
     }
     @Override
     public void distanceTaken (int angle,int distance ){
+        writeLog(Level.INFO,"EventCaller Callback:distanceTaken called");
+        getCalleeFromEvent(EVENT.DISTANCE_TAKEN).distanceTaken(angle,distance);
+    }
 
+    @Override
+    public void ackReady() {
+        writeLog(Level.INFO,"EventCaller Callback:isReady called");
+        getCalleeFromEvent(EVENT.ISREADY).ackReady();
     }
 
     @Override
     public void move(boolean fwd_direction, int speed, int time) {
-        System.out.println("EventCaller move called");
+        writeLog(Level.INFO,"EventCaller move called");
         m_threadManager.getM_writeThread().move(fwd_direction, speed, time);
     }
 
     @Override
     public void rotate(boolean west_direction,int speed, int time ){
+        writeLog(Level.INFO,"EventCaller rotate called");
         m_threadManager.getM_writeThread().rotate(west_direction,speed,time);
     }
 
     @Override
     public void look(int degrees) {
+        writeLog(Level.INFO,"EventCaller look called");
         m_threadManager.getM_writeThread().look(degrees);
     }
+
+    public void isReady() {
+        writeLog(Level.INFO,"EventCaller isReady called");
+        m_threadManager.getM_writeThread().pingArduinoIsReady();
+    }
+
+
 }

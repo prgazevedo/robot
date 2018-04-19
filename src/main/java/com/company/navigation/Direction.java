@@ -1,6 +1,7 @@
 package com.company.navigation;
 
 
+import com.company.graph.GraphProperties;
 import javafx.util.Pair;
 
 

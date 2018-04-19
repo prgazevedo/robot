@@ -1,8 +1,9 @@
-package com.company.navigation;
+package com.company.graph;
 
-import com.company.IManager;
+import com.company.manager.IManager;
 import com.company.MainRobot;
-import com.company.Manager;
+import com.company.manager.Manager;
+import com.company.navigation.Direction;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
@@ -15,10 +16,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph implements IManager {
+public class GraphManager extends Manager implements IManager {
 
 
-    private MainRobot m_mainRobot;
     private StaticLayout m_layout;
     private edu.uci.ics.jung.graph.Graph<Integer,String> m_graph;
     private HashMap<Integer,Vertex> m_hashmapVertexes;
@@ -39,10 +39,11 @@ public class GraphManager extends edu.uci.ics.jung.graph.SparseMultigraph implem
     public int getM_Upper_Y_Location() { return m_Upper_Y_Location; }
 
     @Override
-    public void initialize() { populateVertexes();}
+    public void initialize() {
+        super.initialize();
+        populateVertexes();
+    }
 
-    @Override
-    public void writeLog(Level messageLevel, String message) { m_mainRobot.writeLog(messageLevel,message); }
 
     public GraphManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;

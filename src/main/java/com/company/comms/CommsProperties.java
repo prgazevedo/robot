@@ -5,8 +5,8 @@ public class CommsProperties {
     /** Cmd messages separators */
     public static final String CMD_SEPARATOR=",";
     public static final String CMD_TERMINATOR=";";
-    /** Milliseconds to block while waiting for port open */
-    public static final int DEFAULT_SLEEP = 1000;
+    /** Seconds to block while waiting  */
+    public static final int DEFAULT_SLEEP = 1;
     /** Default bits per second for COM port. */
     public static final int DATA_RATE = 115200;
     /** Data bits to be sent: We shall use 8-N-1: one start bit, the eight data bits, and the one stop bit */
@@ -28,8 +28,9 @@ public class CommsProperties {
         CommandList         , // 0-Command to request list of available commands
         Move              , // 1-Command to move
         Rotate    , // 2-Command to rotate
-        Scan              , // 3-Command to scan
+        Look, // 3-Command to scan
         // Setup connection test
+        // Order is PC->Arduino(6-AskUs) Arduino->PC(4-AreYou) PC->Arduino(5-Ack) Arduino->PC(7-YouAre)
         AreYouReady              , // 4-Command to ask if other side is ready: RPI -> Arduino: "AreYouReady" will cause Arduino -> RPI: "Acknowledge
         Acknowledge              , // 5-Command to acknowledge that cmd was received
         // Acknowledge test
@@ -38,7 +39,7 @@ public class CommsProperties {
         Error,                      // 8-Error
         AckMove              , // 9-Command to move
         AckRotate    , // 10-Command to rotate
-        AckScan              , // 11-Command to scan
+        AckLook, // 11-Command to scan
         None, //No comand was identified
     } ;
 

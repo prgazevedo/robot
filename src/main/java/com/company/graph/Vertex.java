@@ -1,5 +1,6 @@
-package com.company.navigation;
+package com.company.graph;
 
+import com.company.navigation.Direction;
 import javafx.geometry.Point2D;
 
 import java.util.HashMap;
