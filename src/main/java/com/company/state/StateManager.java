@@ -3,6 +3,7 @@ package com.company.state;
 
 
 import com.company.MainRobot;
+import com.company.events.Event;
 import com.company.events.IEvent;
 import com.company.manager.IManager;
 import com.company.manager.Manager;
@@ -55,13 +56,6 @@ public class StateManager extends Manager implements IManager,IEvent{
     public void initialize() {
         super.initialize();
         m_bIsArduinoReady=false;
-    }
-
-    public void testIfArduinoReady() {
-
-        writeLog(Level.INFO,"Test if Arduino is Ready called. Currently is: "+m_bIsArduinoReady);
-        m_mainRobot.getM_EventCaller().addEventCaller(this, IEvent.EVENT.ISREADY);
-        m_mainRobot.getM_EventCaller().isReady();
     }
 
 

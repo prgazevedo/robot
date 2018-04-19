@@ -5,12 +5,11 @@ import com.company.WorkingThreads.ThreadManager;
 import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
 import com.company.graph.GraphViewer;
-import com.company.movement.MovementManager;
+import com.company.movement.ActionManager;
 import com.company.graph.GraphManager;
 import com.company.navigation.NavigationManager;
 import com.company.navigation.PathManager;
 import com.company.state.StateManager;
-import org.apache.logging.log4j.Level;
 
 public class ManagerFactory extends Manager implements IManager{
 
@@ -19,7 +18,7 @@ public class ManagerFactory extends Manager implements IManager{
     private ThreadManager m_ThreadManager;
     private GraphViewer m_GraphViewer;
     private NavigationManager m_NavigationManager;
-    private MovementManager m_MovementManager;
+    private ActionManager m_ActionManager;
     private CommsManager m_CommsManager;
     private PathManager m_PathManager;
     private GraphManager m_GraphManager;
@@ -39,7 +38,7 @@ public class ManagerFactory extends Manager implements IManager{
         getStateManager();
         getCommsManager();
         getThreadManager();
-        getMovementManager();
+        getActionManager();
         getGraphManager();
         getNavigationManager();
         getPathManager();
@@ -59,13 +58,13 @@ public class ManagerFactory extends Manager implements IManager{
         return m_CommsManager;
     }
 
-    public IManager getMovementManager(){
-        if(m_MovementManager==null){
-            m_MovementManager =  new MovementManager(m_mainRobot);
-            m_MovementManager.initialize();
+    public IManager getActionManager(){
+        if(m_ActionManager ==null){
+            m_ActionManager =  new ActionManager(m_mainRobot);
+            m_ActionManager.initialize();
         }
 
-        return m_MovementManager;
+        return m_ActionManager;
     }
 
     public IManager getGraphManager(){

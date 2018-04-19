@@ -17,17 +17,11 @@ public class MonitorThread extends Thread {
     MessageRecordParser m_parser;
     WriteThread m_writeThread;
     EventNotifier m_caller;
-    //LinkedMap<IEvent.EVENT,EventNotifier> m_caller;
-    private final static Logger log =  LogManager.getLogger(SerialListener.class);
+
+    private static Logger log;
     private boolean m_shouldRun = false;
 
-    public boolean isM_shouldRun() {
-        return m_shouldRun;
-    }
 
-    public void setM_shouldRun(boolean m_shouldRun) {
-        this.m_shouldRun = m_shouldRun;
-    }
 
 
 
@@ -41,7 +35,7 @@ public class MonitorThread extends Thread {
         m_queue= threadManager.getM_queue();
         m_shouldRun=true;
         m_parser= new MessageRecordParser();
-        //m_caller = new LinkedMap<IEvent.EVENT,EventNotifier>();
+        log =  LogManager.getLogger(MonitorThread.class);
     }
 
     private void processMessage(){
@@ -107,10 +101,11 @@ public class MonitorThread extends Thread {
         else if(m_cmd_type.equals(CommsProperties.cmds.AckMove) ||
                 m_cmd_type.equals(CommsProperties.cmds.AckRotate) ||
                 m_cmd_type.equals(CommsProperties.cmds.AckRotate) ||
-                m_cmd_type.equals(CommsProperties.cmds.Acknowledge))
+                m_cmd_type.equals(CommsProperties.cmds.Acknowledge) ||
+                        m_cmd_type.equals(CommsProperties.cmds.AckLook) )
         {
 
-            log.info("Process called doWork()");
+            log.info("Process called doWork() for: "+ m_cmd_type.toString());
             m_caller.doCallback(m_cmd_type, m_args);
 
         }

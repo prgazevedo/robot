@@ -6,6 +6,8 @@ import com.company.MainRobot;
 import com.company.graph.GraphManager;
 import com.company.graph.GraphProperties;
 import com.company.manager.Manager;
+import com.company.movement.ActionManager;
+import com.company.movement.ActionProperties;
 import org.apache.logging.log4j.Level;
 
 public class NavigationManager extends Manager  {
@@ -16,6 +18,7 @@ public class NavigationManager extends Manager  {
     private NavigableMap<Integer, Integer> m_path;
     private GraphManager m_GraphManager;
     private PathManager  m_PathManager;
+    private ActionManager m_ActionManager;
     private RandomUtil m_random;
 
     @Override
@@ -27,15 +30,16 @@ public class NavigationManager extends Manager  {
         m_mainRobot = mainRobot;
         m_PathManager = m_mainRobot.getM_PathManager();
         m_GraphManager = m_mainRobot.getM_GraphManager();
+        m_ActionManager = m_mainRobot.getM_ActionManager();
         m_random = new RandomUtil(0,Direction.getNumberDirections());
     }
 
 
     public void runMockNavigator(){
-        m_mainRobot.getM_MovementManager().move(10);
+        m_mainRobot.getM_ActionManager().move(10);
         while(m_PathManager.getM_currentPositionIteration_Key()< GraphProperties.NAV_ITERATIONS)
         {
-        //for (int i=1; i<GraphProperties.NAV_ITERATIONS; i++) {
+
             writeLog(Level.INFO,"runMockNavigator - iteration:"+m_PathManager.getM_currentPositionIteration_Key());
             int v0 = m_PathManager.getM_currentPositionVertexID_Value();
             PathItem pathItem = navigateToNextVertex(v0);
@@ -44,6 +48,7 @@ public class NavigationManager extends Manager  {
             {
                 writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
                 m_PathManager.goTo(pathItem);
+                m_ActionManager.move(pathItem.getM_Direction(), ActionProperties.DEFAULT_DISTANCE);
 
             }
             else
@@ -58,20 +63,35 @@ public class NavigationManager extends Manager  {
 
 
 
-    private void exploreSurroundings(){
+    private void OldexploreSurroundings(){
         int VID=m_PathManager.getM_currentPositionVertexID_Value();
         Direction wallOrientationEAST = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(Direction.EAST);
         Direction wallOrientationWEST = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(Direction.WEST);
-        int eastNeighborID = m_GraphManager.getNeighborID(VID,Direction.EAST);
-        int westNeighborID = m_GraphManager.getNeighborID(VID,Direction.WEST);
+        int eastNeighborID = m_GraphManager.getNeighborID(VID,wallOrientationEAST);
+        int westNeighborID = m_GraphManager.getNeighborID(VID,wallOrientationWEST);
         RandomUtil RU = new RandomUtil(1,4);
-        int distanceOfWall = 1;//RU.getNonRepeatingRandomInt();
+        int hops = 1;//RU.getNonRepeatingRandomInt();
         //for now set left and right walls (but converted to our orientation)
-        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationEAST,distanceOfWall);
-        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationWEST,distanceOfWall);
-        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+distanceOfWall);
-        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+distanceOfWall);
+        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationEAST,hops);
+        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationWEST,hops);
+        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+hops);
+        writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+hops);
 
+    }
+
+    private  void setMockWall(int VID,Direction direction,int hops){
+        Direction wallOrientation = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(direction);
+        int NeighborID = m_GraphManager.getNeighborIDInHops(VID,wallOrientation,hops);
+        m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientation,hops);
+        writeLog(Level.INFO,"setMockWall - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientation+" NodeID:"+NeighborID+"at distance of :"+hops);
+    }
+
+
+    private void exploreForWall(Direction direction){
+        int VID=m_PathManager.getM_currentPositionVertexID_Value();
+        Direction wallOrientation = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(direction);
+        m_ActionManager.look(wallOrientation.getM_properties().getDegrees());
+        writeLog(Level.INFO,"exploreForWall - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and searching for wall at: "+wallOrientation);
 
     }
 
@@ -82,7 +102,7 @@ public class NavigationManager extends Manager  {
         m_random.init();
         while(bSearching) {
 
-            exploreSurroundings();
+            OldexploreSurroundings();
             new_direction = getFreeDirection();
 
             if(new_direction.equals(Direction.NONE))

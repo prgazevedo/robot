@@ -25,7 +25,7 @@ import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
 import com.company.manager.Manager;
 import com.company.manager.ManagerFactory;
-import com.company.movement.MovementManager;
+import com.company.movement.ActionManager;
 import com.company.graph.GraphManager;
 import com.company.graph.GraphViewer;
 import com.company.navigation.NavigationManager;
@@ -49,7 +49,7 @@ public class MainRobot extends Manager {
     public ThreadManager getM_ThreadManager() { return (ThreadManager)getMF().getThreadManager(); }
     public GraphViewer getM_GraphViewer() { return (GraphViewer)getMF().getGraphViewer(); }
     public  NavigationManager getM_NavigationManager() { return (NavigationManager) getMF().getNavigationManager(); }
-    public  MovementManager getM_MovementManager() { return (MovementManager) getMF().getMovementManager(); }
+    public ActionManager getM_ActionManager() { return (ActionManager) getMF().getActionManager(); }
     public CommsManager getM_CommsManager() { return (CommsManager)getMF().getCommsManager(); }
     public PathManager getM_PathManager() { return (PathManager)getMF().getPathManager(); }
     public GraphManager getM_GraphManager() { return (GraphManager)getMF().getGraphManager(); }
@@ -74,14 +74,14 @@ public class MainRobot extends Manager {
         robot.writeLog(Level.INFO, "Robot main start");
         robot.initialize();
         robot.writeLog(Level.INFO, "Robot main initialize");
-        robot.getM_StateManager().testIfArduinoReady();
+        robot.getM_ActionManager().testIfArduinoReady();
         robot.writeLog(Level.INFO, "Robot Test if Arduino Ready");
         while(!robot.getM_StateManager().isM_bIsArduinoReady())
         {
             robot.writeLog(Level.INFO, "Robot waiting for Arduino to be ready...(sleep 1 sec)");
             robot.getM_ThreadManager().sleep();
         }
-        robot.getM_MovementManager().testEngines();
+        robot.getM_ActionManager().testRobot();
         //robot.getM_NavigationManager().runMockNavigator();
         robot.getM_GraphViewer().viewGraph();
 

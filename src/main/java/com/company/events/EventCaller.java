@@ -3,30 +3,31 @@ package com.company.events;
 import com.company.MainRobot;
 import com.company.manager.Manager;
 import com.company.WorkingThreads.ThreadManager;
-import com.company.movement.IMovement;
+import com.company.movement.IAction;
 import com.company.state.State;
 import com.company.state.StateManager;
 import org.apache.logging.log4j.Level;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Responsible to record the caller
  * Dispatches the request to writeThread
  * Dispatches the callback to the caller when is received from Notifier
  */
-public class EventCaller extends Manager implements IMovement,IEvent{
+public class EventCaller extends Manager implements IAction,IEvent{
 
     private ThreadManager m_threadManager;
     private StateManager m_StateManager;
-    private HashMap<EVENT,IEvent> m_CallerMap;
+    private LinkedHashMap<Event,IEvent> m_CallerMap;
     private EventNotifier en;
     public EventCaller (MainRobot mainRobot)
     {
         m_mainRobot = mainRobot;
         m_threadManager= mainRobot.getM_ThreadManager();
         m_StateManager= mainRobot.getM_StateManager();
-        m_CallerMap = new HashMap<EVENT,IEvent>();
+        m_CallerMap = new LinkedHashMap<Event,IEvent>();
 
     }
 
@@ -41,7 +42,7 @@ public class EventCaller extends Manager implements IMovement,IEvent{
         super.writeLog(messageLevel, message);
     }
 
-    public void addEventCaller(IEvent caller, IEvent.EVENT event){
+    public void addEventCaller(IEvent caller, Event event){
         writeLog(Level.INFO,"addEventCaller called: "+event.toString());
         m_CallerMap.put(event,caller);
         // Create the event notifier and pass ourself to it.
@@ -53,48 +54,58 @@ public class EventCaller extends Manager implements IMovement,IEvent{
 
 
 
-    public void waitCallBack(IEvent.EVENT event){
+    public void waitCallBack(Event event){
         while (!isAnswerReceived(event)){
             m_mainRobot.getM_ThreadManager().sleep();
         }
     }
 
 
-    private boolean isAnswerReceived(IEvent.EVENT event){
+    private boolean isAnswerReceived(Event event){
         IEvent callee = getCalleeFromEvent(event);
         if(m_StateManager.getStateCaller(callee).equals(State.READY)) return true;
         else return false;
     }
 
-    public void prepareCallBack(IEvent caller,IEvent.EVENT event){
+    public void prepareCallBack(IEvent caller,Event event){
         writeLog(Level.INFO,"EventCaller callback requested for Event:"+event.toString());
         addEventCaller(caller, event);
         m_StateManager.updateStateCaller(caller, State.WAITING_ANSWER);
     }
 
 
-    public IEvent getCalleeFromEvent(IEvent.EVENT event){
+    public IEvent getCalleeFromEvent(Event event){
         return m_CallerMap.get(event);
     }
+
+    public int getLastEventID(){
+       return m_CallerMap.size();
+    }
+
+
+
     //...
     @Override
     public void carMoved (boolean fwd,int speed, int time){
         writeLog(Level.INFO,"EventCaller Callback:car Moved called");
-        IEvent callee = getCalleeFromEvent(EVENT.CAR_MOVED);
+        Event event = new Event(getLastEventID(),Event.EVENT.CAR_MOVED);
+        IEvent callee = getCalleeFromEvent(event);
         m_StateManager.updateStateCaller(callee,State.READY);
         callee.carMoved(fwd,speed,time);
     }
     @Override
     public void carRotated (boolean left,int speed, int time){
         writeLog(Level.INFO,"EventCaller Callback:car Rotated called");
-        IEvent callee = getCalleeFromEvent(EVENT.CAR_ROTATED);
+        Event event = new Event(getLastEventID(),Event.EVENT.CAR_ROTATED);
+        IEvent callee = getCalleeFromEvent(event);
         m_StateManager.updateStateCaller(callee,State.READY);
         callee.carRotated(left,speed,time);
     }
     @Override
     public void distanceTaken (int angle,int distance ){
         writeLog(Level.INFO,"EventCaller Callback:distanceTaken called");
-        IEvent callee = getCalleeFromEvent(EVENT.DISTANCE_TAKEN);
+        Event event = new Event(getLastEventID(),Event.EVENT.DISTANCE_TAKEN);
+        IEvent callee = getCalleeFromEvent(event);
         m_StateManager.updateStateCaller(callee,State.READY);
         callee.distanceTaken(angle,distance);
     }
@@ -102,7 +113,9 @@ public class EventCaller extends Manager implements IMovement,IEvent{
     @Override
     public void ackReady() {
         writeLog(Level.INFO,"EventCaller Callback:isReady called");
-        getCalleeFromEvent(EVENT.ISREADY).ackReady();
+        Event event = new Event(getLastEventID(),Event.EVENT.ISREADY);
+        IEvent callee = getCalleeFromEvent(event);
+        callee.ackReady();
     }
 
     @Override

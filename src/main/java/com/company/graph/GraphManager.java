@@ -165,7 +165,9 @@ public class GraphManager extends Manager implements IManager {
         else return null;
     }
 
-
+    public int getNeighborIDInHops(int myID,Direction direction, int hops){
+       return getNeighborInDirection( myID, direction, hops);
+    }
 
     public int getNeighborID(int myID, Direction direction){
         int neighborID = -1;
@@ -244,8 +246,8 @@ public class GraphManager extends Manager implements IManager {
 
 
 
-    public void setNeighborInDirectionAsWall(int myID,Direction direction, int distance){
-        int ID = getNeighborInDirection(myID,direction,distance);
+    public void setNeighborInDirectionAsWall(int myID,Direction direction, int hops){
+        int ID = getNeighborInDirection(myID,direction,hops);
         setVertexWall(ID,true);
     }
 

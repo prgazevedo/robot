@@ -1,6 +1,8 @@
 package com.company.movement;
 
-public class MovementProperties {
+public class ActionProperties {
+    /** Default distance*/
+    public static final int DEFAULT_DISTANCE = 10;
     /** Strength of Engines*/
     public static final int SPEED_OF_MOVEMENT = 100;
     /** Milliseconds to move multiplier for seconds to obtain distance in */
