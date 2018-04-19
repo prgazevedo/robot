@@ -36,6 +36,7 @@ public class ManagerFactory extends Manager implements IManager{
     @Override
     public void initialize() {
         super.initialize();
+        getStateManager();
         getCommsManager();
         getThreadManager();
         getMovementManager();
@@ -44,7 +45,7 @@ public class ManagerFactory extends Manager implements IManager{
         getPathManager();
         getGraphViewer();
         getEventCaller();
-        getStateManager();
+
     }
 
 

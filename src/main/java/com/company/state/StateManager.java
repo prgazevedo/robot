@@ -37,9 +37,17 @@ public class StateManager extends Manager implements IManager,IEvent{
     }
 
     public void updateStateCaller(IEvent caller, State state){
-        writeLog(Level.INFO,"addStateCaller called: "+state.toString());
-        if(m_StateMap.containsKey(caller)) m_StateMap.replace(caller,state);
-        else m_StateMap.put(caller,state);
+
+        if(m_StateMap.containsKey(caller)) {
+            State oldState = m_StateMap.get(caller);
+            writeLog(Level.INFO,"updateStateCaller replace state called. OldState:"+oldState+" NewState:"+state.toString());
+            m_StateMap.replace(caller,state);
+        }
+        else
+        {
+            m_StateMap.put(caller,state);
+            writeLog(Level.INFO,"updateStateCaller new state inserted: "+state.toString());
+        }
     }
 
 
