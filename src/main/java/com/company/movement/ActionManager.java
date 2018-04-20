@@ -18,7 +18,7 @@ public class ActionManager extends Manager implements IEvent {
 
 
     private EventCaller m_eventCaller;
-
+    private ActionProperties m_AP;
     private NavigableMap<Integer,ActionResult > m_ListActionResult;
 
     @Override
@@ -31,6 +31,7 @@ public class ActionManager extends Manager implements IEvent {
     public ActionManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
         m_eventCaller = new EventCaller(m_mainRobot);
+        m_AP = new ActionProperties();
         m_ListActionResult = new TreeMap<Integer,ActionResult >(new Comparator<Integer>() {
             @Override
             public int compare(Integer i1, Integer i2) {
@@ -98,20 +99,32 @@ public class ActionManager extends Manager implements IEvent {
 
 
 
-    public int getNextActionIndex(){
+    private int getNextActionIndex(){
         return m_ListActionResult.size();
     }
 
-    public Integer getLastActionIndex(){
+    private Integer getLastActionIndex(){
         if(m_ListActionResult.isEmpty()) return 0;
         else return m_ListActionResult.lastKey();
     }
 
-    public ActionResult getLastActionResult(){
+    private ActionResult getLastActionResult(){
         if(m_ListActionResult.isEmpty()) return null;
         else {
            return m_ListActionResult.lastEntry().getValue();
         }
+    }
+
+    private HashMap<String,Result> getLastResults(){
+        if(m_ListActionResult.isEmpty()) return null;
+        else {
+            return m_ListActionResult.lastEntry().getValue().getResults();
+        }
+    }
+
+    public int getLookResult(){
+        int distance = getLastActionResult().getResult("distance").getInt();
+        return m_AP.convertDistanceToHops(distance);
     }
 
 
@@ -131,15 +144,7 @@ public class ActionManager extends Manager implements IEvent {
         Event event = new Event(index,Action.translateActionToEvent(actionEnum));
         m_eventCaller.prepareCallBack(this,event);
         writeLog(Level.TRACE,"Action Manager-move called distance:"+distance);
-        int move_time= ActionProperties.TIME_MOVE_MULTIPLIER*distance;
-
-        if(distance>=0) {
-
-            m_eventCaller.move(true, ActionProperties.ROT_SPEED_OF_MOVEMENT,move_time);
-        }
-        else{
-            m_eventCaller.move(false, ActionProperties.ROT_SPEED_OF_MOVEMENT,move_time);
-        }
+        m_eventCaller.move(m_AP.convertDistanceToFwdMoveDirection(distance), m_AP.ROT_SPEED_OF_MOVEMENT,m_AP.convertDistanceToMoveTime(distance));
         m_eventCaller.waitCallBack(event);
     }
 
@@ -151,32 +156,26 @@ public class ActionManager extends Manager implements IEvent {
         addToListActionResult(action);
         Event event = new Event(index,Action.translateActionToEvent(actionEnum));
         m_eventCaller.prepareCallBack(this,event);
-
         writeLog(Level.TRACE,"Action Manager-rotate called degrees:"+degrees);
-        int rotation_time= ActionProperties.ROT_MULTIPLIER*degrees;
-
-        if(degrees<0) {
-            m_eventCaller.rotate(true, ActionProperties.ROT_SPEED_OF_MOVEMENT,rotation_time);
-        }
-        else{
-            m_eventCaller.rotate(false, ActionProperties.ROT_SPEED_OF_MOVEMENT,rotation_time);
-        }
+        m_eventCaller.rotate(m_AP.convertDegreesToRotateWestDirection(degrees), m_AP.ROT_SPEED_OF_MOVEMENT,m_AP.convertDegreesToRotationTime(degrees));
         m_eventCaller.waitCallBack(event);
     }
 
 
     public void look(Integer degrees) {
-        writeLog(Level.INFO, "Action Manager-look called, degrees:" + degrees);
-        if (degrees > -1 && degrees < 181) {
+        if(m_AP.performLook(degrees)){
             Action.ACTION actionEnum=Action.ACTION.TAKE_DISTANCE;
             int index = getNextActionIndex();
             Action action = new Action(index,actionEnum );
             addToListActionResult(action);
             Event event = new Event(index,Action.translateActionToEvent(actionEnum));
             m_eventCaller.prepareCallBack(this,event);
-
+            writeLog(Level.INFO, "Action Manager-look called, degrees:" + degrees);
             m_eventCaller.look(degrees);
             m_eventCaller.waitCallBack(event);
+        }
+        else {
+            writeLog(Level.INFO, "Action Manager-look called,but performLook disallowed action");
         }
 
     }

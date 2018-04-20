@@ -82,13 +82,18 @@ public class NavigationManager extends Manager  {
 
     private void NewexploreSurroundings() {
         for(Direction direction: Obstacles.OBSTACLE_LIST){
-            exploreForWall( direction);
+            exploreForWall(direction);
+            int hops = m_ActionManager.getLookResult();
+            setMockWall(direction,hops);
         }
 
     }
 
-    private  void setMockWall(int VID,Direction direction,int hops){
+
+
+    private  void setMockWall(Direction direction,int hops){
         Direction wallOrientation = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(direction);
+        int VID=m_PathManager.getM_currentPositionVertexID_Value();
         int NeighborID = m_GraphManager.getNeighborIDInHops(VID,wallOrientation,hops);
         m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientation,hops);
         writeLog(Level.INFO,"setMockWall - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientation+" NodeID:"+NeighborID+"at distance of :"+hops);

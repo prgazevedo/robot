@@ -63,6 +63,11 @@ public class ActionResult{
         else return null;
     }
 
+    public HashMap<String,Result> getResults(){
+        return m_Result;
+    }
+
+
     @Override
     public String toString() {
         return  "(" + m_Action + ", " + m_ActionResult + ")";

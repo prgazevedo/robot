@@ -14,4 +14,5 @@ public class Result<T> {
 
     public void set(T t) { this.t = t; }
     public T get() { return t; }
+    public int getInt() {return (Integer)t;}
 }
