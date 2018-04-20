@@ -9,14 +9,17 @@ import com.company.events.IEvent;
 import com.company.navigation.Direction;
 import org.apache.logging.log4j.Level;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class ActionManager extends Manager implements IEvent {
 
 
     private EventCaller m_eventCaller;
 
-    private HashMap<Integer,ActionResult > m_ListActionResult;
+    private NavigableMap<Integer,ActionResult > m_ListActionResult;
 
     @Override
     public void initialize() {
@@ -28,7 +31,13 @@ public class ActionManager extends Manager implements IEvent {
     public ActionManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
         m_eventCaller = new EventCaller(m_mainRobot);
-        m_ListActionResult = new HashMap<Integer,ActionResult >();
+        m_ListActionResult = new TreeMap<Integer,ActionResult >(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer i1, Integer i2) {
+                // Overriding the compare method to sort the ID
+                return i1.compareTo(i2);
+            }
+        });
 
     }
 
@@ -93,9 +102,25 @@ public class ActionManager extends Manager implements IEvent {
         return m_ListActionResult.size();
     }
 
+    public Integer getLastActionIndex(){
+        if(m_ListActionResult.isEmpty()) return 0;
+        else return m_ListActionResult.lastKey();
+    }
+
+    public ActionResult getLastActionResult(){
+        if(m_ListActionResult.isEmpty()) return null;
+        else {
+           return m_ListActionResult.lastEntry().getValue();
+        }
+    }
+
 
     private void addToListActionResult(Action action){
-        m_ListActionResult.put(action.getM_actionID(), new ActionResult(action,ActionResult.getDEFAULT_RESULT()));
+        m_ListActionResult.put(action.getM_actionID(), new ActionResult(action));
+    }
+
+    private void updateListActionResult(Action action, ActionResult.ACTION_RESULT ar){
+        m_ListActionResult.replace(action.getM_actionID(), new ActionResult(action,ar));
     }
 
     public void move(Integer distance){
@@ -105,7 +130,7 @@ public class ActionManager extends Manager implements IEvent {
         addToListActionResult(action);
         Event event = new Event(index,Action.translateActionToEvent(actionEnum));
         m_eventCaller.prepareCallBack(this,event);
-        writeLog(Level.TRACE,"Movement Manager-move called distance:"+distance);
+        writeLog(Level.TRACE,"Action Manager-move called distance:"+distance);
         int move_time= ActionProperties.TIME_MOVE_MULTIPLIER*distance;
 
         if(distance>=0) {
@@ -127,7 +152,7 @@ public class ActionManager extends Manager implements IEvent {
         Event event = new Event(index,Action.translateActionToEvent(actionEnum));
         m_eventCaller.prepareCallBack(this,event);
 
-        writeLog(Level.TRACE,"Movement Manager-rotate called degrees:"+degrees);
+        writeLog(Level.TRACE,"Action Manager-rotate called degrees:"+degrees);
         int rotation_time= ActionProperties.ROT_MULTIPLIER*degrees;
 
         if(degrees<0) {
@@ -141,7 +166,7 @@ public class ActionManager extends Manager implements IEvent {
 
 
     public void look(Integer degrees) {
-        writeLog(Level.INFO, "Movement Manager-look called, degrees:" + degrees);
+        writeLog(Level.INFO, "Action Manager-look called, degrees:" + degrees);
         if (degrees > -1 && degrees < 181) {
             Action.ACTION actionEnum=Action.ACTION.TAKE_DISTANCE;
             int index = getNextActionIndex();
@@ -166,28 +191,43 @@ public class ActionManager extends Manager implements IEvent {
         Action action = new Action(index,actionEnum );
         addToListActionResult(action);
         Event event = new Event(index,Action.translateActionToEvent(actionEnum));
-        m_eventCaller.addEventCaller(this, event);
+        m_eventCaller.prepareCallBack(this,event);
         m_eventCaller.isReady();
+        m_eventCaller.waitCallBack(event);
     }
 
 
     @Override
     public synchronized void carMoved(boolean fwd, int speed, int time) {
+        ActionResult previousAR = getLastActionResult();
+        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
         writeLog(Level.INFO,"MOVED:"+fwd+",Speed:"+speed+",Time:"+time);
+
     }
 
     @Override
     public synchronized void carRotated(boolean fwd, int speed, int time)  {
+        ActionResult previousAR = getLastActionResult();
+        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
         writeLog(Level.INFO,"ROTATED:"+fwd+",Speed:"+speed+",Time:"+time);
     }
 
     @Override
     public synchronized void distanceTaken(int degrees, int distance) {
+        ActionResult previousAR = getLastActionResult();
+        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
         writeLog(Level.INFO,"DISTANCE TAKEN:"+distance+",degrees:"+degrees+" distance:"+distance);
     }
 
+
+
     @Override
-    public void ackReady() { throw new UnsupportedOperationException(); }
+    public void ackReady() {
+        ActionResult previousAR = getLastActionResult();
+        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
+        writeLog(Level.INFO,"ARDUINO IS READY");
+        m_mainRobot.getM_StateManager().ackReady();
+    }
 
 
 }

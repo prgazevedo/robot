@@ -6,10 +6,10 @@ public class Event {
         this.event = event;
     }
 
-    private int eventID = 0;
+    private Integer eventID = 0;
     private EVENT event;
 
-    public int getEventID() {
+    public Integer getEventID() {
         return eventID;
     }
 

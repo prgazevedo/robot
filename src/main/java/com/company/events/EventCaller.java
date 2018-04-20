@@ -8,8 +8,11 @@ import com.company.state.State;
 import com.company.state.StateManager;
 import org.apache.logging.log4j.Level;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+
+import java.util.Comparator;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 /**
  * Responsible to record the caller
@@ -20,14 +23,20 @@ public class EventCaller extends Manager implements IAction,IEvent{
 
     private ThreadManager m_threadManager;
     private StateManager m_StateManager;
-    private LinkedHashMap<Event,IEvent> m_CallerMap;
+    private NavigableMap<Event,IEvent> m_CallerMap;
     private EventNotifier en;
     public EventCaller (MainRobot mainRobot)
     {
         m_mainRobot = mainRobot;
         m_threadManager= mainRobot.getM_ThreadManager();
         m_StateManager= mainRobot.getM_StateManager();
-        m_CallerMap = new LinkedHashMap<Event,IEvent>();
+        m_CallerMap = new TreeMap<Event,IEvent>(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                // Overriding the compare method to sort the ID
+                return o1.getEventID().compareTo(o2.getEventID());
+            }
+        });
 
     }
 
@@ -78,9 +87,11 @@ public class EventCaller extends Manager implements IAction,IEvent{
         return m_CallerMap.get(event);
     }
 
-    public int getLastEventID(){
-       return m_CallerMap.size();
+    private int getLastEventID(){
+        Map.Entry<Event,IEvent> lastEntry = m_CallerMap.lastEntry();
+        return lastEntry.getKey().getEventID();
     }
+
 
 
 
