@@ -8,6 +8,9 @@ import java.util.Map;
 
 public class Obstacles {
 
+
+    public static Direction[] OBSTACLE_LIST = new Direction[] {Direction.WEST,Direction.NORTHWEST,Direction.NORTH,Direction.NORTHEAST,Direction.EAST};
+
     private HashMap<Direction,Integer> m_neighbors;
 
 

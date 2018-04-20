@@ -76,12 +76,8 @@ public class MainRobot extends Manager {
         robot.writeLog(Level.INFO, "Robot main initialize");
         robot.getM_ActionManager().testIfArduinoReady();
         robot.writeLog(Level.INFO, "Robot Test if Arduino Ready");
-        while(!robot.getM_StateManager().isM_bIsArduinoReady())
-        {
-            robot.writeLog(Level.INFO, "Robot waiting for Arduino to be ready...(sleep 1 sec)");
-            robot.getM_ThreadManager().sleep();
-        }
         robot.getM_ActionManager().testRobot();
+        robot.writeLog(Level.INFO, "Robot Test Robot Functions");
         //robot.getM_NavigationManager().runMockNavigator();
         robot.getM_GraphViewer().viewGraph();
 

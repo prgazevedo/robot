@@ -126,6 +126,7 @@ public class EventCaller extends Manager implements IAction,IEvent{
         writeLog(Level.INFO,"EventCaller Callback:isReady called");
         Event event = new Event(getLastEventID(),Event.EVENT.ISREADY);
         IEvent callee = getCalleeFromEvent(event);
+        m_StateManager.updateStateCaller(callee,State.READY);
         callee.ackReady();
     }
 

@@ -119,8 +119,8 @@ public class ActionManager extends Manager implements IEvent {
         m_ListActionResult.put(action.getM_actionID(), new ActionResult(action));
     }
 
-    private void updateListActionResult(Action action, ActionResult.ACTION_RESULT ar){
-        m_ListActionResult.replace(action.getM_actionID(), new ActionResult(action,ar));
+    private void updateListActionResult(Action action, ActionResult ar){
+        m_ListActionResult.replace(action.getM_actionID(), ar);
     }
 
     public void move(Integer distance){
@@ -200,22 +200,33 @@ public class ActionManager extends Manager implements IEvent {
     @Override
     public synchronized void carMoved(boolean fwd, int speed, int time) {
         ActionResult previousAR = getLastActionResult();
-        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.setM_ActionResult(ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.addResult("fwd",new Result<>(fwd));
+        previousAR.addResult("speed",new Result<>(speed));
+        previousAR.addResult("time",new Result<>(time));
+        updateListActionResult(previousAR.getM_Action(),previousAR );
         writeLog(Level.INFO,"MOVED:"+fwd+",Speed:"+speed+",Time:"+time);
 
     }
 
     @Override
-    public synchronized void carRotated(boolean fwd, int speed, int time)  {
+    public synchronized void carRotated(boolean left, int speed, int time)  {
         ActionResult previousAR = getLastActionResult();
-        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
-        writeLog(Level.INFO,"ROTATED:"+fwd+",Speed:"+speed+",Time:"+time);
+        previousAR.setM_ActionResult(ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.addResult("left",new Result<>(left));
+        previousAR.addResult("speed",new Result<>(speed));
+        previousAR.addResult("time",new Result<>(time));
+        updateListActionResult(previousAR.getM_Action(),previousAR );
+        writeLog(Level.INFO,"ROTATED:"+left+",Speed:"+speed+",Time:"+time);
     }
 
     @Override
     public synchronized void distanceTaken(int degrees, int distance) {
         ActionResult previousAR = getLastActionResult();
-        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.setM_ActionResult(ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.addResult("degrees",new Result<>(degrees));
+        previousAR.addResult("distance",new Result<>(distance));
+        updateListActionResult(previousAR.getM_Action(),previousAR );
         writeLog(Level.INFO,"DISTANCE TAKEN:"+distance+",degrees:"+degrees+" distance:"+distance);
     }
 
@@ -224,7 +235,9 @@ public class ActionManager extends Manager implements IEvent {
     @Override
     public void ackReady() {
         ActionResult previousAR = getLastActionResult();
-        updateListActionResult(previousAR.getM_Action(), ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.setM_ActionResult(ActionResult.ACTION_RESULT.COMPLETED);
+        previousAR.addResult("ack",new Result<>(true));
+        updateListActionResult(previousAR.getM_Action(),previousAR );
         writeLog(Level.INFO,"ARDUINO IS READY");
         m_mainRobot.getM_StateManager().ackReady();
     }

@@ -8,6 +8,7 @@ import com.company.graph.GraphProperties;
 import com.company.manager.Manager;
 import com.company.movement.ActionManager;
 import com.company.movement.ActionProperties;
+import com.company.movement.Obstacles;
 import org.apache.logging.log4j.Level;
 
 public class NavigationManager extends Manager  {
@@ -76,6 +77,13 @@ public class NavigationManager extends Manager  {
         m_GraphManager.setNeighborInDirectionAsWall(VID,wallOrientationWEST,hops);
         writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationEAST+" NodeID:"+eastNeighborID+"at distance:"+hops);
         writeLog(Level.INFO,"exploreSurroundings - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and found wall at: "+wallOrientationWEST+" NodeID:"+westNeighborID+"at distance:"+hops);
+
+    }
+
+    private void NewexploreSurroundings() {
+        for(Direction direction: Obstacles.OBSTACLE_LIST){
+            exploreForWall( direction);
+        }
 
     }
 
