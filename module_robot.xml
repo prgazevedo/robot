@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_robot" default="compile.module.robot">
+  <dirname property="module.robot.basedir" file="${ant.file.module_robot}"/>
+  
+  <property name="module.jdk.home.robot" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.robot" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.robot" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.robot" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="robot.output.dir" value="${module.robot.basedir}/target/classes"/>
+  <property name="robot.testoutput.dir" value="${module.robot.basedir}/target/test-classes"/>
+  
+  <path id="robot.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="robot.module.production.classpath">
+    <path refid="${module.jdk.classpath.robot}"/>
+    <path refid="library.jserialcomm.classpath"/>
+    <fileset dir="${basedir}/apache-log4j-2.10.0-bin">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/src/main/resources"/>
+    <path refid="library.jung2-2_0_1.classpath"/>
+  </path>
+  
+  <path id="robot.runtime.production.module.classpath">
+    <pathelement location="${robot.output.dir}"/>
+    <path refid="library.jserialcomm.classpath"/>
+    <fileset dir="${basedir}/apache-log4j-2.10.0-bin">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/src/main/resources"/>
+    <path refid="library.jung2-2_0_1.classpath"/>
+  </path>
+  
+  <path id="robot.module.classpath">
+    <path refid="${module.jdk.classpath.robot}"/>
+    <pathelement location="${robot.output.dir}"/>
+    <path refid="library.jserialcomm.classpath"/>
+    <fileset dir="${basedir}/apache-log4j-2.10.0-bin">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/src/main/resources"/>
+    <path refid="library.jung2-2_0_1.classpath"/>
+  </path>
+  
+  <path id="robot.runtime.module.classpath">
+    <pathelement location="${robot.testoutput.dir}"/>
+    <pathelement location="${robot.output.dir}"/>
+    <path refid="library.jserialcomm.classpath"/>
+    <fileset dir="${basedir}/apache-log4j-2.10.0-bin">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/src/main/resources"/>
+    <path refid="library.jung2-2_0_1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.robot">
+    <patternset refid="ignored.files"/>
+    <exclude name="out/**"/>
+    <exclude name="out/artifacts/**"/>
+    <exclude name="out/artifacts/Robot_jar/**"/>
+    <exclude name="target/**"/>
+    <exclude name="target/classes/**"/>
+    <exclude name="target/classes/com/**"/>
+    <exclude name="target/classes/com/company/**"/>
+    <exclude name="target/classes/com/company/comms/**"/>
+    <exclude name="target/classes/com/company/graph/**"/>
+    <exclude name="target/classes/com/company/state/**"/>
+    <exclude name="target/classes/com/company/events/**"/>
+    <exclude name="target/classes/com/company/manager/**"/>
+    <exclude name="target/classes/com/company/movement/**"/>
+    <exclude name="target/classes/com/company/navigation/**"/>
+    <exclude name="target/classes/com/company/WorkingThreads/**"/>
+    <exclude name="target/classes/src/**"/>
+    <exclude name="target/classes/src/main/**"/>
+    <exclude name="target/classes/src/main/java/**"/>
+    <exclude name="target/classes/src/main/java/com/**"/>
+    <exclude name="target/classes/src/main/java/com/company/**"/>
+    <exclude name="target/classes/src/main/java/com/company/comms/**"/>
+    <exclude name="target/classes/src/main/java/com/company/graph/**"/>
+    <exclude name="target/classes/src/main/java/com/company/state/**"/>
+    <exclude name="target/classes/src/main/java/com/company/events/**"/>
+    <exclude name="target/classes/src/main/java/com/company/manager/**"/>
+    <exclude name="target/classes/src/main/java/com/company/movement/**"/>
+    <exclude name="target/classes/src/main/java/com/company/navigation/**"/>
+    <exclude name="target/classes/src/main/java/com/company/WorkingThreads/**"/>
+    <exclude name="target/classes/src/main/java/.idea/**"/>
+    <exclude name="target/classes/src/main/java/META-INF/**"/>
+    <exclude name="target/classes/src/main/resources/**"/>
+    <exclude name="target/classes/.idea/**"/>
+    <exclude name="target/classes/.idea/artifacts/**"/>
+    <exclude name="target/classes/.idea/libraries/**"/>
+    <exclude name="target/classes/Robot/**"/>
+    <exclude name="target/classes/Tests/**"/>
+    <exclude name="target/classes/Tests/Tests/**"/>
+    <exclude name="target/classes/arduino/**"/>
+    <exclude name="target/classes/arduino/Robot/**"/>
+    <exclude name="target/classes/arduino/Tests/**"/>
+    <exclude name="target/classes/arduino/Tests/Tests/**"/>
+    <exclude name="target/classes/META-INF/**"/>
+    <exclude name="target/classes/jSerialComm/**"/>
+    <exclude name="target/classes/jung2-2_0_1/**"/>
+    <exclude name="target/classes/apache-log4j-2.10.0-bin/**"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.robot">
+    <patternset refid="excluded.from.module.robot"/>
+  </patternset>
+  
+  <path id="robot.module.sourcepath">
+    <dirset dir="${module.robot.basedir}/../../Robot">
+      <include name="robot/src/main/java"/>
+      <include name="robot/src/main/resources"/>
+      <include name="robot"/>
+      <include name="robot/jung2-2_0_1"/>
+      <include name="robot/jSerialComm"/>
+      <include name="robot/arduino"/>
+      <include name="robot/apache-log4j-2.10.0-bin"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.robot" depends="compile.module.robot.production,compile.module.robot.tests" description="Compile module Robot"/>
+  
+  <target name="compile.module.robot.production" depends="register.custom.compilers" description="Compile module Robot; production classes">
+    <mkdir dir="${robot.output.dir}"/>
+    <javac2 destdir="${robot.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.robot}/javac">
+      <compilerarg line="${compiler.args.robot}"/>
+      <bootclasspath refid="robot.module.bootclasspath"/>
+      <classpath refid="robot.module.production.classpath"/>
+      <src refid="robot.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.robot"/>
+    </javac2>
+    
+    <copy todir="${robot.output.dir}">
+      <fileset dir="${module.robot.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.robot.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.robot.basedir}">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.robot.basedir}/jung2-2_0_1">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.robot.basedir}/jSerialComm">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.robot.basedir}/arduino">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.robot.basedir}/apache-log4j-2.10.0-bin">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.robot.tests" depends="register.custom.compilers,compile.module.robot.production" description="compile module Robot; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.robot" description="cleanup module">
+    <delete dir="${robot.output.dir}"/>
+    <delete dir="${robot.testoutput.dir}"/>
+  </target>
+</project>

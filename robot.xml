@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="robot" default="all">
+  
+  
+  <property file="robot.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+    <include name="*.ear"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/jaccess.jar"/>
+      <include name="jre/lib/ext/jfxrt.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxswt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="lib/ant-javafx.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="lib/javafx-mx.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/packager.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="lib/tools.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.jserialcomm.classpath">
+    <fileset dir="${basedir}/jSerialComm">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="library.jung2-2_0_1.classpath">
+    <fileset dir="${basedir}/jung2-2_0_1">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  <import file="${basedir}/module_robot.xml"/>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.robot" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.robot" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.robot:jar" value="${basedir}/out/artifacts/Robot_jar"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.Robot.jar" value="${artifacts.temp.dir}/Robot.jar"/>
+  </target>
+  
+  <target name="artifact.robot:jar" depends="init.artifacts, compile.module.robot" description="Build &#39;Robot:jar&#39; artifact">
+    <property name="artifact.temp.output.robot:jar" value="${artifacts.temp.dir}/Robot_jar"/>
+    <mkdir dir="${artifact.temp.output.robot:jar}"/>
+    <jar destfile="${temp.jar.path.Robot.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset dir="${robot.output.dir}"/>
+      <zipfileset dir="${basedir}/src/main/resources"/>
+      <zipfileset src="${basedir}/jSerialComm/jSerialComm-1.3.11.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-api-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jcl-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jul-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-web-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-core-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-taglib-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-1.2-api-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-couchdb-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jmx-gui-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-mongodb-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-flume-ng-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-appserver-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-cassandra-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-iostreams-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-liquibase-2.10.0.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-core-2.10.0-tests.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-api-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-api-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jcl-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jcl-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jul-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jul-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-web-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-web-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-core-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-core-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-taglib-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-taglib-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-1.2-api-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-1.2-api-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-couchdb-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-couchdb-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jmx-gui-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-jmx-gui-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-mongodb-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-mongodb-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-flume-ng-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-flume-ng-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-appserver-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-appserver-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-cassandra-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-cassandra-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-iostreams-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-iostreams-2.10.0-sources.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-liquibase-2.10.0-javadoc.jar"/>
+      <zipfileset src="${basedir}/apache-log4j-2.10.0-bin/log4j-liquibase-2.10.0-sources.jar"/>
+    </jar>
+    <copy file="${temp.jar.path.Robot.jar}" tofile="${artifact.temp.output.robot:jar}/Robot.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.robot:jar" description="Build all artifacts">
+    <mkdir dir="${artifact.output.robot:jar}"/>
+    <copy todir="${artifact.output.robot:jar}">
+      <fileset dir="${artifact.temp.output.robot:jar}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>
