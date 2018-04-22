@@ -127,6 +127,34 @@ public class PathManager extends Manager {
 
     }
 
+
+
+
+    public int retracePath(){
+        try {
+            if(retraceToPreviousPosition())
+            {
+                int new_position = getRetracePositionVertexID();
+                int previousPosition = getM_currentPositionVertexID_Value();
+                System.out.println("retracePath: Iteration: "+getM_currentPositionIteration_Key()+" Retrace Iteration: "+getM_retracePositionIteration_Key()+"I am at node: "+previousPosition +" go back to node: " + new_position);
+                boolean iterations = newPosition(new_position);
+                if(!iterations) return -1;
+                newPathEdge(previousPosition, new_position, getRetraceDirection());
+                return getM_currentPositionVertexID_Value();
+            }
+            else
+            {
+                System.out.println("retracePath: Could not retrace at current position: " + getM_currentPositionVertexID_Value() + " at retracePosition: "+ getM_retracePositionIteration_Key());
+                return -1;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+
+    }
+
     public Direction getRetraceDirection(){
        return m_MyOrientation.getDirectionFromOrientation(Direction.SOUTH);
     }

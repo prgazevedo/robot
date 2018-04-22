@@ -78,10 +78,11 @@ public class NavigationManager extends Manager  {
             {
                 //dead-end -> retrace the path -> but continue searching
 
-                v1=goBackPath();
+                v1=m_PathManager.retracePath();
                 writeLog(Level.INFO,"navigateToNextVertex - retracePath to:"+v1);
                 if(v1!=-1) {
                     m_random.init();
+                    m_ActionManager.move(m_PathManager.getRetraceDirection(),m_ActionManager.defaultDistance());
                     bSearching = true;
                 } else {
                     //no more retrace
@@ -133,30 +134,7 @@ public class NavigationManager extends Manager  {
 
     }
 
-    public int goBackPath(){
-        try {
-            if(m_PathManager.retraceToPreviousPosition())
-            {
-                int new_position = m_PathManager.getRetracePositionVertexID();
-                int previousPosition = m_PathManager.getM_currentPositionVertexID_Value();
-                System.out.println("retracePath: Iteration: "+m_PathManager.getM_currentPositionIteration_Key()+" Retrace Iteration: "+m_PathManager.getM_retracePositionIteration_Key()+"I am at node: "+previousPosition +" go back to node: " + new_position);
-                m_PathManager.newPosition(new_position);
-                m_PathManager.newPathEdge(previousPosition, new_position, m_PathManager.getRetraceDirection());
-                m_ActionManager.move(m_PathManager.getRetraceDirection(),m_ActionManager.defaultDistance());
-                return m_PathManager.getM_currentPositionVertexID_Value();
-            }
-            else
-            {
-                System.out.println("retracePath: Could not retrace at current position: " + m_PathManager.getM_currentPositionVertexID_Value() + " at retracePosition: "+ m_PathManager.getM_retracePositionIteration_Key());
-                return -1;
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1;
-
-    }
 
 
     private Direction getFreeDirection()
@@ -274,7 +252,7 @@ public class NavigationManager extends Manager  {
             {
                 //dead-end -> retrace the path -> but continue searching
 
-                v1=retracePath();
+                v1=m_PathManager.retracePath();
                 writeLog(Level.INFO,"navigateToNextVertex - retracePath to:"+v1);
                 if(v1!=-1) {
                     m_random.init();
@@ -316,29 +294,7 @@ public class NavigationManager extends Manager  {
 
     }
 
-    private int retracePath(){
-        try {
-            if(m_PathManager.retraceToPreviousPosition())
-            {
-                int new_position = m_PathManager.getRetracePositionVertexID();
-                int previousPosition = m_PathManager.getM_currentPositionVertexID_Value();
-                System.out.println("retracePath: Iteration: "+m_PathManager.getM_currentPositionIteration_Key()+" Retrace Iteration: "+m_PathManager.getM_retracePositionIteration_Key()+"I am at node: "+previousPosition +" go back to node: " + new_position);
-                m_PathManager.newPosition(new_position);
-                m_PathManager.newPathEdge(previousPosition, new_position, m_PathManager.getRetraceDirection());
-                return m_PathManager.getM_currentPositionVertexID_Value();
-            }
-            else
-            {
-                System.out.println("retracePath: Could not retrace at current position: " + m_PathManager.getM_currentPositionVertexID_Value() + " at retracePosition: "+ m_PathManager.getM_retracePositionIteration_Key());
-                return -1;
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1;
-
-    }
 
 
 

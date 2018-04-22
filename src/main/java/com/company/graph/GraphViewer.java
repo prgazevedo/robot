@@ -35,6 +35,7 @@ public class GraphViewer extends JFrame implements IManager {
         m_graphManager = mainRobot.getM_GraphManager();
         m_layout= m_graphManager.getM_layout();
         m_dimension= new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH);
+        createVisualization();
 
     }
 
@@ -82,17 +83,8 @@ public class GraphViewer extends JFrame implements IManager {
 
     public void updateVisualization() {
         m_layout= m_graphManager.getM_layout();
-        m_vv = new VisualizationViewer(m_layout, m_dimension);
-        Transformer<Integer, Paint> vertexColor = drawVertexColor();
-        Transformer<Integer, Shape> vertexSize = drawVertexShape();
-        m_vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
-        m_vv.getRenderContext().setVertexShapeTransformer(vertexSize);
-        //zooming and transforming
-        GraphZoomScrollPane zoomPane = new GraphZoomScrollPane(m_vv);
-        DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse();
-        m_vv.setGraphMouse(graphMouse);
-        improvePerformance(m_vv);
-        this.getContentPane().add(m_vv);
+        m_vv.setGraphLayout(m_layout);
+        m_vv.repaint();
     }
 
 
