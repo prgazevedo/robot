@@ -422,7 +422,7 @@ void setupUSServo()
 
 bool checkAngle(int angle)
 {
-  if(angle<=180 && angle>=10) return true;
+  if(angle<=180 && angle>=0) return true;
   else return false;
 }
 

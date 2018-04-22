@@ -15,6 +15,11 @@ public class ActionProperties {
     /** Rotation Milliseconds to move Multiplier for degree*/
     public static final int ROT_MULTIPLIER = 10;
 
+
+    /** Rotation boundaries*/
+    public static final int MAXIMUM_ARDUINO_SERVO_ROTATION = 170;
+    public static final int MINIMUM_ARDUINO_SERVO_ROTATION = 10;
+
     public static boolean convertDistanceToFwdMoveDirection(int distance){
         if(distance>0) return true;
         else return false;
@@ -24,6 +29,16 @@ public class ActionProperties {
         if(degrees<0) return true;
         else return false;
     }
+
+
+    public static int convertLookDegreesToArduino(int degrees){
+        //avoid extreme rotations in arduino
+        int converted_degrees_to_send_arduino= (-degrees+90);
+        if( converted_degrees_to_send_arduino >= MAXIMUM_ARDUINO_SERVO_ROTATION) return MAXIMUM_ARDUINO_SERVO_ROTATION;
+        else if( converted_degrees_to_send_arduino < MINIMUM_ARDUINO_SERVO_ROTATION) return MINIMUM_ARDUINO_SERVO_ROTATION;
+        else return converted_degrees_to_send_arduino;
+    }
+
 
     public static int convertDegreesToRotationTime(int degrees){
         return ActionProperties.ROT_MULTIPLIER*degrees;
@@ -37,8 +52,8 @@ public class ActionProperties {
     }
 
 
-    public boolean performLook(int degrees){
-        if (degrees > -1 && degrees < 181) return true;
+    public boolean canPerformLook(int degrees){
+        if (degrees >= -90 && degrees <= 90) return true;
         else return false;
     }
 

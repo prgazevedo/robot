@@ -78,8 +78,11 @@ public class MainRobot extends Manager {
         robot.writeLog(Level.INFO, "Robot Test if Arduino Ready");
         robot.getM_ActionManager().testRobot();
         robot.writeLog(Level.INFO, "Robot Test Robot Functions");
-        //robot.getM_NavigationManager().runMockNavigator();
-        robot.getM_GraphViewer().viewGraph();
+        //robot.getM_NavigationManager().runNavigator();
+        while(robot.getM_NavigationManager().runStepwiseMockNavigator()){
+            robot.getM_GraphViewer().updateGraph();
+        }
+
 
 
     }

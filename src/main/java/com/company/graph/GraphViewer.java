@@ -44,6 +44,12 @@ public class GraphViewer extends JFrame implements IManager {
         createFrame();
     }
 
+    public void updateGraph()
+    {
+        updateVisualization();
+        createFrame();
+    }
+
     public void createFrame() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
@@ -70,6 +76,22 @@ public class GraphViewer extends JFrame implements IManager {
         m_vv.setGraphMouse(graphMouse);
         improvePerformance(m_vv);
 
+        this.getContentPane().add(m_vv);
+    }
+
+
+    public void updateVisualization() {
+        m_layout= m_graphManager.getM_layout();
+        m_vv = new VisualizationViewer(m_layout, m_dimension);
+        Transformer<Integer, Paint> vertexColor = drawVertexColor();
+        Transformer<Integer, Shape> vertexSize = drawVertexShape();
+        m_vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
+        m_vv.getRenderContext().setVertexShapeTransformer(vertexSize);
+        //zooming and transforming
+        GraphZoomScrollPane zoomPane = new GraphZoomScrollPane(m_vv);
+        DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse();
+        m_vv.setGraphMouse(graphMouse);
+        improvePerformance(m_vv);
         this.getContentPane().add(m_vv);
     }
 

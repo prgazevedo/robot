@@ -65,8 +65,8 @@ public class ActionManager extends Manager implements IEvent {
         look(0);
         look(45);
         look(90);
-        look(135);
-        look(180);
+        look(-45);
+        look(-90);
         writeLog(Level.INFO,"ActionManager:testRobot - Stop");
 
     }
@@ -171,7 +171,7 @@ public class ActionManager extends Manager implements IEvent {
 
 
     public void look(Integer degrees) {
-        if(m_AP.performLook(degrees)){
+        if(m_AP.canPerformLook(degrees)){
             Action.ACTION actionEnum=Action.ACTION.TAKE_DISTANCE;
             int index = getNextActionIndex();
             Action action = new Action(index,actionEnum );
@@ -179,7 +179,7 @@ public class ActionManager extends Manager implements IEvent {
             Event event = new Event(index,Action.translateActionToEvent(actionEnum));
             m_eventCaller.prepareCallBack(this,event);
             writeLog(Level.INFO, "Action Manager-look called, degrees:" + degrees);
-            m_eventCaller.look(degrees);
+            m_eventCaller.look(m_AP.convertLookDegreesToArduino(degrees));
             m_eventCaller.waitCallBack(event);
         }
         else {

@@ -13,9 +13,9 @@ public enum Direction {
     EAST(2, new DirectionProperties(90,new Pair(GraphProperties.NODE_X_DISTANCE, 0))),
     SOUTHEAST(3, new DirectionProperties(125,new Pair(+GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE))),
     SOUTH(4, new DirectionProperties(180,new Pair(0, -GraphProperties.NODE_Y_DISTANCE))),
-    SOUTHWEST(5, new DirectionProperties(225,new Pair(-GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE))),
-    WEST(6, new DirectionProperties(270,new Pair(-GraphProperties.NODE_X_DISTANCE, 0))),
-    NORTHWEST(7, new DirectionProperties(325,new Pair(-GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)));
+    SOUTHWEST(5, new DirectionProperties(-125,new Pair(-GraphProperties.NODE_X_DISTANCE, -GraphProperties.NODE_Y_DISTANCE))),
+    WEST(6, new DirectionProperties(-90,new Pair(-GraphProperties.NODE_X_DISTANCE, 0))),
+    NORTHWEST(7, new DirectionProperties(-45,new Pair(-GraphProperties.NODE_X_DISTANCE, GraphProperties.NODE_Y_DISTANCE)));
 
 
 
