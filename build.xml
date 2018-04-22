@@ -241,7 +241,7 @@
   
   <target name="compile.module.robot.production" description="Compile module Robot; production classes">
     <mkdir dir="${robot.output.dir}"/>
-    <javac destdir="${robot.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.robot}/javac">
+    <javac srcdir="${robot.src.dir}" destdir="${robot.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.robot}/javac">
       <compilerarg line="${compiler.args.robot}"/>
       <bootclasspath refid="robot.module.bootclasspath"/>
       <classpath refid="robot.module.production.classpath"/>
