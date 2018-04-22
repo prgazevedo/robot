@@ -43,6 +43,9 @@ public class ActionManager extends Manager implements IEvent {
     }
 
 
+    public int defaultDistance(){
+        return ActionProperties.DEFAULT_DISTANCE;
+    }
 
     public void testRobot() {
         writeLog(Level.INFO,"ActionManager:testRobot - Start");
@@ -84,9 +87,14 @@ public class ActionManager extends Manager implements IEvent {
                 break;
             }
             case NORTH:
-            case SOUTH:{
+            {
                 writeLog(Level.INFO,"ActionManager: move - move distance:"+distance);
                 move(distance);
+                break;
+            }
+            case SOUTH:{
+                writeLog(Level.INFO,"ActionManager: move - move distance:"+distance);
+                move(-distance);
                 break;
             }
             case NONE:

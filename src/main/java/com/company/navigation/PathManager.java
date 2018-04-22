@@ -82,6 +82,12 @@ public class PathManager extends Manager {
         else return true;
     }
 
+    public PathItem getLatestPathItem() throws IndexOutOfBoundsException{
+        if(m_path.containsKey(m_currentPositionIteration_Key))
+        return m_path.get(m_currentPositionIteration_Key);
+        else throw new IndexOutOfBoundsException("NoSuchElementinPath");
+    }
+
     private void resetRetrace(){
         m_retracePositionIteration_Key=m_currentPositionIteration_Key;
     }

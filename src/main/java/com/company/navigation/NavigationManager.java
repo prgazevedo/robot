@@ -1,5 +1,6 @@
 package com.company.navigation;
 
+import java.nio.file.Path;
 import java.util.NavigableMap;
 
 import com.company.MainRobot;
@@ -49,7 +50,7 @@ public class NavigationManager extends Manager  {
             {
                 writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
                 m_PathManager.goTo(pathItem);
-                m_ActionManager.move(pathItem.getM_Direction(), ActionProperties.DEFAULT_DISTANCE);
+
 
             }
             else
@@ -80,7 +81,75 @@ public class NavigationManager extends Manager  {
 
     }
 
-    private void NewexploreSurroundings() {
+
+    public void runNavigator(){
+
+        while(m_PathManager.getM_currentPositionIteration_Key()< GraphProperties.NAV_ITERATIONS)
+        {
+
+            writeLog(Level.INFO,"runMockNavigator - iteration:"+m_PathManager.getM_currentPositionIteration_Key());
+            int v0 = m_PathManager.getM_currentPositionVertexID_Value();
+            PathItem pathItem = exploreNextDestination(v0);
+            int VID = pathItem.getM_VertexId();
+            if(VID!=-1)
+            {
+                writeLog(Level.INFO,"runMockNavigator navigating to:"+VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+" with getDirection:"+pathItem.getM_Direction());
+                m_PathManager.goTo(pathItem);
+                m_ActionManager.move(pathItem.getM_Direction(), m_ActionManager.defaultDistance());
+
+            }
+            else
+            {
+                writeLog(Level.INFO,"runMockNavigator Stop navigation");
+                break;
+            }
+
+        }
+        writeLog(Level.INFO,"runMockNavigator End navigation");
+    }
+
+
+    private PathItem exploreNextDestination(int v0){
+        int v1=-1;
+        Direction new_direction = Direction.NONE;
+        boolean bSearching=true;
+        m_random.init();
+        while(bSearching) {
+
+            exploreSurroundings();
+            new_direction = getFreeDirection();
+
+            if(new_direction.equals(Direction.NONE))
+            {
+                //dead-end -> retrace the path -> but continue searching
+
+                v1=retracePath();
+                writeLog(Level.INFO,"navigateToNextVertex - retracePath to:"+v1);
+                if(v1!=-1) {
+                    m_random.init();
+                    bSearching = true;
+                } else {
+                    //no more retrace
+                    bSearching = false;
+                }
+
+            }
+            else
+            {
+                writeLog(Level.INFO,"navigateToNextVertex - New valid node so exit the search: "+v1);
+                //New valid node so exit the search
+                bSearching=false;
+
+            }
+
+        }
+
+        return m_PathManager.getNewPathItem(new_direction);
+
+    }
+
+
+    private void exploreSurroundings() {
         for(Direction direction: Obstacles.OBSTACLE_LIST){
             exploreForWall(direction);
             int hops = m_ActionManager.getLookResult();
@@ -105,6 +174,31 @@ public class NavigationManager extends Manager  {
         Direction wallOrientation = m_PathManager.getM_MyOrientation().getDirectionFromOrientation(direction);
         m_ActionManager.look(wallOrientation.getM_properties().getDegrees());
         writeLog(Level.INFO,"exploreForWall - I am at:"+ VID+" at position:"+ m_GraphManager.getVertexCoordinates(VID)+"with Orientation"+m_PathManager.getM_MyOrientation().getMy_Direction()+" and searching for wall at: "+wallOrientation);
+
+    }
+
+    public int goBackPath(){
+        try {
+            if(m_PathManager.retraceToPreviousPosition())
+            {
+                int new_position = m_PathManager.getRetracePositionVertexID();
+                int previousPosition = m_PathManager.getM_currentPositionVertexID_Value();
+                System.out.println("retracePath: Iteration: "+m_PathManager.getM_currentPositionIteration_Key()+" Retrace Iteration: "+m_PathManager.getM_retracePositionIteration_Key()+"I am at node: "+previousPosition +" go back to node: " + new_position);
+                m_PathManager.newPosition(new_position);
+                m_PathManager.newPathEdge(previousPosition, new_position, m_PathManager.getRetraceDirection());
+                m_ActionManager.move(m_PathManager.getRetraceDirection(),m_ActionManager.defaultDistance());
+                return m_PathManager.getM_currentPositionVertexID_Value();
+            }
+            else
+            {
+                System.out.println("retracePath: Could not retrace at current position: " + m_PathManager.getM_currentPositionVertexID_Value() + " at retracePosition: "+ m_PathManager.getM_retracePositionIteration_Key());
+                return -1;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
 
     }
 
