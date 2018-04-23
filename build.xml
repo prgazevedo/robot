@@ -88,7 +88,7 @@
     </fileset>
   </path>
 
-    <property name="jdk.home.1.8" value="/usr/bin/javac"/>
+  <property name="jdk.home.1.8" value="/usr/bin/"/>
   <property name="project.jdk.home" value="${jdk.home.1.8}"/>
   <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
   <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>

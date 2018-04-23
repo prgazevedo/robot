@@ -19,7 +19,8 @@
 package com.company;
 
 
-import com.company.WorkingThreads.ThreadManager;
+import com.company.properties.PropertiesManager;
+import com.company.workingThreads.ThreadManager;
 
 import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
@@ -55,7 +56,7 @@ public class MainRobot extends Manager {
     public GraphManager getM_GraphManager() { return (GraphManager)getMF().getGraphManager(); }
     public EventCaller getM_EventCaller() { return (EventCaller)getMF().getEventCaller(); }
     public StateManager getM_StateManager() { return (StateManager)getMF().getStateManager(); }
-
+    public PropertiesManager getM_PropertiesManager() { return (PropertiesManager)getMF().getPropertiesManager(); }
 
     public MainRobot() {
         m_managerFactory = new ManagerFactory(this);
@@ -74,6 +75,7 @@ public class MainRobot extends Manager {
         robot.writeLog(Level.INFO, "Robot main start");
         robot.initialize();
         robot.writeLog(Level.INFO, "Robot main initialize");
+        robot.getM_PropertiesManager().getPortName();
         robot.getM_ActionManager().testIfArduinoReady();
         robot.writeLog(Level.INFO, "Robot Test if Arduino Ready");
         robot.getM_ActionManager().testRobot();

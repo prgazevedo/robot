@@ -49,7 +49,7 @@ public class CommsManager extends Manager {
         }
 
         try {
-            String portname = ApplicationProperties.PORT_NAME;
+            String portname = m_mainRobot.getM_PropertiesManager().getPortName();
             writeLog(Level.INFO," Will open: " + portname);
             openPort( portname );
             setPortDefaultParams(m_comPort);

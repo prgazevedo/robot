@@ -2,7 +2,7 @@ package com.company.events;
 
 import com.company.MainRobot;
 import com.company.manager.Manager;
-import com.company.WorkingThreads.ThreadManager;
+import com.company.workingThreads.ThreadManager;
 import com.company.movement.IAction;
 import com.company.state.State;
 import com.company.state.StateManager;

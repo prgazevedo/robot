@@ -1,4 +1,4 @@
-package com.company.WorkingThreads;
+package com.company.workingThreads;
 
 
 import com.company.manager.IManager;

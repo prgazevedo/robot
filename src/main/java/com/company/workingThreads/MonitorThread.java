@@ -1,14 +1,11 @@
-package com.company.WorkingThreads;
+package com.company.workingThreads;
 
 import com.company.comms.*;
 import com.company.events.EventNotifier;
-import com.company.events.IEvent;
-import org.apache.commons.collections15.map.LinkedMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class MonitorThread extends Thread {
 

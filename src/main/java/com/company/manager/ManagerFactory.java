@@ -1,7 +1,8 @@
 package com.company.manager;
 
 import com.company.MainRobot;
-import com.company.WorkingThreads.ThreadManager;
+import com.company.properties.PropertiesManager;
+import com.company.workingThreads.ThreadManager;
 import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
 import com.company.graph.GraphViewer;
@@ -24,6 +25,7 @@ public class ManagerFactory extends Manager implements IManager{
     private GraphManager m_GraphManager;
     private EventCaller m_EventCaller;
     private StateManager m_StateManager;
+    private PropertiesManager m_PropertiesManager;
 
 
 
@@ -36,6 +38,7 @@ public class ManagerFactory extends Manager implements IManager{
     public void initialize() {
         super.initialize();
         getStateManager();
+        getPropertiesManager();
         getCommsManager();
         getThreadManager();
         getActionManager();
@@ -44,6 +47,7 @@ public class ManagerFactory extends Manager implements IManager{
         getPathManager();
         getGraphViewer();
         getEventCaller();
+
 
     }
 
@@ -125,5 +129,12 @@ public class ManagerFactory extends Manager implements IManager{
         return m_StateManager;
     }
 
+    public IManager getPropertiesManager(){
+        if(m_PropertiesManager==null) {
+            m_PropertiesManager = new PropertiesManager(m_mainRobot);
+            m_PropertiesManager.initialize();
+        }
+        return m_PropertiesManager;
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.company.WorkingThreads;
+package com.company.workingThreads;
 
 import com.company.comms.*;
 import com.fazecast.jSerialComm.SerialPort;

@@ -28,8 +28,6 @@ public class ApplicationProperties {
     public static final  org.apache.logging.log4j.Level LOG_LEVEL = Level.INFO ;
 
 
-    /** PortName of this machine */
-    public static final String PORT_NAME = "cu.usbmodem1441";
 
 }
 
