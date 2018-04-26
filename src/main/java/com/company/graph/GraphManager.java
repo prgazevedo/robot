@@ -1,13 +1,13 @@
 package com.company.graph;
 
-import com.company.manager.IManager;
+
 import com.company.MainRobot;
+import com.company.manager.IManager;
 import com.company.manager.Manager;
 import com.company.navigation.Direction;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
-import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
-import javafx.geometry.Point2D;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +22,7 @@ public class GraphManager extends Manager implements IManager {
     private StaticLayout m_layout;
     private edu.uci.ics.jung.graph.Graph<Integer,String> m_graph;
     private HashMap<Integer,Vertex> m_hashmapVertexes;
-    private HashMap<Point2D,Integer> m_hashmapLocations;
+    private HashMap<Coordinates2D,Integer> m_hashmapLocations;
     private int m_Upper_X_Location = 0;
     private int m_Upper_Y_Location = 0;
     /** The logger we shall use */
@@ -49,7 +49,7 @@ public class GraphManager extends Manager implements IManager {
         m_mainRobot = mainRobot;
         m_graph = new SparseMultigraph<Integer,String>();
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
-        m_hashmapLocations = new HashMap<Point2D,Integer>();
+        m_hashmapLocations = new HashMap<Coordinates2D,Integer>();
         m_layout = new StaticLayout(m_graph);
 
     }
@@ -105,7 +105,7 @@ public class GraphManager extends Manager implements IManager {
 
 
 
-    public Integer getVertexId(Point2D location){return m_hashmapLocations.get(location);}
+    public Integer getVertexId(Coordinates2D location){return m_hashmapLocations.get(location);}
 
     public void populateVertexes()
     {
@@ -113,7 +113,7 @@ public class GraphManager extends Manager implements IManager {
         for (int i = 0; i<GraphProperties.N_NODES_IN_ROWS; i++) {
             for (int j = 0; j<GraphProperties.N_NODES_IN_COLUMNS; j++) {
 
-                Point2D location = calculateNewLocation(i,j);
+                Coordinates2D location = calculateNewLocation(i,j);
                 m_graph.addVertex(operatingNode);
                 Vertex v = new Vertex(operatingNode, location);
                 mapNeighbors(v,operatingNode);
@@ -151,7 +151,7 @@ public class GraphManager extends Manager implements IManager {
     }
 
 
-    public Point2D getVertexCoordinates(Integer VID)
+    public Coordinates2D getVertexCoordinates(Integer VID)
     {
         if(m_hashmapVertexes.containsKey(VID)) {
             try {
@@ -313,10 +313,10 @@ public class GraphManager extends Manager implements IManager {
     }
 
 
-    private Point2D calculateNewLocation(int i, int j)
+    private Coordinates2D calculateNewLocation(int i, int j)
     {
-        //return new Point2D( i*GraphProperties.NODE_X_DISTANCE, j*GraphProperties.NODE_Y_DISTANCE);
-        return new Point2D( j*GraphProperties.NODE_X_DISTANCE, -i*GraphProperties.NODE_Y_DISTANCE+(GraphProperties.DELTA_Y-GraphProperties.NODE_Y_DISTANCE));
+
+        return new Coordinates2D( j*GraphProperties.NODE_X_DISTANCE, -i*GraphProperties.NODE_Y_DISTANCE+(GraphProperties.DELTA_Y-GraphProperties.NODE_Y_DISTANCE));
     }
 
     private void setUpperLocationBounds()

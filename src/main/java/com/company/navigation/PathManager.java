@@ -1,10 +1,10 @@
 package com.company.navigation;
 
 import com.company.MainRobot;
+import com.company.graph.Coordinates2D;
 import com.company.graph.GraphManager;
 import com.company.graph.GraphProperties;
 import com.company.manager.Manager;
-import javafx.geometry.Point2D;
 import org.apache.logging.log4j.Level;
 
 import java.util.NavigableMap;
@@ -161,7 +161,7 @@ public class PathManager extends Manager {
 
 
     public int getStartVertexID(){
-        return m_graphManager.getVertexId(new Point2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
+        return m_graphManager.getVertexId(new Coordinates2D(GraphProperties.START_POSITION_X,GraphProperties.START_POSITION_Y));
     }
 
 }

@@ -1,16 +1,14 @@
 package com.company.navigation;
 
-import java.nio.file.Path;
-import java.util.NavigableMap;
-
 import com.company.MainRobot;
 import com.company.graph.GraphManager;
 import com.company.graph.GraphProperties;
 import com.company.manager.Manager;
 import com.company.movement.ActionManager;
-import com.company.movement.ActionProperties;
 import com.company.movement.Obstacles;
 import org.apache.logging.log4j.Level;
+
+import java.util.NavigableMap;
 
 public class NavigationManager extends Manager  {
 

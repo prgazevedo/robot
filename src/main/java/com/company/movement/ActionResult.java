@@ -1,6 +1,5 @@
 package com.company.movement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ActionResult{

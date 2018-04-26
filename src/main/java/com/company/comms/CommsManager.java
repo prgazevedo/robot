@@ -1,6 +1,5 @@
 package com.company.comms;
 
-import com.company.ApplicationProperties;
 import com.company.MainRobot;
 import com.company.manager.Manager;
 import com.fazecast.jSerialComm.SerialPort;

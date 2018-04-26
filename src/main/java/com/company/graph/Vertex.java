@@ -1,14 +1,13 @@
 package com.company.graph;
 
 import com.company.navigation.Direction;
-import javafx.geometry.Point2D;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Vertex{
     private int m_vertexID;
-    private Point2D m_coords;
+    private Coordinates2D m_coords;
     private boolean m_visited;
     private boolean m_wall;
     private HashMap<Direction,Integer> m_neighbors;
@@ -30,17 +29,17 @@ public class Vertex{
         this.m_wall = m_wall;
     }
 
-    public Point2D getM_coords() {
+    public Coordinates2D getM_coords() {
         return m_coords;
     }
 
 
 
-    public Vertex(int VertexId, Point2D coords) {
+    public Vertex(int VertexId, Coordinates2D coords) {
         m_wall = false;
         m_visited = false;
         m_vertexID = VertexId;
-        this.m_coords = new Point2D(coords.getX(),coords.getY());
+        this.m_coords = new Coordinates2D(coords.getX(),coords.getY());
         this.m_neighbors = new HashMap<Direction,Integer>(Direction.getNumberDirections());
 
     }

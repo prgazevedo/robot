@@ -1,14 +1,13 @@
 package com.company.workingThreads;
 
 
-import com.company.manager.IManager;
 import com.company.MainRobot;
-import com.company.manager.Manager;
 import com.company.comms.CommsProperties;
 import com.company.comms.MessageRecordQueue;
+import com.company.manager.IManager;
+import com.company.manager.Manager;
 import com.fazecast.jSerialComm.SerialPort;
 import org.apache.logging.log4j.Level;
-
 
 import java.util.concurrent.TimeUnit;
 

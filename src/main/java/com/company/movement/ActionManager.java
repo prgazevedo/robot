@@ -3,9 +3,9 @@ package com.company.movement;
 
 import com.company.MainRobot;
 import com.company.events.Event;
-import com.company.manager.Manager;
 import com.company.events.EventCaller;
 import com.company.events.IEvent;
+import com.company.manager.Manager;
 import com.company.navigation.Direction;
 import org.apache.logging.log4j.Level;
 

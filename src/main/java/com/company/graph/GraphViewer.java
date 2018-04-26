@@ -1,7 +1,7 @@
 package com.company.graph;
 
-import com.company.manager.IManager;
 import com.company.MainRobot;
+import com.company.manager.IManager;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;

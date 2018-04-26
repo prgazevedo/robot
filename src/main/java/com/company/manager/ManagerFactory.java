@@ -1,16 +1,16 @@
 package com.company.manager;
 
 import com.company.MainRobot;
-import com.company.properties.PropertiesManager;
-import com.company.workingThreads.ThreadManager;
 import com.company.comms.CommsManager;
 import com.company.events.EventCaller;
+import com.company.graph.GraphManager;
 import com.company.graph.GraphViewer;
 import com.company.movement.ActionManager;
-import com.company.graph.GraphManager;
 import com.company.navigation.NavigationManager;
 import com.company.navigation.PathManager;
+import com.company.properties.PropertiesManager;
 import com.company.state.StateManager;
+import com.company.workingThreads.ThreadManager;
 
 public class ManagerFactory extends Manager implements IManager{
 

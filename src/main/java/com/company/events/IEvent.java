@@ -1,8 +1,5 @@
 package com.company.events;
 
-import com.company.navigation.Direction;
-import com.company.state.State;
-
 public interface IEvent
 {
     // Callback methods
