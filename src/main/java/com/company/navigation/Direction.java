@@ -3,7 +3,7 @@ package com.company.navigation;
 
 import com.company.graph.Coordinates2D;
 import com.company.graph.GraphProperties;
-import javafx.util.Pair;
+
 
 
 public enum Direction {
