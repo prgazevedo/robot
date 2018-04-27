@@ -1,27 +1,23 @@
 <project name="Robot" basedir="." default="main">
+    <property name="base.dir" value="."/>
     <property name="base.project" value="/home/pi/PROJECTS/robot/"/>
     <property name="src.dir"     value="${base.project}/src/main/java/"/>
+    <property name="package.dir"     value="/com/company/"/>
     <property name="build.dir"   value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
-    <property name="main-class"  value="MainRobot"/>
+    <property name="main-class"  value="MainRobot"/>       
     <property name="lib.dir"     value="${base.project}"/>
 
     <path id="classpath">
-        <pathelement location="."/>
-        <pathelement location="${base.project}/src/main/java"/>
-        <pathelement location="${base.project}/src/main/java/com/company"/>
-        <fileset dir="${src.dir}/com/company/" includes="*.java"/>
-        <dirset dir="${src.dir}" includes="comms events graph manager movement navigation state WorkingThreads"/>
+	<pathelement location="${base.dir}"/>
+	<pathelement location="${base.project}/src/main/java"/>
+	<pathelement location="${base.project}/src/main/java/com/company"/>
+	<fileset dir="${src.dir}${package.dir}" includes="*.java"/>
+	<dirset dir="${src.dir}" includes="comms events graph manager movement navigation state WorkingThreads"/>
         <fileset dir="${lib.dir}" includes="apache-log4j-2.10.0-bin/*.jar"/>
         <fileset dir="${lib.dir}" includes="jSerialComm/*.jar"/>
         <fileset dir="${lib.dir}" includes="jung2-2_0_1/*.jar"/>
-        <!--
-                <fileset dir="${src.dir}" includes="*.java"/>
-                <fileset dir="${lib.dir}" includes="apache-log4j-2.10.0-bin/*.jar"/>
-                <fileset dir="${lib.dir}" includes="jSerialComm/*.jar"/>
-                <fileset dir="${lib.dir}" includes="jung2-2_0_1/*.jar"/>
-        -->
     </path>
 
 
@@ -40,7 +36,7 @@
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
             <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
+                <attribute name="Main-Class" value="${main-class}${package.dir}"/>
             </manifest>
         </jar>
     </target>
