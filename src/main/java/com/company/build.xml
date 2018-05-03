@@ -1,7 +1,7 @@
 <project name="Robot" basedir="." default="main">
-	<description>
-		Create a Java Project (JAR) with Ant build script
-	</description>
+<description>
+Create a Java Project (JAR) with Ant build script
+</description>
     <property name="projectName" value="Robot" />
     <property name="base.dir" value="."/>
     <property name="base.project" value="/home/pi/PROJECTS/robot/"/>
@@ -29,6 +29,15 @@
         <fileset dir="${lib.dir}" includes="jung2-2_0_1/*.jar"/>
     </path>
 
+<pathconvert property="manifest.classpath" pathsep=" ">
+  <path refid="jarpath"/>
+  <mapper>
+    <chainedmapper>
+       <flattenmapper/>
+       <globmapper from="*.jar" to="lib/*.jar"/>
+    </chainedmapper>
+  </mapper>
+</pathconvert>
 
 	<!-- Group all dependencies into a big dependency-all.jar 
 	<target name="copy-dependencies">
@@ -58,6 +67,9 @@
         <delete dir="${build.dir}"/>
     </target>
 
+
+
+
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
@@ -66,24 +78,24 @@
     <target name="jar" depends="compile, copy-dependencies">
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="${package.dir}${main-class}"/>
-
-	      <attribute name="Class-Path" value="${dist.lib.dir}/*.jar"/>
+        
+       <manifest>
+        <attribute name="Main-Class" value="${package.dir}${main-class}"/>
+	<attribute name="Class-Path" value="${manifest.classpath}"/>
          </manifest>
-<!--
-	<zipfileset src="${dist.lib.dir}/dependencies-all.jar" excludes="META-INF/*.SF" />
--->    
-    </jar>
+	</jar>
+
+    	<echo message="Build Classpath: ${classpath}" />
+    	<echo message="Manifest Classpath: ${manifest.classpath}" />
     </target>
 
-    <target name="run" depends="jar">
-        <java fork="true" classname="${main-class}">
-            <classpath>
-                <path refid="classpath"/>
-                <path location="${jar.dir}/${ant.project.name}.jar"/>
-            </classpath>
-        </java>
+     <target name="copy-jar">
+                <copy file="${jar.dir}/${ant.project.name}.jar" todir="${build.dir}">
+                </copy>
+        </target>
+
+    <target name="run" depends="jar,copy-jar">
+        <java jar="${build.dir}/${ant.project.name}.jar"  fork="true"/>
     </target>
 
     <target name="clean-build" depends="clean,jar"/>
