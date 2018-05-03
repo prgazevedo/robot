@@ -29,6 +29,7 @@ public class PropertiesManager extends Manager {
     public void readProperties(){
         java.util.Properties prop = new Properties();
         try {
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
             File file = new File("./robot_properties.xml");
             FileInputStream fileInputStream = new FileInputStream(file);
             System.out.println("To Read the file"+file.getCanonicalPath());
