@@ -12,8 +12,9 @@
     <property name="jar.dir"     value="${build.dir}/jar"/>
     <property name="dist.lib.dir"     value="${build.dir}/lib"/>
     <property name="main-class"  value="MainRobot"/>
+    <property name="property-file" value="robot_properties.xml"/>
     <property name="lib.dir"     value="${base.project}"/>
-
+    <property name="log4j" value="/src/main/resources/log4j2.xml" />
     <path id="classpath">
         <pathelement location="${base.dir}"/>
         <pathelement location="${base.project}/src/main/java"/>
@@ -75,8 +76,15 @@
         </copy>
     </target>
 
-    <target name="run" depends="jar,copy-jar">
-        <java jar="${build.dir}/${ant.project.name}.jar"  fork="true"/>
+    <target name="copy-properties">
+        <copy file="${base.project}/${property-file}" todir="${build.dir}"/>
+        <copy file="${base.project}/${log4j}" todir="${build.dir}"/>
+    </target>
+
+    <target name="run" depends="jar,copy-jar,copy-properties">
+        <java jar="${build.dir}/${ant.project.name}.jar"  fork="true">
+        <jvmarg value="-Dlog4j.configurationFile=log4j2.xml"/>
+         </java>
     </target>
 
     <target name="clean-build" depends="clean,jar"/>
