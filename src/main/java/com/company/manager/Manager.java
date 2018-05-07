@@ -9,7 +9,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 public class Manager implements IManager{
 
     /** The reference to Main*/
-    protected MainRobot m_mainRobot;
+    protected static MainRobot m_mainRobot;
     /** The logger we shall use */
     private final static Logger logger =  LogManager.getLogger(MainRobot.class);
     @Override

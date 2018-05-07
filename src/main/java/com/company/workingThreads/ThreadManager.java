@@ -69,7 +69,10 @@ public class ThreadManager extends Manager implements IManager {
         if(m_mainRobot.getM_CommsManager().isComPortOpen()){
             m_writeThread = new WriteThread(this);
         }
-        else writeLog(Level.ERROR,"createWriteThread: COM port is not open - could not create");
+        else{
+            writeLog(Level.ERROR,"createWriteThread: COM port is not open - could not create");
+            m_mainRobot.shutDown(1);
+        }
 
     }
 
@@ -78,7 +81,10 @@ public class ThreadManager extends Manager implements IManager {
             m_monitorThread = new MonitorThread(this);
             m_monitorThread.setWriteThread(m_writeThread);
         }
-        else writeLog(Level.ERROR,"createWriteThread: COM port is not open - could not create");
+        else {
+            writeLog(Level.ERROR,"createWriteThread: COM port is not open - could not create");
+            m_mainRobot.shutDown(1);
+        }
 
     }
 

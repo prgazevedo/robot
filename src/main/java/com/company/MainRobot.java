@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Level;
 public class MainRobot extends Manager {
 
 
-    private static MainRobot m_MainRobot;
+    //private static MainRobot m_MainRobot;
     public ManagerFactory getMF() {
         return m_managerFactory;
     }
@@ -60,18 +60,19 @@ public class MainRobot extends Manager {
     public MainRobot() {
         m_managerFactory = new ManagerFactory(this);
         m_managerFactory.initialize();
-        MainRobot m_MainRobot = new MainRobot();
+
     }
 
     @Override
     public void initialize()  {
         super.initialize();
-        m_MainRobot.writeLog(Level.INFO, "Robot main initialize");
+
+        m_mainRobot.writeLog(Level.INFO, "Robot main initialize");
         try {
-            m_MainRobot.getM_ActionManager().waitIfArduinoReady();
-            m_MainRobot.writeLog(Level.INFO, "Robot Test if Arduino Ready completed");
-            m_MainRobot.getM_ActionManager().testRobot();
-            m_MainRobot.writeLog(Level.INFO, "Robot Test Robot Functions completed");
+            m_mainRobot.getM_ActionManager().waitIfArduinoReady();
+            m_mainRobot.writeLog(Level.INFO, "Robot Test if Arduino Ready completed");
+            m_mainRobot.getM_ActionManager().testRobot();
+            m_mainRobot.writeLog(Level.INFO, "Robot Test Robot Functions completed");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,17 +84,18 @@ public class MainRobot extends Manager {
     }
 
     public static void main(String[] args) throws Exception {
-        m_MainRobot.writeLog(Level.INFO, "Robot main start");
-        m_MainRobot.initialize();
+        m_mainRobot = new MainRobot();
+        m_mainRobot.initialize();
+        m_mainRobot.writeLog(Level.INFO, "Robot main start");
         //robot.getM_NavigationManager().runNavigator();
-        while(m_MainRobot.getM_NavigationManager().runStepwiseMockNavigator()){
-            m_MainRobot.getM_GraphViewer().updateGraph();
+        while(m_mainRobot.getM_NavigationManager().runStepwiseMockNavigator()){
+            m_mainRobot.getM_GraphViewer().updateGraph();
         }
 
     }
 
     public void shutDown(int status){
-        m_MainRobot.writeLog(Level.INFO,"shutDown has been called: Robot main code will now exit with code: "+status);
+        m_mainRobot.writeLog(Level.INFO,"shutDown has been called: Robot main code will now exit with code: "+status);
         System.exit(0);
     }
 
