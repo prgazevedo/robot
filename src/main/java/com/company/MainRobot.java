@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Level;
 public class MainRobot extends Manager {
 
 
-
+    private static MainRobot m_MainRobot;
     public ManagerFactory getMF() {
         return m_managerFactory;
     }
@@ -60,32 +60,42 @@ public class MainRobot extends Manager {
     public MainRobot() {
         m_managerFactory = new ManagerFactory(this);
         m_managerFactory.initialize();
+        MainRobot m_MainRobot = new MainRobot();
     }
 
+    @Override
+    public void initialize()  {
+        super.initialize();
+        m_MainRobot.writeLog(Level.INFO, "Robot main initialize");
+        try {
+            m_MainRobot.getM_ActionManager().waitIfArduinoReady();
+            m_MainRobot.writeLog(Level.INFO, "Robot Test if Arduino Ready completed");
+            m_MainRobot.getM_ActionManager().testRobot();
+            m_MainRobot.writeLog(Level.INFO, "Robot Test Robot Functions completed");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-
+    }
 
     public String getName(){
         return ApplicationProperties.APPLICATION_NAME;
     }
 
     public static void main(String[] args) throws Exception {
-        MainRobot robot = new MainRobot();
-        robot.writeLog(Level.INFO, "Robot main start");
-        robot.initialize();
-        robot.writeLog(Level.INFO, "Robot main initialize");
-        robot.getM_PropertiesManager().getPortName();
-        robot.getM_ActionManager().testIfArduinoReady();
-        robot.writeLog(Level.INFO, "Robot Test if Arduino Ready");
-        robot.getM_ActionManager().testRobot();
-        robot.writeLog(Level.INFO, "Robot Test Robot Functions");
+        m_MainRobot.writeLog(Level.INFO, "Robot main start");
+        m_MainRobot.initialize();
         //robot.getM_NavigationManager().runNavigator();
-        while(robot.getM_NavigationManager().runStepwiseMockNavigator()){
-            robot.getM_GraphViewer().updateGraph();
+        while(m_MainRobot.getM_NavigationManager().runStepwiseMockNavigator()){
+            m_MainRobot.getM_GraphViewer().updateGraph();
         }
 
-
-
     }
+
+    public void shutDown(int status){
+        m_MainRobot.writeLog(Level.INFO,"shutDown has been called: Robot main code will now exit with code: "+status);
+        System.exit(0);
+    }
+
 
 }

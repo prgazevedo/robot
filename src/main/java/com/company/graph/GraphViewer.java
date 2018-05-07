@@ -242,4 +242,7 @@ public class GraphViewer extends JFrame implements IManager {
 
     @Override
     public void writeLog(Level messageLevel, String message) { }
+
+    @Override
+    public void managerExit(int status) { }
 }

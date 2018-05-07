@@ -86,16 +86,18 @@ public class CommsManager extends Manager {
 
             } else {
                 writeLog(Level.WARN, "failed to open: " +portID);
-
+                managerExit(1);
             }
         }
         else
         {
             writeLog(Level.WARN, " openPort: Could not find port in portMap: "+portID);
+            managerExit(1);
         }
 
-
     }
+
+
 
     public boolean isComPortOpen(){
         if(m_comPort!=null) {
