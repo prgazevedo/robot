@@ -60,7 +60,9 @@ public class MonitorThread extends Thread {
         }
         catch(Exception e)
         {
+
             log.error("processMessage - Exception:"+e.toString());
+            log.error("processMessage - Exception: Serial Message Record:"+smr.toString());
         }
     }
 

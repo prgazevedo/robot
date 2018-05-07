@@ -18,6 +18,11 @@ public class Manager implements IManager{
     @Override
     public void initialize(){
         Configurator.setAllLevels(LogManager.getRootLogger().getName(), ApplicationProperties.LOG_LEVEL);
-
     }
+
+    @Override
+    public void managerExit(int status){
+        m_mainRobot.shutDown(status);
+    }
+
 }

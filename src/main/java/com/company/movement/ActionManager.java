@@ -190,7 +190,7 @@ public class ActionManager extends Manager implements IEvent {
 
 
 
-    public void testIfArduinoReady() {
+    public void waitIfArduinoReady() {
 
         writeLog(Level.INFO,"Test if Arduino is Ready called. Currently is: "+m_mainRobot.getM_StateManager().isM_bIsArduinoReady());
         Action.ACTION actionEnum=Action.ACTION.TEST_IS_READY;
