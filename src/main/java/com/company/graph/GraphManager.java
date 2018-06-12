@@ -20,6 +20,10 @@ public class GraphManager extends Manager implements IManager {
 
 
     private StaticLayout m_layout;
+
+
+
+    private GraphViewer m_GraphViewer;
     private edu.uci.ics.jung.graph.Graph<Integer,String> m_graph;
     private HashMap<Integer,Vertex> m_hashmapVertexes;
     private HashMap<Coordinates2D,Integer> m_hashmapLocations;
@@ -33,6 +37,10 @@ public class GraphManager extends Manager implements IManager {
     }
 
     public StaticLayout getM_layout() { return m_layout; }
+
+    public GraphViewer getGraphViewer() {
+        return m_GraphViewer;
+    }
 
     public int getM_Upper_X_Location() { return m_Upper_X_Location; }
 
@@ -51,6 +59,7 @@ public class GraphManager extends Manager implements IManager {
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
         m_hashmapLocations = new HashMap<Coordinates2D,Integer>();
         m_layout = new StaticLayout(m_graph);
+        m_GraphViewer = new GraphViewer(m_layout);
 
     }
 

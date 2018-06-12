@@ -23,20 +23,24 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
-public class GraphViewer extends JFrame implements IManager {
+public class GraphViewer extends JFrame  {
 
     private Dimension m_dimension;
+
+    public VisualizationViewer getM_vv() {
+        return m_vv;
+    }
+
     private VisualizationViewer m_vv;
     private StaticLayout m_layout;
     private GraphManager m_graphManager;
 
-    public GraphViewer(MainRobot mainRobot) throws HeadlessException {
-        super(mainRobot.getName());
-        m_graphManager = mainRobot.getM_GraphManager();
-        m_layout= m_graphManager.getM_layout();
+
+
+    public GraphViewer(StaticLayout layout) throws HeadlessException {
+        m_layout= layout;
         m_dimension= new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH);
         createVisualization();
-
     }
 
     public void viewGraph()
@@ -89,40 +93,22 @@ public class GraphViewer extends JFrame implements IManager {
 
 
     private Transformer<Integer, Paint> drawVertexColor() {
-        // Transformer maps the vertex number to a vertex property
-        return  new Transformer<Integer, Paint>() {
-            public Paint transform(Integer vID) {
-
-                if (m_graphManager.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
-                else if (m_graphManager.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
-                else return GraphProperties.NODE_COLOR;
-
-            }
-        };
+       return getVertexColorTransformer();
     }
     private Transformer<Integer, Shape> drawVertexShape() {
-        return new Transformer<Integer, Shape>() {
-            public Shape transform(Integer i) {
-                Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X, GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
-                return circle;
-            }
-        };
-    }
-    private void drawVertexCoords(){
-        m_vv.getRenderContext().setVertexLabelTransformer(new Transformer<Integer, String>() {
-            public String transform(Integer e) {
-                String s= "C:"+ m_graphManager.getVertex(e).getM_coords().toString();
-                return (e.toString()+s );
-            }
-        });
+       return getVertexShapeTransformer();
     }
 
+
+
+    private void drawVertexCoords(){
+        m_vv.getRenderContext().setVertexLabelTransformer(getVertexLabelTransformer());
+    }
+
+
+
     private void drawEdgeLabel() {
-        m_vv.getRenderContext().setEdgeLabelTransformer(new Transformer<String, String>() {
-            public String transform(String e) {
-                return (e.toString());
-            }
-        });
+        m_vv.getRenderContext().setEdgeLabelTransformer(getEdgeLabelTransformer());
     }
 
     // This method summarizes several options for improving the painting
@@ -237,12 +223,47 @@ public class GraphViewer extends JFrame implements IManager {
     }
 
 
-    @Override
-    public void initialize() { }
+    public Transformer<Integer, Paint> getVertexColorTransformer(){
+        // Transformer maps the vertex number to a vertex property
+        return  new Transformer<Integer, Paint>() {
+            public Paint transform(Integer vID) {
 
-    @Override
-    public void writeLog(Level messageLevel, String message) { }
+                if (m_graphManager.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
+                else if (m_graphManager.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
+                else return GraphProperties.NODE_COLOR;
 
-    @Override
-    public void managerExit(int status) { }
+            }
+        };
+    }
+
+    public Transformer<Integer, Shape> getVertexShapeTransformer() {
+        return new Transformer<Integer, Shape>() {
+            public Shape transform(Integer i) {
+                Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X, GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
+                return circle;
+            }
+        };
+    }
+
+    public Transformer getVertexLabelTransformer(){
+        return new Transformer<Integer, String>() {
+            public String transform(Integer e) {
+                String s= "C:"+ m_graphManager.getVertex(e).getM_coords().toString();
+                return (e.toString()+s );
+            }
+        };
+    }
+
+
+    public Transformer getEdgeLabelTransformer(){
+        return new Transformer<String, String>() {
+            public String transform(String e) {
+                return (e.toString());
+            }
+        };
+    }
+
+
+
+
 }

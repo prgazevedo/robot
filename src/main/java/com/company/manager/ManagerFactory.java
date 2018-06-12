@@ -45,7 +45,7 @@ public class ManagerFactory extends Manager implements IManager{
         getGraphManager();
         getNavigationManager();
         getPathManager();
-        getGraphViewer();
+       // getGraphViewer();
         getEventCaller();
 
 
@@ -105,13 +105,6 @@ public class ManagerFactory extends Manager implements IManager{
 
     }
 
-    public IManager getGraphViewer(){
-        if(m_GraphViewer==null) {
-            m_GraphViewer = new GraphViewer(m_mainRobot);
-            m_GraphViewer.initialize();
-        }
-        return m_GraphViewer;
-    }
 
     public IManager getEventCaller(){
         if(m_EventCaller==null) {

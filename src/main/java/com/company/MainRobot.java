@@ -47,7 +47,6 @@ public class MainRobot extends Manager {
     private ManagerFactory m_managerFactory;
 
     public ThreadManager getM_ThreadManager() { return (ThreadManager)getMF().getThreadManager(); }
-    public GraphViewer getM_GraphViewer() { return (GraphViewer)getMF().getGraphViewer(); }
     public  NavigationManager getM_NavigationManager() { return (NavigationManager) getMF().getNavigationManager(); }
     public ActionManager getM_ActionManager() { return (ActionManager) getMF().getActionManager(); }
     public CommsManager getM_CommsManager() { return (CommsManager)getMF().getCommsManager(); }
@@ -89,7 +88,7 @@ public class MainRobot extends Manager {
         m_mainRobot.writeLog(Level.INFO, "Robot main start");
         //robot.getM_NavigationManager().runNavigator();
         while(m_mainRobot.getM_NavigationManager().runStepwiseMockNavigator()){
-            m_mainRobot.getM_GraphViewer().updateGraph();
+            m_mainRobot.getM_GraphManager().getGraphViewer().updateGraph();
         }
 
     }
