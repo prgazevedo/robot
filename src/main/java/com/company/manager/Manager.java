@@ -8,6 +8,10 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 public class Manager implements IManager{
 
+    public static MainRobot getM_mainRobot() {
+        return m_mainRobot;
+    }
+
     /** The reference to Main*/
     protected static MainRobot m_mainRobot;
     /** The logger we shall use */

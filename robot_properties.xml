@@ -1,6 +1,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <comment>This is a comment</comment>
+    <comment>These are the Robot properties</comment>
+    <entry key="WorkingDir">.</entry>
+    <entry key="LogsDir">/Logs/</entry>
     <entry key="LinuxPortName">ttyACM0</entry>
     <entry key="OSXPortName">cu.usbmodem1441</entry>
 </properties>

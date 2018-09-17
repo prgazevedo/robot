@@ -33,12 +33,18 @@ public class GraphViewer extends JFrame  {
 
     private VisualizationViewer m_vv;
     private StaticLayout m_layout;
+
+    public GraphManager getM_graphManager() {
+        return m_graphManager;
+    }
+
     private GraphManager m_graphManager;
 
 
 
-    public GraphViewer(StaticLayout layout) throws HeadlessException {
-        m_layout= layout;
+    public GraphViewer(GraphManager graphManager) throws HeadlessException {
+        m_graphManager = graphManager;
+        m_layout= m_graphManager.getM_layout();
         m_dimension= new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH);
         createVisualization();
     }

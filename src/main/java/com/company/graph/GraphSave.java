@@ -20,20 +20,24 @@ import java.io.IOException;
 
 public class GraphSave {
 
-
+    BufferedImage m_image;
     private VisualizationImageServer  m_vis;
     private VisualizationViewer m_vv;
     private GraphViewer  m_graphViewer;
     private PropertiesManager m_propertiesManager;
+    private GraphManager m_graphManager;
+    private String m_WorkingDir;
 
-    public GraphSave(GraphViewer gv) {
-        m_graphViewer = gv;
+    public GraphSave(GraphManager graphManager) {
+        m_graphManager = graphManager;
+        m_graphViewer = m_graphManager.getGraphViewer();
         m_vv=m_graphViewer.getM_vv();
-        m_graphViewer.getM_mainRobot().getM_PropertiesManager().getM_WorkingDir();
+        m_WorkingDir = m_graphManager.getM_mainRobot().getM_PropertiesManager().getM_WorkingDir();
+        createVisualizationImageServer();
 
     }
 
-    public void createVisualizationImageServer() {
+    private void createVisualizationImageServer() {
 
 
         // Create the VisualizationImageServer
@@ -49,21 +53,24 @@ public class GraphSave {
         m_vis.getRenderContext().setVertexLabelTransformer(m_graphViewer.getVertexLabelTransformer());
         m_vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 
-        // Create the buffered image
-        BufferedImage image = (BufferedImage) m_vis.getImage(
-                new Point2D.Double(m_vv.getGraphLayout().getSize().getWidth() / 2,
-                        m_vv.getGraphLayout().getSize().getHeight() / 2),
-                new Dimension(m_vv.getGraphLayout().getSize()));
 
-        // Write image to a png file
-        File outputfile = new File("graph.png");
-
-        try {
-            ImageIO.write(image, "png", outputfile);
-        } catch (IOException e) {
-            // Exception handling
-        }
     }
 
 
+    public void updateImage() {
+        // Create the buffered image
+        m_image = (BufferedImage) m_vis.getImage(
+                new Point2D.Double(m_vv.getGraphLayout().getSize().getWidth() / 2,
+                        m_vv.getGraphLayout().getSize().getHeight() / 2),
+                new Dimension(m_vv.getGraphLayout().getSize()));
+    }
+    public void saveImage( File fileToWrite) {
+        updateImage();
+        try {
+            m_graphManager.writeLog(Level.INFO, "GraphSave about to write image in: "+ fileToWrite.getCanonicalPath());
+            ImageIO.write(m_image, "png", fileToWrite);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
