@@ -18,13 +18,13 @@ public class FileUtils {
      * Creates a File if the file does not exist, or returns a
      * reference to the File if it already exists.
      */
-    public static File createOrRetrieve(final String target) throws IOException{
+    public static File createOrRetrieveDir(final String target) throws IOException{
 
         final Path path = Paths.get(target);
 
         if(Files.notExists(path)){
             //LOG.info("Target file \"" + target + "\" will be created.");
-            return Files.createFile(Files.createDirectories(path)).toFile();
+            return Files.createDirectories(path).toFile();
         }
         //LOG.info("Target file \"" + target + "\" will be retrieved.");
         return path.toFile();

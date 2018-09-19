@@ -67,7 +67,7 @@ public class PropertiesManager extends Manager {
         String extractedFilePath = FileUtils.removeExtension(completeFilePath);
         m_LogsImageDir = m_WorkingDir+m_LogsDir+extractedFilePath+"/";
         try {
-            FileUtils.createOrRetrieve(m_LogsImageDir);
+            FileUtils.createOrRetrieveDir(m_LogsImageDir);
         } catch (IOException e) {
             e.printStackTrace();
         }

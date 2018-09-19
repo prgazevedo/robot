@@ -44,14 +44,13 @@ public class GraphSave {
         // vv is the VisualizationViewer containing my graph
          m_vis = new VisualizationImageServer(m_vv.getGraphLayout(), m_vv.getGraphLayout().getSize());
 
-        // Configure the VisualizationImageServer the same way
-        // you did your VisualizationViewer. In my case e.g.
+        // Configure the VisualizationImageServer the same way as for thw Viewer
 
         m_vis.setBackground(Color.WHITE);
-        m_vis.getRenderContext().setEdgeLabelTransformer(m_graphViewer.getEdgeLabelTransformer());
-        m_vis.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line());
-        m_vis.getRenderContext().setVertexLabelTransformer(m_graphViewer.getVertexLabelTransformer());
-        m_vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+        m_vis.getRenderContext().setEdgeLabelTransformer(m_graphViewer.drawEdgeLabel());
+        m_vis.getRenderContext().setVertexShapeTransformer(m_graphViewer.drawVertexShape());
+        m_vis.getRenderContext().setVertexFillPaintTransformer(m_graphViewer.drawVertexColor());
+        //m_vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 
 
     }
@@ -59,13 +58,21 @@ public class GraphSave {
 
     public void updateImage() {
         // Create the buffered image
-        m_image = (BufferedImage) m_vis.getImage(
-                new Point2D.Double(m_vv.getGraphLayout().getSize().getWidth() / 2,
-                        m_vv.getGraphLayout().getSize().getHeight() / 2),
-                new Dimension(m_vv.getGraphLayout().getSize()));
+        try {
+            m_image = (BufferedImage) m_vis.getImage(
+                    new Point2D.Double(m_vv.getGraphLayout().getSize().getWidth() / 2,
+                            m_vv.getGraphLayout().getSize().getHeight() / 2),
+                    new Dimension(m_vv.getGraphLayout().getSize()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void saveImage( File fileToWrite) {
         updateImage();
+
+
+
+
         try {
             m_graphManager.writeLog(Level.INFO, "GraphSave about to write image in: "+ fileToWrite.getCanonicalPath());
             ImageIO.write(m_image, "png", fileToWrite);

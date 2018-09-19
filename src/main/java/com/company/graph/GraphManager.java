@@ -8,6 +8,7 @@ import com.company.navigation.Direction;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.graph.util.EdgeType;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -343,8 +344,17 @@ public class GraphManager extends Manager implements IManager {
 
         if(m_hashmapVertexes.containsKey(vertexA) && m_hashmapVertexes.containsKey(vertexB))
         {
-            m_graph.addEdge(edgeID,vertexA, vertexB);
-            return true;
+            if(m_graph.containsVertex(vertexA) && m_graph.containsVertex(vertexB)) {
+                m_graph.addEdge(edgeID, vertexA, vertexB, EdgeType.DIRECTED);
+                return true;
+            }
+            else
+            {
+                //What the ???? is happening?
+                writeLog(Level.ERROR,"Add edge without vertex");
+                return false;
+            }
+
         }
         else return false;
 
