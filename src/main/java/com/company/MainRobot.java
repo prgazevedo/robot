@@ -88,7 +88,8 @@ public class MainRobot extends Manager {
         m_mainRobot.writeLog(Level.INFO, "Robot main start");
         //robot.getM_NavigationManager().runNavigator();
         while(m_mainRobot.getM_NavigationManager().runStepwiseMockNavigator()){
-            m_mainRobot.getM_GraphManager().getGraphViewer().updateGraph();
+            m_mainRobot.getM_GraphManager().updateViewGraph();
+            m_mainRobot.getM_GraphManager().updateSaveGraph();
         }
 
     }

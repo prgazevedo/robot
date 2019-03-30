@@ -27,6 +27,9 @@ public class ApplicationProperties {
     /** Application debug level */
     public static final  org.apache.logging.log4j.Level LOG_LEVEL = Level.INFO ;
 
+    /** log path  */
+    public static final String LOG_DIR = "/logs/";
+
 
 
 }

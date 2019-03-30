@@ -8,10 +8,12 @@ import com.company.navigation.Direction;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.graph.util.EdgeType;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +22,8 @@ public class GraphManager extends Manager implements IManager {
 
 
     private StaticLayout m_layout;
-
-
-
     private GraphViewer m_GraphViewer;
+    private GraphSave m_GraphSave;
     private edu.uci.ics.jung.graph.Graph<Integer,String> m_graph;
     private HashMap<Integer,Vertex> m_hashmapVertexes;
     private HashMap<Coordinates2D,Integer> m_hashmapLocations;
@@ -53,13 +53,17 @@ public class GraphManager extends Manager implements IManager {
     }
 
 
+    @Override
+    public void writeLog(Level messageLevel, String message) { m_mainRobot.writeLog(messageLevel,this.getClass().toString()+":"+message); }
+
     public GraphManager(MainRobot mainRobot) {
         m_mainRobot = mainRobot;
         m_graph = new SparseMultigraph<Integer,String>();
         m_hashmapVertexes = new HashMap<Integer,Vertex>();
         m_hashmapLocations = new HashMap<Coordinates2D,Integer>();
         m_layout = new StaticLayout(m_graph);
-        m_GraphViewer = new GraphViewer(m_layout);
+        m_GraphViewer = new GraphViewer(this);
+        m_GraphSave = new GraphSave(this);
 
     }
 
@@ -340,16 +344,30 @@ public class GraphManager extends Manager implements IManager {
 
         if(m_hashmapVertexes.containsKey(vertexA) && m_hashmapVertexes.containsKey(vertexB))
         {
-            m_graph.addEdge(edgeID,vertexA, vertexB);
-            return true;
+            if(m_graph.containsVertex(vertexA) && m_graph.containsVertex(vertexB)) {
+                m_graph.addEdge(edgeID, vertexA, vertexB, EdgeType.DIRECTED);
+                return true;
+            }
+            else
+            {
+                //What the ???? is happening?
+                writeLog(Level.ERROR,"Add edge without vertex");
+                return false;
+            }
+
         }
         else return false;
 
     }
 
 
-
-
-
-
+    public void updateViewGraph() {
+        writeLog(Level.INFO,"Called updateViewGraph");
+        m_GraphViewer.updateGraph();
+    }
+    public void updateSaveGraph() {
+        writeLog(Level.INFO,"Called updateSaveGraph");
+        File fileToWrite = m_mainRobot.getM_PropertiesManager().getImageFileToWrite();
+        m_GraphSave.saveImage(fileToWrite);
+    }
 }

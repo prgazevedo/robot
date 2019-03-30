@@ -33,12 +33,18 @@ public class GraphViewer extends JFrame  {
 
     private VisualizationViewer m_vv;
     private StaticLayout m_layout;
+
+    public GraphManager getM_graphManager() {
+        return m_graphManager;
+    }
+
     private GraphManager m_graphManager;
 
 
 
-    public GraphViewer(StaticLayout layout) throws HeadlessException {
-        m_layout= layout;
+    public GraphViewer(GraphManager graphManager) throws HeadlessException {
+        m_graphManager = graphManager;
+        m_layout= m_graphManager.getM_layout();
         m_dimension= new Dimension(GraphProperties.WINDOW_HEIGHT,GraphProperties.WINDOW_WIDTH);
         createVisualization();
     }
@@ -67,14 +73,11 @@ public class GraphViewer extends JFrame  {
         m_vv = new VisualizationViewer(m_layout, m_dimension);
 
 
-        Transformer<Integer, Paint> vertexColor = drawVertexColor();
-        Transformer<Integer, Shape> vertexSize = drawVertexShape();
-        //drawVertexCoords();
-        drawEdgeLabel();
 
-        m_vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
-        m_vv.getRenderContext().setVertexShapeTransformer(vertexSize);
 
+        m_vv.getRenderContext().setVertexFillPaintTransformer(drawVertexColor());
+        m_vv.getRenderContext().setVertexShapeTransformer(drawVertexShape());
+        m_vv.getRenderContext().setEdgeLabelTransformer(drawEdgeLabel());
         //zooming and transforming
         GraphZoomScrollPane zoomPane = new GraphZoomScrollPane(m_vv);
         DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse();
@@ -92,15 +95,17 @@ public class GraphViewer extends JFrame  {
     }
 
 
-    private Transformer<Integer, Paint> drawVertexColor() {
+    public Transformer<Integer, Paint> drawVertexColor() {
        return getVertexColorTransformer();
     }
-    private Transformer<Integer, Shape> drawVertexShape() {
+    public Transformer<Integer, Shape> drawVertexShape() {
        return getVertexShapeTransformer();
     }
+    public Transformer<String, String> drawEdgeLabel() {
+        return getEdgeLabelTransformer();
+    }
 
-
-
+/*
     private void drawVertexCoords(){
         m_vv.getRenderContext().setVertexLabelTransformer(getVertexLabelTransformer());
     }
@@ -110,6 +115,52 @@ public class GraphViewer extends JFrame  {
     private void drawEdgeLabel() {
         m_vv.getRenderContext().setEdgeLabelTransformer(getEdgeLabelTransformer());
     }
+    */
+
+
+    private Transformer<Integer, Paint> getVertexColorTransformer(){
+        // Transformer maps the vertex number to a vertex property
+        return  new Transformer<Integer, Paint>() {
+            public Paint transform(Integer vID) {
+
+                if (m_graphManager.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
+                else if (m_graphManager.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
+                else return GraphProperties.NODE_COLOR;
+
+            }
+        };
+    }
+
+    private Transformer<Integer, Shape> getVertexShapeTransformer() {
+        return new Transformer<Integer, Shape>() {
+            public Shape transform(Integer i) {
+                Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X, GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
+                return circle;
+            }
+        };
+    }
+
+    private Transformer<Integer,String> getVertexLabelTransformer(){
+        return new Transformer<Integer, String>() {
+            public String transform(Integer e) {
+                String s= "C:"+ m_graphManager.getVertex(e).getM_coords().toString();
+                return (e.toString()+s );
+            }
+        };
+    }
+
+
+    private Transformer<String,String> getEdgeLabelTransformer(){
+        return new Transformer<String, String>() {
+            public String transform(String e) {
+                return (e.toString());
+            }
+        };
+    }
+
+    /*
+    OPTIMIZATIONS
+     */
 
     // This method summarizes several options for improving the painting
     // performance. Enable or disable them depending on which visual features
@@ -221,48 +272,6 @@ public class GraphViewer extends JFrame  {
             }
         });
     }
-
-
-    public Transformer<Integer, Paint> getVertexColorTransformer(){
-        // Transformer maps the vertex number to a vertex property
-        return  new Transformer<Integer, Paint>() {
-            public Paint transform(Integer vID) {
-
-                if (m_graphManager.isVertexWall(vID)) return GraphProperties.WALL_COLOR;
-                else if (m_graphManager.wasVertexVisited(vID)) return GraphProperties.VISITED_NODE_COLOR;
-                else return GraphProperties.NODE_COLOR;
-
-            }
-        };
-    }
-
-    public Transformer<Integer, Shape> getVertexShapeTransformer() {
-        return new Transformer<Integer, Shape>() {
-            public Shape transform(Integer i) {
-                Ellipse2D circle = new Ellipse2D.Double(GraphProperties.NODE_X, GraphProperties.NODE_Y, GraphProperties.NODE_W, GraphProperties.NODE_H);
-                return circle;
-            }
-        };
-    }
-
-    public Transformer getVertexLabelTransformer(){
-        return new Transformer<Integer, String>() {
-            public String transform(Integer e) {
-                String s= "C:"+ m_graphManager.getVertex(e).getM_coords().toString();
-                return (e.toString()+s );
-            }
-        };
-    }
-
-
-    public Transformer getEdgeLabelTransformer(){
-        return new Transformer<String, String>() {
-            public String transform(String e) {
-                return (e.toString());
-            }
-        };
-    }
-
 
 
 
